@@ -9,7 +9,7 @@
     <meta name="description" content="简介根据官方教程，JNDI（Java Naming and Directory Interface）是为Java程序提供的，一组用来统一调用命名服务和目录服务的API，逻辑结构如下：可以看到下面的SPI中，有熟悉的RMI服务和DNS服务，也有没用过的CORBA和LDAP服务等。那么到底什么是JNDI？一句话说：接口一词在计算机系统中再常见不过，所谓JNDI，就是屏蔽掉上面说到的服务的底层细节，提供">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JNDI漏洞分析">
-<meta property="og:url" content="https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/index.html">
+<meta property="og:url" content="https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="Jasper_sec">
 <meta property="og:description" content="简介根据官方教程，JNDI（Java Naming and Directory Interface）是为Java程序提供的，一组用来统一调用命名服务和目录服务的API，逻辑结构如下：可以看到下面的SPI中，有熟悉的RMI服务和DNS服务，也有没用过的CORBA和LDAP服务等。那么到底什么是JNDI？一句话说：接口一词在计算机系统中再常见不过，所谓JNDI，就是屏蔽掉上面说到的服务的底层细节，提供">
 <meta property="og:locale" content="en_US">
@@ -52,17 +52,17 @@
     
       
         
-          <link rel="shortcut icon" href="/blog/images/favicon.ico">
+          <link rel="shortcut icon" href="/images/favicon.ico">
         
       
       
         
-          <link rel="icon" type="image/png" href="/blog/images/favicon-192x192.png" sizes="192x192">
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
         
       
       
         
-          <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon.png">
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
         
       
     
@@ -77,7 +77,7 @@
 
     <!-- styles -->
     
-<link rel="stylesheet" href="/blog/css/style.css">
+<link rel="stylesheet" href="/css/style.css">
 
     <!-- persian styles -->
     
@@ -98,15 +98,15 @@
     <span id="nav">
       <ul>
         <!--
-       --><li><a href="/blog/">Home</a></li><!--
+       --><li><a href="/">Home</a></li><!--
      --><!--
-       --><li><a href="/blog/archives/">Writing</a></li><!--
+       --><li><a href="/archives/">Writing</a></li><!--
      --><!--
        --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
      --><!--
-       --><li><a href="/blog/links/">links</a></li><!--
+       --><li><a href="/links/">links</a></li><!--
      --><!--
-       --><li><a href="/blog/about/">About</a></li><!--
+       --><li><a href="/about/">About</a></li><!--
      -->
       </ul>
     </span>
@@ -114,10 +114,10 @@
     <span id="actions">
       <ul>
         
-        <li><a class="icon" aria-label="Previous post" href="/blog/2023/12/24/0x0C%20fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%80%BB%E7%BB%93%20TODO/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Previous post" href="/2023/12/24/0x0C%20fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%80%BB%E7%BB%93%20TODO/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
         
-        <li><a class="icon" aria-label="Next post" href="/blog/2023/12/24/0x0A%20RMI%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Next post" href="/2023/12/24/0x0A%20RMI%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
         
         <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
         <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
@@ -130,17 +130,17 @@
     <br/>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&text=JNDI漏洞分析"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&is_video=false&description=JNDI漏洞分析"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=JNDI漏洞分析&body=Check out this article: https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&name=JNDI漏洞分析&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&t=JNDI漏洞分析"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&text=JNDI漏洞分析"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&is_video=false&description=JNDI漏洞分析"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=JNDI漏洞分析&body=Check out this article: https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&name=JNDI漏洞分析&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&t=JNDI漏洞分析"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -185,7 +185,7 @@
       
     <div class="article-tag">
         <i class="fa-solid fa-tag"></i>
-        <a class="p-category" href="/blog/tags/JNDI/" rel="tag">JNDI</a>, <a class="p-category" href="/blog/tags/Java/" rel="tag">Java</a>
+        <a class="p-category" href="/tags/JNDI/" rel="tag">JNDI</a>, <a class="p-category" href="/tags/Java/" rel="tag">Java</a>
     </div>
 
 
@@ -252,15 +252,15 @@
     <div id="nav-footer" style="display: none">
       <ul>
         
-          <li><a href="/blog/">Home</a></li>
+          <li><a href="/">Home</a></li>
         
-          <li><a href="/blog/archives/">Writing</a></li>
+          <li><a href="/archives/">Writing</a></li>
         
           <li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li>
         
-          <li><a href="/blog/links/">links</a></li>
+          <li><a href="/links/">links</a></li>
         
-          <li><a href="/blog/about/">About</a></li>
+          <li><a href="/about/">About</a></li>
         
       </ul>
     </div>
@@ -274,17 +274,17 @@
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&text=JNDI漏洞分析"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&is_video=false&description=JNDI漏洞分析"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=JNDI漏洞分析&body=Check out this article: https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&name=JNDI漏洞分析&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://sketchpl4ne.github.io/blog/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&t=JNDI漏洞分析"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&text=JNDI漏洞分析"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&is_video=false&description=JNDI漏洞分析"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=JNDI漏洞分析&body=Check out this article: https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&title=JNDI漏洞分析"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&name=JNDI漏洞分析&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://sketchpl4ne.github.io/2023/12/24/0x0B%20JNDI%20%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/&t=JNDI漏洞分析"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -314,15 +314,15 @@
     <nav>
       <ul>
         <!--
-       --><li><a href="/blog/">Home</a></li><!--
+       --><li><a href="/">Home</a></li><!--
      --><!--
-       --><li><a href="/blog/archives/">Writing</a></li><!--
+       --><li><a href="/archives/">Writing</a></li><!--
      --><!--
        --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
      --><!--
-       --><li><a href="/blog/links/">links</a></li><!--
+       --><li><a href="/links/">links</a></li><!--
      --><!--
-       --><li><a href="/blog/about/">About</a></li><!--
+       --><li><a href="/about/">About</a></li><!--
      -->
       </ul>
     </nav>
@@ -370,7 +370,7 @@
   </script>
 
 
-<script src="/blog/js/main.js"></script>
+<script src="/js/main.js"></script>
 
 <!-- search -->
 
