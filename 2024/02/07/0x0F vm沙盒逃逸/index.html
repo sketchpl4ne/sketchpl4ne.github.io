@@ -8,8 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
     <meta name="description" content="前言vm2在2023年7月已经停止维护了，本文仅用作nodejs沙盒逃逸思路的学习。 vmvm APIvm的API比较简单，掌握下面这种即可，它结合了其他API命令。  vm.Script(code)：将要执行的code进行预编译 script.runInNewContext()：创建和global隔离的作用域（context）当作沙箱，并且执行script的代码  下面是vm使用模板，运行之后可">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Jasper_sec">
-<meta property="og:url" content="https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/index.html">
+<meta property="og:title" content="vm2沙盒逃逸源码分析">
+<meta property="og:url" content="https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/index.html">
 <meta property="og:site_name" content="Jasper_sec">
 <meta property="og:description" content="前言vm2在2023年7月已经停止维护了，本文仅用作nodejs沙盒逃逸思路的学习。 vmvm APIvm的API比较简单，掌握下面这种即可，它结合了其他API命令。  vm.Script(code)：将要执行的code进行预编译 script.runInNewContext()：创建和global隔离的作用域（context）当作沙箱，并且执行script的代码  下面是vm使用模板，运行之后可">
 <meta property="og:locale" content="en_US">
@@ -36,12 +36,11 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1705242975937-1dfc1a30-1fe2-4e4a-a04a-418fecb1fcd8.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1705245212290-b9f4bf2a-3d96-4a3b-a944-d4f57f45c824.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1705245774335-d4778680-a085-440c-8488-c9ffc4094afe.png">
-<meta property="article:published_time" content="2024-01-28T12:33:17.706Z">
-<meta property="article:modified_time" content="2024-01-14T17:49:34.000Z">
+<meta property="article:published_time" content="2024-02-07T07:50:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:50:08.230Z">
 <meta property="article:author" content="Jasper_sec">
-<meta property="article:tag" content="security">
-<meta property="article:tag" content="CTF">
-<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Nodejs">
+<meta property="article:tag" content="vm2">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1702648787232-181d55f2-cd65-4b27-a307-10002fb5fb26.png">
     
@@ -63,7 +62,7 @@
       
     
     <!-- title -->
-    <title>Jasper_sec</title>
+    <title>vm2沙盒逃逸源码分析</title>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
@@ -124,17 +123,17 @@
     <br/>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&text="><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title="><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&is_video=false&description="><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=&body=Check out this article: https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title="><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title="><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title="><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title="><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&name=&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&t="><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&text=vm2沙盒逃逸源码分析"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title=vm2沙盒逃逸源码分析"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&is_video=false&description=vm2沙盒逃逸源码分析"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=vm2沙盒逃逸源码分析&body=Check out this article: https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title=vm2沙盒逃逸源码分析"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title=vm2沙盒逃逸源码分析"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title=vm2沙盒逃逸源码分析"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title=vm2沙盒逃逸源码分析"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&name=vm2沙盒逃逸源码分析&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&t=vm2沙盒逃逸源码分析"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -154,7 +153,7 @@
   <header>
     
     <h1 class="posttitle p-name" itemprop="name headline">
-        
+        vm2沙盒逃逸源码分析
     </h1>
 
 
@@ -166,9 +165,9 @@
       
     <div class="postdate">
       
-        <time datetime="2024-01-28T12:33:17.706Z" class="dt-published" itemprop="datePublished">2024-01-28</time>
+        <time datetime="2024-02-07T07:50:00.000Z" class="dt-published" itemprop="datePublished">2024-02-07</time>
         
-        (Updated: <time datetime="2024-01-14T17:49:34.000Z" class="dt-updated" itemprop="dateModified">2024-01-15</time>)
+        (Updated: <time datetime="2024-02-07T07:50:08.230Z" class="dt-updated" itemprop="dateModified">2024-02-07</time>)
         
       
     </div>
@@ -177,6 +176,11 @@
       
 
       
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Nodejs/" rel="tag">Nodejs</a>, <a class="p-category" href="/tags/vm2/" rel="tag">vm2</a>
+    </div>
+
 
     </div>
   </header>
@@ -337,17 +341,17 @@
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&text="><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title="><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&is_video=false&description="><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=&body=Check out this article: https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title="><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title="><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title="><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title="><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&name=&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2024/01/28/0x0F%20%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&t="><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&text=vm2沙盒逃逸源码分析"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title=vm2沙盒逃逸源码分析"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&is_video=false&description=vm2沙盒逃逸源码分析"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=vm2沙盒逃逸源码分析&body=Check out this article: https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title=vm2沙盒逃逸源码分析"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title=vm2沙盒逃逸源码分析"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title=vm2沙盒逃逸源码分析"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&title=vm2沙盒逃逸源码分析"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&name=vm2沙盒逃逸源码分析&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2024/02/07/0x0F%20vm%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/&t=vm2沙盒逃逸源码分析"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
