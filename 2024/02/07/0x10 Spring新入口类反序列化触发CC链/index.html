@@ -6,12 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="文章首发于先知社区 前言使用CodeQL在Spring组件里找到新的入口类MimeType，能够触发到LazyMap#get，进而触发CC链简单记录了一下使用codeql挖链子的工作流程，本机环境和依赖：  jdk 17.0.11 SpringBoot 3.1.10 CC 3.2.1 codeql cli 2.17.0  CodeQL起手式官方文档推荐使用vscode extension来搭建Co">
+    <meta name="description" content="前言文章首发于先知社区使用CodeQL在Spring组件里找到新的入口类MimeType，能够触发到LazyMap#get，进而触发CC链简单记录了一下使用codeql挖链子的工作流程，本机环境和依赖：  jdk 17.0.11 SpringBoot 3.1.10 CC 3.2.1 codeql cli 2.17.0  CodeQL起手式官方文档推荐使用vscode extension来搭建Cod">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Jasper_sec">
-<meta property="og:url" content="https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/index.html">
+<meta property="og:title" content="Spring新入口类反序列化触发CC链">
+<meta property="og:url" content="https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/index.html">
 <meta property="og:site_name" content="Jasper_sec">
-<meta property="og:description" content="文章首发于先知社区 前言使用CodeQL在Spring组件里找到新的入口类MimeType，能够触发到LazyMap#get，进而触发CC链简单记录了一下使用codeql挖链子的工作流程，本机环境和依赖：  jdk 17.0.11 SpringBoot 3.1.10 CC 3.2.1 codeql cli 2.17.0  CodeQL起手式官方文档推荐使用vscode extension来搭建Co">
+<meta property="og:description" content="前言文章首发于先知社区使用CodeQL在Spring组件里找到新的入口类MimeType，能够触发到LazyMap#get，进而触发CC链简单记录了一下使用codeql挖链子的工作流程，本机环境和依赖：  jdk 17.0.11 SpringBoot 3.1.10 CC 3.2.1 codeql cli 2.17.0  CodeQL起手式官方文档推荐使用vscode extension来搭建Cod">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052152109.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052153402.png">
@@ -22,12 +22,13 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052153407.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052153079.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052153408.png">
-<meta property="article:published_time" content="2024-05-05T13:57:10.141Z">
-<meta property="article:modified_time" content="2024-05-05T14:02:41.277Z">
+<meta property="article:published_time" content="2024-02-07T07:50:00.000Z">
+<meta property="article:modified_time" content="2024-05-05T14:07:40.183Z">
 <meta property="article:author" content="Jasper_sec">
-<meta property="article:tag" content="security">
-<meta property="article:tag" content="CTF">
 <meta property="article:tag" content="Java">
+<meta property="article:tag" content="CC">
+<meta property="article:tag" content="反序列化">
+<meta property="article:tag" content="CodeQL">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052152109.png">
     
@@ -49,7 +50,7 @@
       
     
     <!-- title -->
-    <title>Jasper_sec</title>
+    <title>Spring新入口类反序列化触发CC链</title>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
@@ -110,17 +111,17 @@
     <br/>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&text="><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title="><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&is_video=false&description="><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=&body=Check out this article: https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title="><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title="><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title="><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title="><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&name=&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&t="><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&text=Spring新入口类反序列化触发CC链"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类反序列化触发CC链"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&is_video=false&description=Spring新入口类反序列化触发CC链"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Spring新入口类反序列化触发CC链&body=Check out this article: https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类反序列化触发CC链"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类反序列化触发CC链"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类反序列化触发CC链"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类反序列化触发CC链"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&name=Spring新入口类反序列化触发CC链&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&t=Spring新入口类反序列化触发CC链"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -140,7 +141,7 @@
   <header>
     
     <h1 class="posttitle p-name" itemprop="name headline">
-        
+        Spring新入口类反序列化触发CC链
     </h1>
 
 
@@ -152,9 +153,9 @@
       
     <div class="postdate">
       
-        <time datetime="2024-05-05T13:57:10.141Z" class="dt-published" itemprop="datePublished">2024-05-05</time>
+        <time datetime="2024-02-07T07:50:00.000Z" class="dt-published" itemprop="datePublished">2024-02-07</time>
         
-        (Updated: <time datetime="2024-05-05T14:02:41.277Z" class="dt-updated" itemprop="dateModified">2024-05-05</time>)
+        (Updated: <time datetime="2024-05-05T14:07:40.183Z" class="dt-updated" itemprop="dateModified">2024-05-05</time>)
         
       
     </div>
@@ -163,14 +164,18 @@
       
 
       
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/CC/" rel="tag">CC</a>, <a class="p-category" href="/tags/CodeQL/" rel="tag">CodeQL</a>, <a class="p-category" href="/tags/Java/" rel="tag">Java</a>, <a class="p-category" href="/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" rel="tag">反序列化</a>
+    </div>
+
 
     </div>
   </header>
   
 
   <div class="content e-content" itemprop="articleBody">
-    <p>文章首发于先知社区</p>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>使用CodeQL在Spring组件里找到新的入口类MimeType，能够触发到LazyMap#get，进而触发CC链<br>简单记录了一下使用codeql挖链子的工作流程，本机环境和依赖：</p>
+    <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>文章首发于先知社区<br>使用CodeQL在Spring组件里找到新的入口类MimeType，能够触发到LazyMap#get，进而触发CC链<br>简单记录了一下使用codeql挖链子的工作流程，本机环境和依赖：</p>
 <ul>
 <li>jdk 17.0.11</li>
 <li>SpringBoot 3.1.10</li>
@@ -245,17 +250,17 @@
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&text="><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title="><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&is_video=false&description="><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=&body=Check out this article: https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title="><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title="><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title="><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title="><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&name=&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&t="><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&text=Spring新入口类反序列化触发CC链"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类反序列化触发CC链"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&is_video=false&description=Spring新入口类反序列化触发CC链"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Spring新入口类反序列化触发CC链&body=Check out this article: https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类反序列化触发CC链"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类反序列化触发CC链"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类反序列化触发CC链"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类反序列化触发CC链"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&name=Spring新入口类反序列化触发CC链&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2024/02/07/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&t=Spring新入口类反序列化触发CC链"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
