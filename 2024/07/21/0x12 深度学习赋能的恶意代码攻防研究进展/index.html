@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="引言深度学习对恶意代码的攻防赋能，文章分为赋能攻击和赋能防御。 赋能攻击：基于对抗样本生成（Adversarial Sample Generation）的自动化免杀、基于自然语言生成（Natural Language Generation，简称NLG）的自动化网络钓鱼、基于深度学习分类目标的精准定位与打击、基于生成对抗网络（Generative Adversarial Network，简称GAN）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《深度学习赋能的恶意代码攻防研究进展》文献阅读">
+<meta property="og:url" content="https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/index.html">
+<meta property="og:site_name" content="Jasper_sec">
+<meta property="og:description" content="引言深度学习对恶意代码的攻防赋能，文章分为赋能攻击和赋能防御。 赋能攻击：基于对抗样本生成（Adversarial Sample Generation）的自动化免杀、基于自然语言生成（Natural Language Generation，简称NLG）的自动化网络钓鱼、基于深度学习分类目标的精准定位与打击、基于生成对抗网络（Generative Adversarial Network，简称GAN）">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202407211837957.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202407211838497.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202407211839360.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202407211839062.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202407211840252.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240721184047.png">
+<meta property="article:published_time" content="2024-07-21T10:24:16.000Z">
+<meta property="article:modified_time" content="2024-07-21T10:45:55.494Z">
+<meta property="article:author" content="Jasper_sec">
+<meta property="article:tag" content="深度学习">
+<meta property="article:tag" content="文献阅读">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202407211837957.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>《深度学习赋能的恶意代码攻防研究进展》文献阅读</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/05/25/0x11%20CISCN2024%20writeup/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/&text=《深度学习赋能的恶意代码攻防研究进展》文献阅读"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/&title=《深度学习赋能的恶意代码攻防研究进展》文献阅读"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/&is_video=false&description=《深度学习赋能的恶意代码攻防研究进展》文献阅读"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=《深度学习赋能的恶意代码攻防研究进展》文献阅读&body=Check out this article: https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/&title=《深度学习赋能的恶意代码攻防研究进展》文献阅读"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/&title=《深度学习赋能的恶意代码攻防研究进展》文献阅读"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/&title=《深度学习赋能的恶意代码攻防研究进展》文献阅读"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/&title=《深度学习赋能的恶意代码攻防研究进展》文献阅读"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/&name=《深度学习赋能的恶意代码攻防研究进展》文献阅读&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/&t=《深度学习赋能的恶意代码攻防研究进展》文献阅读"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%8A%A9%E5%8A%9B%E6%94%BB%E5%87%BB"><span class="toc-number">2.</span> <span class="toc-text">深度学习助力攻击</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E5%AF%B9%E6%8A%97%E6%A0%B7%E6%9C%AC%E7%94%9F%E6%88%90%E7%9A%84%E8%87%AA%E5%8A%A8%E5%8C%96%E5%85%8D%E6%9D%80"><span class="toc-number">2.1.</span> <span class="toc-text">基于对抗样本生成的自动化免杀</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E7%94%9F%E6%88%90%E7%9A%84%E8%87%AA%E5%8A%A8%E5%8C%96%E7%BD%91%E7%BB%9C%E9%92%93%E9%B1%BC"><span class="toc-number">2.2.</span> <span class="toc-text">基于自然语言生成的自动化网络钓鱼</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E7%B2%BE%E5%87%86%E5%AE%9A%E4%BD%8D%E4%B8%8E%E6%89%93%E5%87%BB"><span class="toc-number">2.3.</span> <span class="toc-text">基于神经网络的精准定位与打击</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C%E7%9A%84%E6%B5%81%E9%87%8F%E6%A8%A1%E4%BB%BF"><span class="toc-number">2.4.</span> <span class="toc-text">基于生成对抗网络的流量模仿</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E9%BB%91%E7%9B%92%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%94%BB%E5%87%BB%E6%84%8F%E5%9B%BE%E9%9A%90%E8%97%8F"><span class="toc-number">2.5.</span> <span class="toc-text">基于黑盒模型的攻击意图隐藏</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%8A%A9%E5%8A%9B%E9%98%B2%E5%BE%A1"><span class="toc-number">3.</span> <span class="toc-text">深度学习助力防御</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%9F%A5%E6%9D%80"><span class="toc-number">3.1.</span> <span class="toc-text">基于深度学习的恶意代码查杀</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%8A%A8%E5%8C%96%E7%BD%91%E7%BB%9C%E9%92%93%E9%B1%BC%E6%94%BB%E5%87%BB%E8%AF%86%E5%88%AB"><span class="toc-number">3.2.</span> <span class="toc-text">自动化网络钓鱼攻击识别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E8%A1%8C%E4%B8%BA%E6%A3%80%E6%B5%8B"><span class="toc-number">3.3.</span> <span class="toc-text">深度学习赋能的恶意行为检测</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%81%B6%E6%84%8F%E6%B5%81%E9%87%8F%E6%A3%80%E6%B5%8B"><span class="toc-number">3.3.1.</span> <span class="toc-text">恶意流量检测</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E8%A1%8C%E4%B8%BA%E6%A3%80%E6%B5%8B"><span class="toc-number">3.3.2.</span> <span class="toc-text">进程行为检测</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%BC%B4%E7%94%9F%E5%AE%89%E5%85%A8"><span class="toc-number">4.</span> <span class="toc-text">深度学习伴生安全</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E5%90%8E%E9%97%A8%E6%94%BB%E5%87%BB"><span class="toc-number">4.0.1.</span> <span class="toc-text">模型后门攻击</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E5%90%8E%E9%97%A8%E9%98%B2%E5%BE%A1"><span class="toc-number">4.0.2.</span> <span class="toc-text">模型后门防御</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E6%96%87%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">全文总结</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        《深度学习赋能的恶意代码攻防研究进展》文献阅读
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Jasper_sec</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-07-21T10:24:16.000Z" class="dt-published" itemprop="datePublished">2024-07-21</time>
+        
+        (Updated: <time datetime="2024-07-21T10:45:55.494Z" class="dt-updated" itemprop="dateModified">2024-07-21</time>)
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/" rel="tag">文献阅读</a>, <a class="p-category" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag">深度学习</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>深度学习对恶意代码的攻防赋能，文章分为<strong>赋能攻击</strong>和<strong>赋能防御</strong>。</p>
+<p>赋能攻击：基于对抗样本生成（Adversarial Sample Generation）的自动化免杀、基于自然语言生成（Natural Language Generation，简称NLG）的自动化网络钓鱼、基于深度学习分类目标的精准定位与打击、基于生成对抗网络（Generative Adversarial Network，简称GAN）的流量模仿、基于黑盒模型的攻击意图隐藏、<em>自动化漏洞挖掘、自</em><br><em>动化漏洞利用、自动化绕过凭证和基于深度学习的密码破解</em>。</p>
+<p>赋能防御：基于深度学习的恶意代码查杀、自动化网络钓鱼攻击识别、深度学习赋能的恶意行为检测</p>
+<h2 id="深度学习助力攻击"><a href="#深度学习助力攻击" class="headerlink" title="深度学习助力攻击"></a>深度学习助力攻击</h2><p>分成5类：基于对抗样本生成的自动化免杀、基于自然语言生成的自动化网络钓鱼、基于深度学习分类的精准定位与打击、基于生成对抗网络的流量模仿、基于黑盒模型的攻击意图隐藏。</p>
+<h3 id="基于对抗样本生成的自动化免杀"><a href="#基于对抗样本生成的自动化免杀" class="headerlink" title="基于对抗样本生成的自动化免杀"></a>基于对抗样本生成的自动化免杀</h3><p>简单来说，就是通过生成恶意的对抗样本，以绕过基于深度学习模型的引擎的查杀。注意，这里是绕过DL-Based的检测引擎，也就是绕过深度学习的判别。</p>
+<p>2016 年，Kathrin Grosse等人<strong>基于前向导数算法</strong>生成具有对抗性的恶意代码样本，对抗的<strong>检测引擎是DNN</strong>。通过实验证明，该方法对恶意代码实现了 85%的误分类率，验证了基于对抗样本生成的恶意代码攻击的可行性。</p>
+<p>2017 年，Weiwei Hu<strong>基于GAN</strong>提出了MalGAN模型来生成对抗性恶意代码，以绕过黑盒检测系统，实验结果表明MalGAN能够将检测率降低到接近零，并使基于再训练的防御性方法难以对抗此类攻击。</p>
+<p>同年，Weiwei Hu等人<strong>将RNN与GAN 相结合</strong>，<strong>在原始恶意代码的API序列中插入一些不相关的 API</strong>，生成基于顺序的对抗性恶意代码，可有效对抗多种不同 RNN 结构的的模拟反病毒引擎。</p>
+<p>2018 年，Bojan Kolosnjaji等人首次在字节粒度上<strong>提出在恶意代码末尾填充字节</strong>的方式来生成对抗性恶意代码，并基于梯度下降算法指导决定要填充的字节，其测试准确率高达92.83%，并在实际对抗基于字节粒度的检测系统MalConv时获得了60%的成功率。</p>
+<p>同年，Hyrum S.Anderson等人<strong>利用深度强化学习网络</strong>（DeepReinforcement-learning Network，简称DRN），提出了一种基于对抗样本生成的黑盒攻击方法，用于攻击静态 PE 反杀毒<br>引擎，这是当前第<strong>一个可以产生对抗性PE 恶意代码的工作</strong>，在模拟现实的攻击中达到了 90%的成功率。</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202407211837957.png"></p>
+<p>发展：</p>
+<ol>
+<li>限制条件越来越苛刻，白盒模型假设-&gt;黑盒模型假设；</li>
+<li>绕过的检测引擎由DNN扩展到各个深度学习模型；</li>
+<li>提出了末尾直接填充的细粒度方法，并取得不错的效果。</li>
+</ol>
+<p>问题：</p>
+<ol>
+<li>数据集不规范，没有标准恶意代码数据集；</li>
+<li>检测样本所用的引擎，与真实的反病毒引擎检测能力存在差距，存在模型不实用的问题。</li>
+</ol>
+<p>总结：综上，当前基于对抗样本生成的自动化免杀<strong>在实际应用中并不可行</strong>。然而，即使如此，作为恶意代码攻击“准备”过程中增强免杀性和生存性的一个先进的技术手段，深度学习赋能的自动化免杀技术仍具有重要的研究价值。</p>
+<h3 id="基于自然语言生成的自动化网络钓鱼"><a href="#基于自然语言生成的自动化网络钓鱼" class="headerlink" title="基于自然语言生成的自动化网络钓鱼"></a>基于自然语言生成的自动化网络钓鱼</h3><p>背景：普通的钓鱼邮件攻击已经可以被很好地预防了，所以攻击人员更加倾向于研究自动化的、针对性的钓鱼邮件生成，使<strong>深度学习NLG + 钓鱼邮件</strong> 成为不错的方向。</p>
+<p>优势：</p>
+<ol>
+<li>NLG和钓鱼邮件很搭，利用现有数据，生成目标感兴趣、且大概率会响应的钓鱼邮件的流程很符合NlG的作用。</li>
+<li>深度学习对NLG有促进作用。首先降低了特征纬度，其次模型更复杂，建模更精准，最后深度学习缓解了语义鸿沟问题。</li>
+</ol>
+<p>2017 年，Shahryar Baki等人设计了一种<strong>使用 NLG</strong> 的可扩展方案来开展电子邮件伪装的<strong>鱼叉式钓鱼攻击</strong>，使用的引擎称为Data引擎，并且他们针对两个知名人物（HillaryClinton 和 Sarah Palin，分别简称为HC和 SP）验证了鱼叉式钓鱼攻击的效果，攻击结果显示对 HC 的电子邮件进行的鱼叉式钓鱼攻击欺骗了 34％的人，对 SP 的攻击欺骗了 71％的人。</p>
+<p>2019 年，AvishaDas等人使用<strong>基于 RNN 的 NLG 技术</strong>，通过<strong>在训练过程中注入恶意意图</strong>（例如欺骗性的网页链接或超链接），并在合成电子邮件中生成恶意内容，从而实现了一个进行高级电子邮件伪装攻击的 RNN原型系统。该系统的训练依赖于两个数据集：一个是合法电子邮件数据集，主要是从真实个人的发件箱和收件箱中提取的；另一个是网络钓鱼邮件数据集，由个人收集的 197 个网络钓鱼电子邮件，以及Jose Nazario 网络钓鱼语料库中的 3392 封网络钓鱼电子邮件组成。最终通过评估实验证明，对比Shahryar Baki 等人使用的Dada 引擎，<strong>RNN生成的伪电子邮件具有更好的连贯性和更少的语法错误</strong>，能更好地作为网络钓鱼电子邮件进行攻击。</p>
+<p>总结：钓鱼邮件的攻击已经逐步趋向自动化，攻击者的研究偏向深度学习+NLG 的自动化网络鱼叉式钓鱼， 自动化钓鱼机器人的攻击占比逐步提高，如何训练出更好的模型来自动化钓鱼也是个不错的方向。</p>
+<h3 id="基于神经网络的精准定位与打击"><a href="#基于神经网络的精准定位与打击" class="headerlink" title="基于神经网络的精准定位与打击"></a>基于神经网络的精准定位与打击</h3><p>思路：深度学习模型作为攻击组件，与攻击载荷一起嵌入到恶意代码体内，它是恶意代码是否释放恶意行为的决策者，只有在特定攻击目标出现时，深度学习模型才会决定释放恶意行为，从而实现精准打击。</p>
+<p>2018年，IBM研究院在的Black Hat大会上展示一种 AI 赋能的恶意代码 — DeepLocker，它借助 <strong>CNN 模型</strong>实现了对特定<strong>目标的精准定位与打击</strong>。DeepLocker的工作原理：首先对payload做对称加密，然后和深度学习的分类模型一起发送到目标主机；分类模型对主机的情况做二分类检测，只有当判断为TP的时候，模型输出正确的全连接层输出作为对称加密密钥；最后payload用密钥做解密，执行正常攻击流程。</p>
+<p>总结：综上，当前精准定位与打击的攻击思路不仅仅在理论层面，该类攻击手法已被攻击者应用于实际的APT攻击中，并且通过对防御难度的分析，<strong>本文认为这类攻击技术一旦被攻击者广泛利用，将难以实现防御对抗</strong>。因此该类攻击带来的安全风险需要引起安全研究人员的高度重视，<strong>针对这类新型攻击的防御研究刻不容缓</strong>。</p>
+<h3 id="基于生成对抗网络的流量模仿"><a href="#基于生成对抗网络的流量模仿" class="headerlink" title="基于生成对抗网络的流量模仿"></a>基于生成对抗网络的流量模仿</h3><p>在权限维持阶段，强调攻击和利用的隐蔽性。因此，攻击者就想把恶意的C2流量伪装成正常流量，而深度学习又可以派上用场了，即生成对抗网络（GAN）+流量模仿。</p>
+<p>2018 年，Maria Rigaki使用<strong>GAN模仿仿 Facebook 聊天流量</strong>，通过修改恶意软件的源代码从GAN接收参数，通过参数的反馈，可以调整其“C2信道”上基于流量的通信行为，以使其不会被阻止，实验结果表明这种流量模仿的攻击方法可以成功绕过 Stratosphere IPS。</p>
+<p>2019 年，Zilong Lin等人提出了一种新的GAN框架 IDSGAN，用于在流量维度上针对IDS进行黑盒对抗攻击。IDSGAN由生成器、鉴别器和黑盒 IDS 组成。实验表明，IDSGAN仅通过<strong>修改攻击流量的部分非功能性特征</strong>，就可使各种黑盒 IDS 模型的检测率降低到接近0，提高了入侵的有效性。</p>
+<p>下面的研究不是生成攻击，但是对攻击有帮助的一些研究，一个是攻击小样本生成，一个是进行流量伪装（隐私保护作用）。</p>
+<p>2019 年 WooHoLee等人<strong>提出一种基于图像生成攻击流量</strong>的方法，该方法专注攻防对抗中数据量非常少的恶意流量，使用WGAN-GP 模型来<strong>增加攻击级别的流量训练数据</strong>，通过<strong>解决数据集不平衡</strong>的问题，用以实现增强的模型学习和分类。</p>
+<p>同年，Markus Ring等人提出<strong>使用 GAN 生成逼真的基于流的网络流量</strong>，其中既包含有正常的用户行为流量，也包含着恶意攻击流量，并且实验证明他们提出的方法可以生成高质量的数据。</p>
+<p>2019年 Jie Li等人提出了一种称为 FlowGAN 的<strong>动态流量伪装技术</strong>，它包括 GAN 生成器、网络流生成器、本地代理服务器和远程代理服务器。FlowGAN的<strong>核心思想是通过提供源流和目标流，自动提取目标流的流量特征，基于特征将源流转换成目标流</strong>。基于这一核心思想，匿名通信的流量便可被伪装变形为可规避互联网审查的流量，而且实验结果表明FlowGAN在流量伪装方面具有不可区分性和延迟小的特性。</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202407211838497.png"></p>
+<p>缺点：</p>
+<ol>
+<li>GAN的流量模仿，各研究者使用的数据集不共享、不通用；</li>
+<li>如果存在良性的流量模仿，会极大降低以上方案的判别能力，当前方案无法判断流量的模仿是恶意的还是良性。</li>
+</ol>
+<p>总结：基于 GAN 的流量模仿是利用GAN可以生成与正常流量相似的流量的功能，让GAN去生成，从而达到流量伪装的目的。数据集的缺乏、良性流量模仿的问题还丞待解决。</p>
+<h3 id="基于黑盒模型的攻击意图隐藏"><a href="#基于黑盒模型的攻击意图隐藏" class="headerlink" title="基于黑盒模型的攻击意图隐藏"></a>基于黑盒模型的攻击意图隐藏</h3><p>流量模仿可以隐藏通信过程，但是恶意程序本身还是表露在目标机器上，防守人员可以去逆向分析这个样本，所以如何隐藏恶意程序在主机上的攻击意图也十分重要。</p>
+<p>同样是2018年IBM 研究院的研究人员提出的 DeepLocker，它通过深度学习判别模型+对称加密算法来隐藏攻击载荷，只有深度学习模型识别到特定对象时（二分类问题），才会输出解密密钥，从而payload解密进行攻击，实现隐藏攻击意图。</p>
+<p>防御难点：</p>
+<ol>
+<li>攻击者使用深度学习模型精准定位攻击目标，想要用非目标来“触发”攻击变得十分困难；</li>
+<li>防御方如果想直接爆破密钥也是十分困难，对称加密的爆破复杂度摆在那。</li>
+</ol>
+<p>发展：DeepLocker使用的是DNN黑盒模型做的攻击目标识别，同样的还可以基于 RNN、GAN、DRN等等模型照搬，另外其他只有输入和输出的黑盒系统也可作为判别模型，例如APT组织以hash函数作为模型。</p>
+<h2 id="深度学习助力防御"><a href="#深度学习助力防御" class="headerlink" title="深度学习助力防御"></a>深度学习助力防御</h2><p>针对攻击链的主要部分，提出三大类的深度学习赋能防御方案，包括：a.基于深度学习的恶意代码查杀；b.自动化网络钓鱼攻击识别；c.深度学习赋能的恶意行为检测。</p>
+<h3 id="基于深度学习的恶意代码查杀"><a href="#基于深度学习的恶意代码查杀" class="headerlink" title="基于深度学习的恶意代码查杀"></a>基于深度学习的恶意代码查杀</h3><p><strong>核心思想是去优化深度学习的检测模型，防止攻击者利用特征空间来绕过检测。</strong>。本文将这些新型恶意代码查杀技术总结为三类，分别为：<strong>增强式对抗性训练、特征压缩、赋能式仿真执行</strong>。</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202407211839360.png"></p>
+<p>1）增强式对抗性训练。2018 年，AbdullahAl-Dujaili等人为了研究<strong>减少神经网络恶意代码检测器对抗盲点的方法</strong>，他们首先将该问题<strong>作为二进制域中的鞍点优化问题进行处理</strong>。利用鞍点优化加快神经网络学习速度的基础上，再对检测系统做稳健训练，可有效减少神经网络的学习盲点。实验证明他们基于对抗性训练的模型检测到的恶意代码样本是自然训练中检测到的恶意代码样本的 4 倍。</p>
+<p>2）特征压缩。该对抗策略的关键思想是<strong>将 DNN 模型对原始输入的预测与对压缩输入的预测进行比较，如果原始输入和压缩后的输入产生与模型实质上不同的输出，则输入可能是对抗性的</strong>。2018 年被Weilin Xu等人提出，可以通过检测对抗性示例来强化DNN模型。特征压缩策略成功实现的背后，其所依赖的技术原理为：降维表示并不会影响分类器的准确性。具体地，Weilin Xu 等人专注于图像分类，通过减少颜色位深度、空间平滑两种技术手段实现了特征压缩策略。</p>
+<p>3）赋能式仿真执行。Yu Wang等人于 2019年提出了一种新颖的基于深度神经网络的恶意控制模型。反恶意代码引擎会模拟执行一个未知文件，并生成一系列行为事件文件。执行控制模型负责处理事件文件并负责控制未知文件的执行；而改进的推理模型则负责决策未知文件属于良性文件或恶意文件。通过实验结果表明，Yu Wang等人提出的模型比基于启发式的反恶意代码引擎，对于测试集中超过 91％的文件，能够更早地停止执行，能够以更少的延迟提供了更好的保护。</p>
+<p>防御方需要重视：1. 数据集 2.检测纬度 3. 攻击者策略 4. 模型的可持续性</p>
+<h3 id="自动化网络钓鱼攻击识别"><a href="#自动化网络钓鱼攻击识别" class="headerlink" title="自动化网络钓鱼攻击识别"></a>自动化网络钓鱼攻击识别</h3><p>主要针对基于深度学习的NLG技术的自动化鱼叉式网络钓鱼攻击，提出相应的防护性措施。</p>
+<p>2018年Sneha Kudugunta 提出的面向社交推文级别的检测方法，Sneha Kudugunta 等人强调数据的可解释性，通过基于文本特征和用户元数据的组合<strong>设计LSTM构建了第一个基于推文的社交机器人检测系统</strong>。</p>
+<p>2020 年，Gan Kim Soon等人<strong>利用DNN对网络钓鱼电子邮件进行了检测</strong>，并且通过实验证明可以实现 94.27%的检测性能，进一步证明了深度学习技术在自动化网络钓鱼识别中的可行性。</p>
+<p>机器学习VS深度学习：对于短文本的样本处理，机器学习比深度学习的识别效果更好，这是问题所在。未来机器学习与深度学习的融合或许能够为自动化网络钓鱼识别带来更好的检测性能。</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202407211839062.png"></p>
+<p>难点：数据集难收集，而且需要大量的样本，而样本的获取非常困难。</p>
+<p>发展趋势：未来网络钓鱼攻击的一大发展趋势就是把攻击建立在HTTPS协议上，HTTPS加密的特性，使得攻击者可以通过HTTPS协议来绕过检测，<strong>如何展开基于HTTPS协议的钓鱼邮件流量检测，是一个重要方向</strong>。</p>
+<p>总结：当前针对自动化网络钓鱼攻击的识别多通过获取社交网站运营商的API或在取得目标用户邮箱权限的情况下进行数据集的爬取，并基于文本内容来检测钓鱼攻击的存在。在内容检测之外，<strong>未来网络钓鱼攻击的发展趋势也启发安全研究人员关注到另一个比较重要的检测视角，即基于流量的检测，尤其是基于 HTTPS 流量的恶意代码传输</strong>。</p>
+<h3 id="深度学习赋能的恶意行为检测"><a href="#深度学习赋能的恶意行为检测" class="headerlink" title="深度学习赋能的恶意行为检测"></a>深度学习赋能的恶意行为检测</h3><p>深度学习赋能的恶意行为检测包括两部分，恶意流量检测（针对C2步骤）和恶意进程检测（针对感染步骤）。</p>
+<h4 id="恶意流量检测"><a href="#恶意流量检测" class="headerlink" title="恶意流量检测"></a>恶意流量检测</h4><p>深度学习赋能恶意流量检测，对比传统机器学习的流量检测需要根据专家经验来提取特征的问题，优势在于能自动提取特征。</p>
+<p>2018 年 Sajad Homayoun等人提出了深度学习+僵尸网络恶意网络流量检测器，称为BoTShark。BoTShark <strong>采用 Autoencoder 和CNN</strong>两个深度学习模型，用于消除检测系统对网络流量主要特征的依赖。BoTShark 的优势在于它借助神经网络<strong>可以自动提取特征</strong>，而无需专家知识来提取特征。通过实验表明，BoTShark 能够从两种常见的僵尸网络拓扑（即集中式和 P2P）中检测到僵尸网络流量，实现了 91%的分类准确率和 13%的召回率。</p>
+<p>2019 年Gonzalo Marn 提出了<strong>基于数据包和流形式的数据</strong>作为输入，来训练深度学习模型的方法，并且取得了很好的效果： 对于流量的捕获精确度<strong>优于浅层机器学习的随机森林，并且无需设置任何手工特征</strong>。</p>
+<p>2017年 Paul Prasse 等人在无法通过对有效传输载荷提取特征的情况下，开发并研究了<strong>基于 LSTM的加密恶意流量检测模型</strong>，Paul Prasse 等人通过对<strong>可见域名</strong>和<strong>统计信息</strong>的赋能分析，<strong>实现了有效的加密流量检测</strong>。可以对许多不同的恶意软件家族识别其未知的加密恶意流量。</p>
+<p>前景：目前深度学习的<strong>加密流量检测</strong>（如HTTPS流量），各个安全厂商还未推出安全产品，会是一个不错的方向。</p>
+<h4 id="进程行为检测"><a href="#进程行为检测" class="headerlink" title="进程行为检测"></a>进程行为检测</h4><p>流量检测主要针对的是通信端，深度学习赋能防御还可以往主机端考虑，进程行为检测+深度学习。</p>
+<p>2016 年，Shun Tobiyama提出，<strong>将API 调用序列记录为进程行为并生成日志文件，然后将 RNN 与 CNN 相结合</strong>，使用 RNN来提取进程行为的特征，并使用 CNN 对特征图像进行分类。通过81 个恶意软件进程日志文件和 69 个良性进程日志文作为数据集，在 Cuckoo 沙箱评估了他们的方法，当特征图像尺寸为 30×30 时，该方法实现的最佳检测准确性达到了 96%。</p>
+<p>2018 年，Matilda Rhode等人首次提出了一种早期行为检测模型，<strong>该模型记录机器活动特征</strong>，能够在执行文件的前几秒钟中预测文件是否为恶意文件。实验结果表明，Matilda Rhode 等人使用一组 <strong>RNN</strong>，仅用5s 的动态数据就实现了 94％的检测精度，而在不到10s 的时间内实现了 96％的检测精度。</p>
+<p>可行性分析：恶意代码驻留主机之后，无法避免会在主机中留下入侵痕迹，这些日志文件或者系统快照往往数据量很大，即可作为深度学习的原始数据集。另外传统机器学习往往需要设置特征，而攻击者往往会不断尝试绕过，深度学习自动提取特征就没有这个问题，有着更高的精确度。</p>
+<p>两种特征提取方式：记录API调用序列、记录机器活动特征。<strong>1. 从攻击者绕过的角度看</strong>，API 调用容易受到恶意攻击者的操纵，这会导致利用神经网络的检测出现分类错误，攻击者将能够绕过面向 API 的行为检测；相比之下，有关机器活动的行为特征无法被攻击者篡改。2. <strong>从及时性的角度看，</strong> 活动特征快照以秒为单位，API记录则以分钟为单位，捕获特征时间<strong>越长</strong>，意味着检测到攻击的时间<strong>越晚</strong> 。</p>
+<p>不足：无论是秒级还是分钟级的防御检测，对于现实中的apt攻击没有很好的抵御能力，例如一次apt攻击往往需要几个月才能被检测出来，这是秒级、分钟级提取特征的防御设备所无法防御的。</p>
+<p>总结：基于深度学习的进程行为检测在实际的部署中仍然存在问题；基于api和快照的两种检测方法各有利弊，可以尝试综合两种方法。</p>
+<h2 id="深度学习伴生安全"><a href="#深度学习伴生安全" class="headerlink" title="深度学习伴生安全"></a>深度学习伴生安全</h2><h4 id="模型后门攻击"><a href="#模型后门攻击" class="headerlink" title="模型后门攻击"></a>模型后门攻击</h4><p>模型后门：指对于一个训练好的模型，其他的数据输入都能够正常判别，但对特定的某个样本则会分类错误，即存在后门。</p>
+<p>模型后门攻击：通过一些手段（如加入恶意数据样本再次训练模型）获得带模型后门的模型。</p>
+<p>2017年，Yingqi Liu等人在假设攻击者对目标神经网络具有完全访问权限，但却无法访问原有的训练数据和测试数据的基础上，<strong>使用外部数据重新训练模型</strong>，仅在几分钟到几个小时的时间内便可在后门触发器和所选神经元之间建立强连接，且不影响神经网络模型的正常功能，实现了高达 97.15%的攻击成功率。</p>
+<p>同年，Yujie Ji等人首次证明了存在潜在危害的<strong>原始学习模块</strong>（Primitive Learning Module，简称 PLM）会对由其“组合”生成的深度学习系统造成严重的安全威胁。但当存在携带后门触发器的输入时，恶意 PLM便能够强制深度学习系统发生故障，并在对 DNN模型的攻击验证中获得了 95%的成功率。</p>
+<p>同年，2017 年，Dawn Song团队在假设攻击者不能直接访问目标学习系统，且只能向训练数据中注入少量后门样本的前提下，研究并提出了两种物理上可实现（比如利用佩戴眼镜的不同）的后门攻击——输入实例密钥攻击和模式密钥攻击，并且通过评估证明攻击者只需注入大约 50 个后门样本，就可以实现超过 90％的攻击成功率，成为了第一个证明可以创建物理上可实现的后门攻击而<strong>不涉及模型训练过程</strong>的研究工作。</p>
+<p>2018 年，Cong Liao等人专注于深度学习中的 CNN 模型，不仅基于各种假设对模型后门攻击进行了广泛评估，而且分别在模型训练之前和模型更新期间执行后门注入，这是唯一一项<strong>考虑不同程度的攻击者知识和能力的工作</strong>，并且经过攻击验证，即使在最苛刻的假设下，攻击者也能够实现90%的攻击成功率。</p>
+<p>2019 年Adnan Siraj Rakin等人基于对 DNN 模型的白盒假设首次提出了一种<strong>基于比特翻转</strong>的模型后门攻击方案，即 TBT（Targeted Bit Trojan）。攻击者通过翻转神经网络模型中易受攻击的权重位，将功能完备的 DNN 模型转换为木马后门模型，<strong>消除了模型重新训练的需要</strong>，并在基于 CIFAR10 数据集的攻击验证中实现了 93％的攻击成功率。</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202407211840252.png"></p>
+<p>总结：关于模型后门攻击的研究，大部分都是通过白盒&#x2F;黑盒假设，对模型执行攻击方案，得到带后门的新模型。</p>
+<h4 id="模型后门防御"><a href="#模型后门防御" class="headerlink" title="模型后门防御"></a>模型后门防御</h4><p>顾名思义，就是对模型后门做查杀工作，主要手段是模型神经元进行修剪。</p>
+<p>2018 年，Kang Liu等人将修剪和微调两种防御措施进行组合并提出 fine-pruning 的防御思路，并且还设计了一种可感知修剪的后门攻击对fine-pruning 进行了评估，结果表明 fine-pruning 可以将攻击成功率降低到了0%，<strong>首次实现了对DNN后门攻击的有效防御</strong>。</p>
+<p>同年，Bryant Chen等人<strong>提出了后门检测和清除的新方法</strong>，该方法使用激活聚类来检测将后门插入DNN模型的恶意样本，并且通过实验评估证明了激活聚类的方法在面向不同应用时的有效检测性能。</p>
+<p>2019 年 ，Bolun Wang等人<strong>提出并验证了三种缓解方法</strong>：1）对抗输入的早期过滤器，用于识别具有已知触发器的输入，2）基于神经元修剪的模型修补算法，3）基于取消学习的模型修补算法，并且通过对各种 DNN 进行广泛的实验证明了这些防御措施的有效性。</p>
+<p>同年，Huili Chen等人提出了第一个后门检测框架DeepInspect，在没有干净的训练数据或真实参考模型的帮助下，检查预先训练的 DNN 的安全性，使用条件 GAN 学习潜在触发器的概率分布，通过扰动程度来检测后门插入痕迹，并且通过模型修补有效降低了触发器的激活率，实验评估表明，与以前的工作相比，DeepInspect 可提供卓越的检测性能和更低的运行时间开销。</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240721184047.png"></p>
+<p>总结：本文在对上述防御技术进行归纳总结后，发现当前的后门防御方法可以简单概括为两种：<strong>一种是数据清洗</strong>，即通过过滤触发后门的输入，降低触发后门的风险，典型的操作就是激活聚类的方法；<strong>另一种是模型修复</strong>，即在保证模型正常功能的前提下，对原有模型稍加改动，例如通过细粒度的修剪法，可以去除能够触发后门的神经元，以达到防御后门攻击的效果。</p>
+<h2 id="全文总结"><a href="#全文总结" class="headerlink" title="全文总结"></a>全文总结</h2><p>这篇论文从深度学习+攻防的角度，汇总了诸多不同的研究方向，包括深度学习助力攻击、深度学习助力防御和深度学习伴生安全。作为一篇综述性质的文章，为想要研究DL+安全的研究者提供了很多思路和想法。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%8A%A9%E5%8A%9B%E6%94%BB%E5%87%BB"><span class="toc-number">2.</span> <span class="toc-text">深度学习助力攻击</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E5%AF%B9%E6%8A%97%E6%A0%B7%E6%9C%AC%E7%94%9F%E6%88%90%E7%9A%84%E8%87%AA%E5%8A%A8%E5%8C%96%E5%85%8D%E6%9D%80"><span class="toc-number">2.1.</span> <span class="toc-text">基于对抗样本生成的自动化免杀</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E7%94%9F%E6%88%90%E7%9A%84%E8%87%AA%E5%8A%A8%E5%8C%96%E7%BD%91%E7%BB%9C%E9%92%93%E9%B1%BC"><span class="toc-number">2.2.</span> <span class="toc-text">基于自然语言生成的自动化网络钓鱼</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E7%B2%BE%E5%87%86%E5%AE%9A%E4%BD%8D%E4%B8%8E%E6%89%93%E5%87%BB"><span class="toc-number">2.3.</span> <span class="toc-text">基于神经网络的精准定位与打击</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C%E7%9A%84%E6%B5%81%E9%87%8F%E6%A8%A1%E4%BB%BF"><span class="toc-number">2.4.</span> <span class="toc-text">基于生成对抗网络的流量模仿</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E9%BB%91%E7%9B%92%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%94%BB%E5%87%BB%E6%84%8F%E5%9B%BE%E9%9A%90%E8%97%8F"><span class="toc-number">2.5.</span> <span class="toc-text">基于黑盒模型的攻击意图隐藏</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%8A%A9%E5%8A%9B%E9%98%B2%E5%BE%A1"><span class="toc-number">3.</span> <span class="toc-text">深度学习助力防御</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%9F%A5%E6%9D%80"><span class="toc-number">3.1.</span> <span class="toc-text">基于深度学习的恶意代码查杀</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%8A%A8%E5%8C%96%E7%BD%91%E7%BB%9C%E9%92%93%E9%B1%BC%E6%94%BB%E5%87%BB%E8%AF%86%E5%88%AB"><span class="toc-number">3.2.</span> <span class="toc-text">自动化网络钓鱼攻击识别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E8%A1%8C%E4%B8%BA%E6%A3%80%E6%B5%8B"><span class="toc-number">3.3.</span> <span class="toc-text">深度学习赋能的恶意行为检测</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%81%B6%E6%84%8F%E6%B5%81%E9%87%8F%E6%A3%80%E6%B5%8B"><span class="toc-number">3.3.1.</span> <span class="toc-text">恶意流量检测</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E8%A1%8C%E4%B8%BA%E6%A3%80%E6%B5%8B"><span class="toc-number">3.3.2.</span> <span class="toc-text">进程行为检测</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%BC%B4%E7%94%9F%E5%AE%89%E5%85%A8"><span class="toc-number">4.</span> <span class="toc-text">深度学习伴生安全</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E5%90%8E%E9%97%A8%E6%94%BB%E5%87%BB"><span class="toc-number">4.0.1.</span> <span class="toc-text">模型后门攻击</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E5%90%8E%E9%97%A8%E9%98%B2%E5%BE%A1"><span class="toc-number">4.0.2.</span> <span class="toc-text">模型后门防御</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E6%96%87%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">全文总结</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/&text=《深度学习赋能的恶意代码攻防研究进展》文献阅读"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/&title=《深度学习赋能的恶意代码攻防研究进展》文献阅读"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/&is_video=false&description=《深度学习赋能的恶意代码攻防研究进展》文献阅读"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=《深度学习赋能的恶意代码攻防研究进展》文献阅读&body=Check out this article: https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/&title=《深度学习赋能的恶意代码攻防研究进展》文献阅读"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/&title=《深度学习赋能的恶意代码攻防研究进展》文献阅读"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/&title=《深度学习赋能的恶意代码攻防研究进展》文献阅读"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/&title=《深度学习赋能的恶意代码攻防研究进展》文献阅读"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/&name=《深度学习赋能的恶意代码攻防研究进展》文献阅读&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/&t=《深度学习赋能的恶意代码攻防研究进展》文献阅读"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    Jasper_sec
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+      <ul>
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">
+          本站总访问量 <span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span id="busuanzi_container_site_uv">
+          本站访客数 <span id="busuanzi_value_site_uv"></span>人
+        </span>
+        <span id="busuanzi_container_page_uv">
+          本页访问量 <span id="busuanzi_value_page_pv"><!-- number will be auto injected here by busuanzi --></span>次
+        </span>
+      </ul>
+    </nav>
+  </div>
+
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?21e6754c7f372c2de41518ffb4f72c33";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
