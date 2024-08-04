@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="论文名称：《钓鱼邮件识别方法研究》发表期刊：广州大学硕士学位论文发表时间：2023年5月28日作者：肖怡含 绪论研究背景钓鱼邮件危害很大，钓鱼邮件的检测技术很重要，略。 研究现状本文依照钓鱼邮件检测方法的发展，将现有的研究分为4类：基于黑名单、基于规则、基于机器学习、基于深度学习。 基于黑名单的钓鱼邮件识别方法：  核心思想：维护一个黑名单数据库（IP、域名等），符合黑名单的邮件全部被过滤。 优点">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《钓鱼邮件识别方法研究》文献阅读">
+<meta property="og:url" content="https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Jasper_sec">
+<meta property="og:description" content="论文名称：《钓鱼邮件识别方法研究》发表期刊：广州大学硕士学位论文发表时间：2023年5月28日作者：肖怡含 绪论研究背景钓鱼邮件危害很大，钓鱼邮件的检测技术很重要，略。 研究现状本文依照钓鱼邮件检测方法的发展，将现有的研究分为4类：基于黑名单、基于规则、基于机器学习、基于深度学习。 基于黑名单的钓鱼邮件识别方法：  核心思想：维护一个黑名单数据库（IP、域名等），符合黑名单的邮件全部被过滤。 优点">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175703.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175720.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175735.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175747.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175803.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175818.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175837.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175848.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175902.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175929.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175946.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175957.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804180013.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804180023.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804180036.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804180057.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804180111.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804180130.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804180928.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804180941.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804180955.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804181017.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804181031.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804181042.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804181217.png">
+<meta property="article:published_time" content="2024-08-04T10:15:13.000Z">
+<meta property="article:modified_time" content="2024-08-04T10:27:40.160Z">
+<meta property="article:author" content="Jasper_sec">
+<meta property="article:tag" content="深度学习">
+<meta property="article:tag" content="文献阅读">
+<meta property="article:tag" content="钓鱼邮件">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175703.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>《钓鱼邮件识别方法研究》文献阅读</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/07/21/0x12%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%B5%8B%E8%83%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E6%94%BB%E9%98%B2%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/&text=《钓鱼邮件识别方法研究》文献阅读"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/&title=《钓鱼邮件识别方法研究》文献阅读"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/&is_video=false&description=《钓鱼邮件识别方法研究》文献阅读"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=《钓鱼邮件识别方法研究》文献阅读&body=Check out this article: https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/&title=《钓鱼邮件识别方法研究》文献阅读"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/&title=《钓鱼邮件识别方法研究》文献阅读"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/&title=《钓鱼邮件识别方法研究》文献阅读"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/&title=《钓鱼邮件识别方法研究》文献阅读"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/&name=《钓鱼邮件识别方法研究》文献阅读&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/&t=《钓鱼邮件识别方法研究》文献阅读"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%AA%E8%AE%BA"><span class="toc-number">1.</span> <span class="toc-text">绪论</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A0%94%E7%A9%B6%E8%83%8C%E6%99%AF"><span class="toc-number">1.1.</span> <span class="toc-text">研究背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A0%94%E7%A9%B6%E7%8E%B0%E7%8A%B6"><span class="toc-number">1.2.</span> <span class="toc-text">研究现状</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A0%94%E7%A9%B6%E5%86%85%E5%AE%B9"><span class="toc-number">1.3.</span> <span class="toc-text">研究内容</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF"><span class="toc-number">2.</span> <span class="toc-text">相关技术</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E5%B8%B8%E8%A7%81%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F"><span class="toc-number">2.1.</span> <span class="toc-text">钓鱼邮件常见攻击方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E6%9C%AC%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95"><span class="toc-number">2.2.</span> <span class="toc-text">文本特征表示方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#One-Hot"><span class="toc-number">2.2.1.</span> <span class="toc-text">One-Hot</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#TF-IDF"><span class="toc-number">2.2.2.</span> <span class="toc-text">TF-IDF</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Word2Vec%EF%BC%88%E4%B8%8D%E5%A4%AA%E6%87%82%EF%BC%89"><span class="toc-number">2.2.3.</span> <span class="toc-text">Word2Vec（不太懂）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90%E6%96%B9%E6%B3%95"><span class="toc-number">2.3.</span> <span class="toc-text">情感分析方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%83%85%E6%84%9F%E8%AF%8D%E5%85%B8%E7%9A%84%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90%E6%96%B9%E6%B3%95"><span class="toc-number">2.3.1.</span> <span class="toc-text">基于情感词典的情感分析方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90%E6%96%B9%E6%B3%95"><span class="toc-number">2.3.2.</span> <span class="toc-text">基于机器学习的情感分析方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SnowNLP-%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.3.3.</span> <span class="toc-text">SnowNLP 介绍</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95"><span class="toc-number">2.4.</span> <span class="toc-text">深度学习方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#RNN%EF%BC%88%E4%B8%8D%E5%A4%AA%E6%87%82%EF%BC%89"><span class="toc-number">2.4.1.</span> <span class="toc-text">RNN（不太懂）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#LSTM%EF%BC%88%E4%B8%8D%E5%A4%AA%E6%87%82%EF%BC%89"><span class="toc-number">2.4.2.</span> <span class="toc-text">LSTM（不太懂）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BiLSTM%EF%BC%88%E4%B8%8D%E5%A4%AA%E6%87%82%EF%BC%89"><span class="toc-number">2.4.3.</span> <span class="toc-text">BiLSTM（不太懂）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AM%EF%BC%88%E4%B8%8D%E5%A4%AA%E6%87%82%EF%BC%89"><span class="toc-number">2.4.4.</span> <span class="toc-text">AM（不太懂）</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%B9%E5%BE%81%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">特征分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E8%AF%8D%E7%89%B9%E5%BE%81%EF%BC%88%E7%96%91%E9%97%AE%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">字词特征（疑问）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E4%B9%89%E7%89%B9%E5%BE%81"><span class="toc-number">3.2.</span> <span class="toc-text">语义特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%85%E6%84%9F%E7%89%B9%E5%BE%81"><span class="toc-number">3.3.</span> <span class="toc-text">情感特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#URL%E7%89%B9%E5%BE%81"><span class="toc-number">3.4.</span> <span class="toc-text">URL特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%99%84%E4%BB%B6%E7%89%B9%E5%BE%81"><span class="toc-number">3.5.</span> <span class="toc-text">附件特征</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="toc-number">4.</span> <span class="toc-text">模型训练</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-number">4.1.</span> <span class="toc-text">引言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E6%A1%86%E6%9E%B6"><span class="toc-number">4.2.</span> <span class="toc-text">模型框架</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E4%BC%98%E5%8C%96%EF%BC%88%E7%9C%8B%E4%B8%8D%E6%87%82%EF%BC%89"><span class="toc-number">4.3.</span> <span class="toc-text">模型优化（看不懂）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%87%AA%E9%80%82%E5%BA%94-Dropout-%E6%AD%A3%E5%88%99%E5%8C%96"><span class="toc-number">4.3.1.</span> <span class="toc-text">自适应 Dropout 正则化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BC%A9%E6%94%BE%E7%82%B9%E7%A7%AF%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6"><span class="toc-number">4.3.2.</span> <span class="toc-text">缩放点积注意力机制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%81%9A%E7%84%A6%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="toc-number">4.3.3.</span> <span class="toc-text">聚焦损失函数</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E9%80%9A%E9%81%93BiLSTM-Attention%E6%A8%A1%E5%9E%8B%EF%BC%88%E7%9C%8B%E4%B8%8D%E6%87%82%EF%BC%89"><span class="toc-number">4.4.</span> <span class="toc-text">多通道BiLSTM-Attention模型（看不懂）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E9%80%9A%E9%81%93%E8%BE%93%E5%85%A5%E5%B1%82"><span class="toc-number">4.4.1.</span> <span class="toc-text">多通道输入层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E7%BA%A7%E5%B5%8C%E5%85%A5%E5%B1%82"><span class="toc-number">4.4.2.</span> <span class="toc-text">多级嵌入层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BiLSTM%E5%B1%82"><span class="toc-number">4.4.3.</span> <span class="toc-text">BiLSTM层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%89%B9%E5%BE%81%E8%81%94%E5%90%88%E5%B1%82"><span class="toc-number">4.4.4.</span> <span class="toc-text">特征联合层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%A8%E8%BF%9E%E6%8E%A5"><span class="toc-number">4.4.5.</span> <span class="toc-text">全连接</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="toc-number">4.5.</span> <span class="toc-text">实验结果</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="toc-number">4.5.1.</span> <span class="toc-text">数据集</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83%E5%92%8C%E9%85%8D%E7%BD%AE"><span class="toc-number">4.5.2.</span> <span class="toc-text">实验环境和配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C-1"><span class="toc-number">4.5.3.</span> <span class="toc-text">实验结果</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E5%AE%9E%E7%8E%B0"><span class="toc-number">5.</span> <span class="toc-text">系统实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        《钓鱼邮件识别方法研究》文献阅读
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Jasper_sec</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-08-04T10:15:13.000Z" class="dt-published" itemprop="datePublished">2024-08-04</time>
+        
+        (Updated: <time datetime="2024-08-04T10:27:40.160Z" class="dt-updated" itemprop="dateModified">2024-08-04</time>)
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/" rel="tag">文献阅读</a>, <a class="p-category" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag">深度学习</a>, <a class="p-category" href="/tags/%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6/" rel="tag">钓鱼邮件</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>论文名称：《钓鱼邮件识别方法研究》<br>发表期刊：广州大学硕士学位论文<br>发表时间：2023年5月28日<br>作者：肖怡含</p>
+<h2 id="绪论"><a href="#绪论" class="headerlink" title="绪论"></a>绪论</h2><h3 id="研究背景"><a href="#研究背景" class="headerlink" title="研究背景"></a>研究背景</h3><p>钓鱼邮件危害很大，钓鱼邮件的检测技术很重要，略。</p>
+<h3 id="研究现状"><a href="#研究现状" class="headerlink" title="研究现状"></a>研究现状</h3><p>本文依照钓鱼邮件检测方法的发展，将现有的研究分为4类：<strong>基于黑名单、基于规则、基于机器学习、基于深度学习</strong>。</p>
+<p><strong>基于黑名单的钓鱼邮件识别方法：</strong></p>
+<ol>
+<li>核心思想：维护一个黑名单数据库（IP、域名等），符合黑名单的邮件全部被过滤。</li>
+<li>优点：简单、迅速。</li>
+<li>缺点：黑名单的更新存在滞后性，无法应对新出现的钓鱼邮件攻击。</li>
+</ol>
+<p><strong>基于规则的钓鱼邮件识别方法：</strong></p>
+<ol>
+<li>核心思想：由研究者设定一个规则（网页相似度、网页排名等），根据规则来判断是否为钓鱼邮件。</li>
+<li>优点：简单有效</li>
+<li>缺点：设定的规则需要不断地更新，也存在被绕过的可能</li>
+</ol>
+<p><strong>基于机器学习的钓鱼邮件识别方法：</strong></p>
+<ol>
+<li>核心思想：人工提取特征作为输入，使用某个机器学习分类算法训练模型，然后使用模型进行分类判断。</li>
+<li>优点：实现简单，对计算资源、数据量的要求不高；机器学习算法的可解释性强</li>
+<li>缺点：特别依赖特征的提取，同时需要人工设置特征提取的方法；训练出来的模型泛化能力弱，只针对特定数据集有效，如果遇到新的数据集，则需要重新训练模型。</li>
+</ol>
+<p><strong>基于深度学习的钓鱼邮件识别方法：</strong></p>
+<ol>
+<li>核心思想：将深度学习技术，应用在钓鱼邮件检测中，</li>
+<li>优点：自动提取特征、模型具备泛化能力、性能更好</li>
+<li>缺点：<strong>a. 使用多任务、多模态、多视图结合深度学习的文献还比较少；b. 特征分析不全面 c. 可解释性和鲁棒性差</strong></li>
+</ol>
+<h3 id="研究内容"><a href="#研究内容" class="headerlink" title="研究内容"></a>研究内容</h3><p><strong>特征表示的优化</strong>：提出了一种基于多层次多特征的钓鱼邮件特征分析方法。a. 针对基础层字词特征、逻辑层语义特征、认知层情感特征、字符层 URL 特征4个方面，由浅入深地对钓鱼邮件正文特征进行分析并提出合适的特征表示方法；b. 针对邮件附件，提出了附件名关联特征和正文相关系数特征两个新特征及特征表示方法，从而更全面的更系统的分析钓鱼邮件的特征。</p>
+<p><strong>模型的优化</strong>： 本文提出一种基于多通道 BiLSTM+Attention 钓鱼邮件识别模型。a. 该模型将多层次特征分别输入到多通道网络中进行处理和分析，并引入 BiLSTM模型来学习文本特征上下文依赖关系；b. 引入自适应Dropout 正则化方法来提高模型泛化能力；c. 模型还引入了缩放点积注意力机制来加强模型的关注度；d. 针对邮件数据集的不平衡问题，模型还引入了一种改进的二元交叉熵损失函数，即聚焦损失函数(Focal Loss)来对模型进行优化。 这种多层次的特征可以更容易地解释为人类可以理解的概念，从而提高模型可解释性，且可以有效地减小数据维度，具有很强的抗噪声能力，有效地提高模型的鲁棒性</p>
+<p><strong>系统实现：</strong> 用户上传制定格式数据或者eml文件，系统自动识别是否为钓鱼邮件。（功能有点简单）</p>
+<h2 id="相关技术"><a href="#相关技术" class="headerlink" title="相关技术"></a>相关技术</h2><p>主要介绍：钓鱼邮件常见攻击方式、文本特征表示方法、情感分析方法、深度学习方法四个方面的技术。</p>
+<h3 id="钓鱼邮件常见攻击方式"><a href="#钓鱼邮件常见攻击方式" class="headerlink" title="钓鱼邮件常见攻击方式"></a>钓鱼邮件常见攻击方式</h3><p>主要有三种，分别是恶意链接、恶意附件、回复式。</p>
+<p><strong>基于恶意链接的钓鱼邮件：</strong></p>
+<ol>
+<li>本质：在邮件正文中嵌入恶意的url链接，欺骗用户点击恶意链接达到各种攻击的目的。</li>
+<li>类型：a. 钓鱼网站 b. 短网址 c. 重定向</li>
+</ol>
+<p><strong>基于恶意附件的钓鱼邮件：</strong></p>
+<ol>
+<li>本质：诱导用户执行恶意附件，从而达到攻击的目的</li>
+<li>类型：a. 普通附件 b. 加密附件&#x2F;加密云附件 c.二维码图片附件</li>
+</ol>
+<p><strong>基于回复式的钓鱼邮件：</strong></p>
+<ol>
+<li>本质：以命令的语气，要求用户回复敏感信息，很多用户会如实回复</li>
+<li>类型：纯文本</li>
+</ol>
+<h3 id="文本特征表示方法"><a href="#文本特征表示方法" class="headerlink" title="文本特征表示方法"></a>文本特征表示方法</h3><p>文本特征表示：将单词或短语转换成计算机能够理解的形式，即文本特征。转化后可以用于深度学习输入。</p>
+<p>主要包含三种编码表示：One-Hot、TF-IDF和Word2Vec</p>
+<h4 id="One-Hot"><a href="#One-Hot" class="headerlink" title="One-Hot"></a>One-Hot</h4><ol>
+<li>定义：将每个单词映射为一个唯一整数，然后把整数转成维度是词汇表大小的向量，整数对应位置1其余位置置0。</li>
+<li>优点：简单，易懂</li>
+<li>缺点：显然句子越长，词向量的维度越高，容易引起维度灾难</li>
+</ol>
+<h4 id="TF-IDF"><a href="#TF-IDF" class="headerlink" title="TF-IDF"></a>TF-IDF</h4><ol>
+<li>定义：论文没说</li>
+<li>评判标准：TF-IDF &#x3D; TF x IDF，其中TF是词在文档中的频率，IDF是包含该词的文档数量的倒数。TF越高，词在文档出现频率越高，词越重要；IDF越高，包含该词的文档越少，说明该词越重要。<strong>总结：TF-IDF越高，词越重要。</strong></li>
+<li>优点：pass</li>
+<li>缺点：pass</li>
+</ol>
+<h4 id="Word2Vec（不太懂）"><a href="#Word2Vec（不太懂）" class="headerlink" title="Word2Vec（不太懂）"></a>Word2Vec（不太懂）</h4><ol>
+<li>定义：一种基于神经网络的词向量表示方法。采用固定长度的词向量，相似的单词，词向量的距离近，反之则远。</li>
+<li>训练方式：CBOW和Skip-Gram，前者根据上下文预测中心词，后者相反。</li>
+<li>优点：论文没说</li>
+<li>缺点：论文没说</li>
+</ol>
+<h3 id="情感分析方法"><a href="#情感分析方法" class="headerlink" title="情感分析方法"></a>情感分析方法</h3><p>情感分析，即使用计算机技术，分析文本中包含的情感倾向。 目前常见的有基于情感词典和基于机器学习两种方法。</p>
+<h4 id="基于情感词典的情感分析方法"><a href="#基于情感词典的情感分析方法" class="headerlink" title="基于情感词典的情感分析方法"></a>基于情感词典的情感分析方法</h4><ol>
+<li>本质：利用现成的情感字典，对输入文本做命中统计，计算情感分数，得到情感分类结果。</li>
+<li>优点：简单、易实现</li>
+<li>缺点：结果受情感词典的质量影响，收集词典费时费力，达不到预期效果</li>
+</ol>
+<h4 id="基于机器学习的情感分析方法"><a href="#基于机器学习的情感分析方法" class="headerlink" title="基于机器学习的情感分析方法"></a>基于机器学习的情感分析方法</h4><ol>
+<li>本质：传统机器学习路子，投喂大量带标注的文本数据，训练出一个模型来判别情感。</li>
+<li>优点：可以适应多种语言，并且通过不断训练模型来优化模型</li>
+<li>缺点：需要大量带标注数据；需要持续改进特征提取和模型选择</li>
+</ol>
+<h4 id="SnowNLP-介绍"><a href="#SnowNLP-介绍" class="headerlink" title="SnowNLP 介绍"></a>SnowNLP 介绍</h4><p>Snow NLP 是基于机器学习的中文自然语言处理工具包，使用基于统计和机器学习的算法来处理中文文本，包括文本分类、情感分析、中文分词、词性标注、关键词提取等任务。SnowNLP 情感分析的底层原理是朴素贝叶斯算法。公式略。</p>
+<h3 id="深度学习方法"><a href="#深度学习方法" class="headerlink" title="深度学习方法"></a>深度学习方法</h3><p>深度学习基于多层神经网络，其核心思想是建立一个多层次的神经网络模型，让模型从原始数据中提取有用的特征和模式，实现对数据的分类、预测、生成等任务。</p>
+<p>深度学习包括多种不同的网络和算法，如循环神经网络、注意力机制等，下面将分别介绍循环神经网络以及它的变种方法长短期记忆网络、双向长短期记忆网络，最后再介绍一种用来提高神经网络性能的技术，即注意力机制。</p>
+<h4 id="RNN（不太懂）"><a href="#RNN（不太懂）" class="headerlink" title="RNN（不太懂）"></a>RNN（不太懂）</h4><p>定义：RNN即循环神经网络，主要用于处理有时间相关性的序列数据。</p>
+<p>结构：神经元的输出不仅依赖于当前输入，还依赖于之前的输入，由此可以达到短时记忆的效果。以下图t时刻的输出St为例，他受St-1（t-1时刻输出）和Xt（t时刻输入）的综合影响。</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175703.png" alt="image.png"></p>
+<p>缺点：CNN只能短期记忆。</p>
+<h4 id="LSTM（不太懂）"><a href="#LSTM（不太懂）" class="headerlink" title="LSTM（不太懂）"></a>LSTM（不太懂）</h4><p>定义：LSTM全称长短期记忆神经网络，引入门控单元，解决CNN只能短期记忆的问题。</p>
+<p>结构：通过引入三个门控单元，分别是输入门i、遗忘门f和输出门o，以及一个记忆单元来控制状态的更新和遗忘。输入门控制信息的输入，遗忘门控制过去信息的保留，输出门控制输出的信息，长期记忆c，短期记忆h。</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175720.png" alt="image.png"></p>
+<p>缺点：LSTM只能按照时间的正向顺序处理输入序列，无法利用序列中的未来信息，影响了模型的预测准确性。</p>
+<h4 id="BiLSTM（不太懂）"><a href="#BiLSTM（不太懂）" class="headerlink" title="BiLSTM（不太懂）"></a>BiLSTM（不太懂）</h4><p>定义：BiLSTM，即双向长短期记忆神经网络，双向循环结构，解决无法利用序列的未来信息的问题。</p>
+<p>结构：BiLSTM中包含两个 LSTM 单元，一个按正向顺序处理输入序列，一个按逆向顺序处理输入序列，这样每个时间步的输出就包含了前向和后向两个方向的信息。这样在处理序列任务时，BiLSTM能够更好地捕捉序列中的长期依赖关系，同时利用了序列中的过去和未来信息，提高了模型的预测准确度。</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175735.png" alt="image.png"></p>
+<p>缺点：没有</p>
+<h4 id="AM（不太懂）"><a href="#AM（不太懂）" class="headerlink" title="AM（不太懂）"></a>AM（不太懂）</h4><p>定义：AM即注意力机制，是一种用于加强神经网络对输入数据中不同部分的关注度的技术，被频繁地使用到以 RNN 或 CNN 等神经网络模型为基础的各种自然语言处理任务中。</p>
+<p>原理：注意力机制通过对输入序列中每个元素分配不同的权重，使模型能够更好地关注重要的信息，同时忽略无用的信息。具体而言，注意力机制会计算每个输入元素与模型输出之间的相似度，从而得到一个权重向量，即根据Query 和 Key 计算权重，注意力权重越大则会越聚焦于其对应的Value 值上。根据权重系数对Value 进行加权求和。 最终得到一个加权向量，作为模型的输出。</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175747.png" alt="image.png"></p>
+<h2 id="特征分析"><a href="#特征分析" class="headerlink" title="特征分析"></a>特征分析</h2><p><strong>痛点分析：</strong> 传统的深度学习把邮件整体作为输入，希望能提取到邮件的深层特征。然而，恶意邮件相对于普通邮件非常稀少，这就使深度学习模型学习深层次特征比较困难，此外，传统特征分析还忽略了UR 特征和附件特征，进而影响模型识别效果。<strong>因此，本文通过对大量钓鱼邮件进行分析，提出了基于多层次多特征的钓鱼邮件特征分析方法</strong>，如图3-1:</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175803.png" alt="image.png"></p>
+<p><strong>解决方案：</strong> 本文从基础层字词特征、逻辑层语义特征、认知层情感特征、字符层 URL 特征四个方面，由浅入深地对钓鱼邮件正文特征进行分析。</p>
+<ol>
+<li>在字词特征方面，使用一种改进 TF-IDF 的方法选出可以区分钓鱼邮件和正常邮件的特征词；</li>
+<li>在语义特征方面，基于邮件语料库构建词向量模型，获得能同时表征中英文单词语义信息的Word2Vec 词向量特征；</li>
+<li>在情感特征方面，针对钓鱼邮件的特点，制作了针对钓鱼邮件恐惧、好奇、紧迫情感的情感文本语料库，弥补了情感语料库在特定领域的不足；</li>
+<li>在URL特征方面，使用N-gram分词及字符级编码的方式获取能表征特殊符号语义的词向量。</li>
+<li>最后，传统的基于深度学习的方法都没有提及附件特征，提出附件名关联特征、正文相关系数特征两个新特征。</li>
+</ol>
+<h3 id="字词特征（疑问）"><a href="#字词特征（疑问）" class="headerlink" title="字词特征（疑问）"></a>字词特征（疑问）</h3><p>本节首先使用分词模块(例如，jieba)对中英文邮件的正文部分做分词，然后利用改良的TF-IDF算法计算词的权重，最后得出一个特征词集合。</p>
+<p><strong>问题：特征词集合有什么用？</strong><br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175818.png" alt="image.png"></p>
+<h3 id="语义特征"><a href="#语义特征" class="headerlink" title="语义特征"></a>语义特征</h3><p>本节使用Word2Vec模型获取邮件正文词向量作为邮件的逻辑层语义特征，包括构建语料库、数据预处理、训练模型和保存模型4个步骤，训练好的模型中，每个词语对应一个 100 维的向量，向量可以根据语义进行加减操作。然后，在深度学习中，可以使用该预训练模型将钓鱼邮件正文中的词语映射成词向量，从而获取邮件的深度语义特征。</p>
+<ol>
+<li>构建语料库：使用中英文混合邮件的正文作为代表性的邮件领域语料库，这样训练的词向量模型不仅可以捕捉邮件中特定的语言使用习惯，还可以满足邮件中多语言文本分析和处理。</li>
+<li>数据预处理：分词，中文使用jieba，英文直接空格；去除停用词，中文用停用词库，英文用nltk、spacy库；最后中文繁简体转换，英文大小写转化</li>
+<li>训练模型：使用Word2Vec的CBOW架构进行模型训练，深度学习框架采用keras，调参如下：</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175837.png" alt="image.png"></p>
+<ol start="4">
+<li>保存模型：将训练好的词向量模型保存起来，之后可以使用训练好的Word2Vec模型将单词转换为向量表示，作为深度学习任务的输入。</li>
+</ol>
+<h3 id="情感特征"><a href="#情感特征" class="headerlink" title="情感特征"></a>情感特征</h3><p><strong>传统钓鱼邮件情感特征：</strong></p>
+<p>一般使用情感词典，直接将句子里的词语词典进行匹配，然后加和计算出句子的情感分值得到情感倾向。目前国内研究成熟的词典有大连理工情感词本体库、知网HowNet 情感词典及台湾大学中文情感极性词典等。</p>
+<p>但是，这些情感词典库通常是静态的，不会随着时间和新的钓鱼邮件数据集的更新而更新。这可能导致钓鱼邮件中一些新的情感特征无法被准确地识别。</p>
+<p>另外，“奖励”、“抽奖”等词语在钓鱼邮件中明显为了吸引受害者的好奇情感，“病毒感染”、“修复”、“交易异常”在钓鱼邮件中表达了恐惧、紧张的情感，但是这些词在一般的语料库中一般不会出现。</p>
+<p>因此，本文根据钓鱼邮件特定领域构建针对性的情感语料库。此外，使用有监督的机器学习方法，通过使用机器学习算法对钓鱼邮件领域的情感语料库数据进行训练，得到训练好的模型之后，就可以通过模型计算邮件的情感倾向，不受限于情感词典中词语的数量。</p>
+<p><strong>情感分析及语料库构建：</strong></p>
+<p>本文通过收集和分析大量钓鱼邮件，将钓鱼邮件常见的主题分为紧急行动、账户验证、财务诈骗、交易异常、病毒警报、奖励信息、特价优惠 7 类，把其中蕴含的情感总结为好奇、紧张、恐惧 3 类，其情感强度由弱到强。</p>
+<p>接下来，分别分析每类钓鱼邮件与情感的对应关系，结果如表 3-4 所示，可以发现大部分钓鱼邮件的情感是多种的，不能通过一种情感对钓鱼邮件进行分类，因此，本文把恐惧、紧张、好奇情感定义为钓鱼邮件的负面情感，邮件中的负面情感越强，那么表明该邮件越可能是钓鱼邮件。</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175848.png" alt="image.png"></p>
+<p>对于正面情感，本文同样收集了多种类型日常生活中的正常邮件作为正面情感语料库。</p>
+<p><strong>基于 SnowNLP 的情感特征分析：</strong></p>
+<p>SnowNLP是一个基于 Python 的文本分析库，专门用于文本内容的分析，其底层原理是朴素贝叶斯算法。首先读取己经分类的消极语料库与积极语料库训练一个朴素贝叶斯分类器，接着对需要情感打分的文本数据计算出每个词汇的正负极性的后验概率，最后将概率转换为情感得分。</p>
+<p>基于 SnowNLP 进行情感分析包括3个步骤：自定义情感语料库、训练情感分类器和计算情感特征值。</p>
+<ol>
+<li>自定义情感语料库：将准备好的正面&#x2F;负面情感语料库分别以文本格式保存，并对语料库进行合理的处理和清洗，以提高情感分类的准确度。</li>
+<li>训练情感分类器：使用 SnowNLP 提供的 sentiment.train 方法加载自定义情感语料库，SnowNLP 使用了朴素贝叶斯算法和最大熵模型来实现情感分类器的训练。</li>
+<li>计算情感特征值：对于待分析的钓鱼邮件文本，使用 SnowNLP 的 sentiment 方法对其进行情感分析，情感分类器会利用训练数据中已经标注好的情感类别来计算每个词汇属于不同情感类别的概率，并使用朴素贝叶斯算法或最大熵模型来进行分类。最终，SnowNLP 会根据每个词汇的情感值以及整体文本的情感分布，返回情感极性值，值越接近 1 表示情感越积极，越接近 0 表示情感越消极。分别使用原始语料库和自定义语料库对邮件正文情感值进行计算，正常邮件和钓鱼邮件情感值计算结果。</li>
+</ol>
+<p>根据图 3-2 所示，原始语料库的邮件情感值分布比较平均，正常邮件和钓鱼邮件情感值差距较小，使用自定义语料库后，钓鱼邮件中的负向情感被更好的发现，钓鱼邮件整体情感值降低，正常邮件由于负面情感较少，更容易被认为不是负面情感，因此情感值较高。</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175902.png" alt="image.png"></p>
+<p>为了更详细分析邮件的情感值，图 3-3 显示了实验原始语料库和自定义语料库前后的情感值平均值，可以看到原始语料库中，钓鱼邮件和正常邮件情感值差距较小，只有0.15 左右，再使用自定义语料库后，钓鱼邮件和正常邮件情感值差距达到 0.8，可以更好的区分钓鱼邮件和正常邮件。</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175929.png" alt="image.png"></p>
+<h3 id="URL特征"><a href="#URL特征" class="headerlink" title="URL特征"></a>URL特征</h3><p><strong>传统邮件URL特征：</strong></p>
+<p>传统识别钓鱼邮件 URL 的方法一般是基于先验知识，通过预先定义一组规则来识别钓鱼邮件中的URL。</p>
+<p>传统钓鱼邮件识别中的主要使用的URL 特征如表 3-6 所示：</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175946.png" alt="image.png"></p>
+<p><strong>N-gram分词介绍：</strong></p>
+<p>URL 是一种特殊的文本，通常包含大量的非中文字符，例如数字、字母和特殊字符等，URL 语法以及字符串格式与传统文本出入较大，它不能使用传统的分词方法，本文使用N-gram分词。</p>
+<p>N-gram是自然语言处理领域中的一个术语，它指的是文本中由N个连续的单词(或字符)组成的序列。N-gram分词是一种基于 N-gram 模型的分词方法。该方法将文本划分为由 N 个片段，称为 N-gram片段。N-gram 片段可以是字符级别的，也可以是词级别的，这些片段被称为 N-gram。在 N-gram 模型中，每个 N-gram 被视为一个独立的单元，而与它之前或之后的单元无关。它通常用于文本分类、文本生成、机器翻译等任务。在 N-gram 字符级分词中，由于不需要考虑词汇库，所以这种方法适用于处理语言模糊或新词汇的情况。</p>
+<p>本文使用 N-gram 分词对 URL 进行分词，通过将 URL 划分为有意义的词汇序列，以便进一步的处理和分析。将 URL 中的每个字符都看作一个单元，然后将相邻的 3 个字符组成一个 3-gram 片段。例如，对于 URL：“<a target="_blank" rel="noopener" href="https://www.examples.com”/">https://www.examples.com”</a> ，可以得到以下 3-gram片段序列：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">“htt”，“ttp”，“tps”，“ps:”，“s:/”，“:/w”，“//w”，“www”，“ww.”，“w.e”，“.ex”，“exa”，“xam”，“amp”，“mpl”，“ple”，“les”“es.”，“s.c”，“.co”，“com”。</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，生成的N-gram序列是由三个字符组成的词组。这些N-gram序列可以用于训练一个基于字符级别的语言模型，用于处理各种文本中任务。</p>
+<p>分词算法：首先，输入文本字符串和 N-gram 的大小。然后使用一个循环逐个生成 N-gram 序列，并将它们添加到一个列表中。最后，函数返回生成的 N-gram序列。基于N-gram分词过程如算法 3-2 所示<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804175957.png" alt="image.png"></p>
+<p><strong>N-gram + Word2Vec 构建字符级词向量模型：</strong></p>
+<ol>
+<li>数据预处理：对于正文中没有URL 的邮件，需要对URL 字段进行空值填充，本文使用零值填充空URL字段</li>
+<li>字符级N-gram 分词：使用上述N-gram算法，生成的N-gram序列</li>
+<li>字符级词向量模型训练及保存：使用Word2Vec 模型训练字符级词向量模型，将 3-gram分词好的字符进行Word2Vec训练，获得每个字符的高维度向量，最终获得一个字符级词向量模型，嵌入维度设置为 100。通过图 3-4 可知，大部分邮件中的URL 数量在 5 个以下，一个URL 通过 3-gram进行字符分割可以得到 20 个左右切分好的字符，所以选取 100 作为URL特征长度进行补齐。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804180013.png" alt="image.png"></li>
+</ol>
+<h3 id="附件特征"><a href="#附件特征" class="headerlink" title="附件特征"></a>附件特征</h3><p><strong>传统邮件附件特征：</strong></p>
+<p>传统的通过钓鱼邮件附件特征识别钓鱼邮件的方法包含两种，静态特征和动态特征。具体如下图：</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804180023.png" alt="image.png"></p>
+<p>缺点：静态特征过于简单，容易被攻击者绕过，动态特征提取难度大，且分析附件运行是否存在恶意行为的规则是认为设置的，容易被免杀绕过。</p>
+<p><strong>附件名关联特征：</strong></p>
+<p>钓鱼邮件的附件名和正常邮件的附件名存在差异，正常邮件的附件命名通常是清晰、有意义的，而钓鱼邮件附件可能采用吸引人的语言或陌生的名称，所以本文基于附件名来提取特征，作为一个层面的特征向量。</p>
+<p>方法：首先将附件名通过特殊符号切分成单词数组，然后用Tokenizer进行编码，即可作为特征向量输入进神经网络。</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804180036.png" alt="image.png"></p>
+<p><strong>正文相关系数：</strong></p>
+<p>首先处理附件名，去除后缀和特殊符号，再使用 jieba 分词对附件名进行拆分，并判断每个拆分的词语是否在邮件正文中，计算附件名中的词语在正文出现的数量，由于附件名的长度及个数都不同，最后需要除以附件名中词语的数量，获得附件的正文相关度特征，特征值范围在[0,1]</p>
+<p>文章没说这个特征要怎么用，直接把系数作为一个特征值？</p>
+<h2 id="模型训练"><a href="#模型训练" class="headerlink" title="模型训练"></a>模型训练</h2><h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><p>传统的基于深度学习的钓鱼邮件检测，一般是邮件文本转词向量，然后输入深度学习分类模型进行训练。</p>
+<p>本文由于提取的特征是多层次的，即存在不同类型的特征，都输入相同的神经网络结构显然不够合理，所以提出了基于多通道 BiLSTM-Attention 的钓鱼邮件识别模型。原理是将提取到的多种特征输入到多通道分别处理，然后BiLSTM网络来学习文本特征上下文依赖关系。</p>
+<p>同时，引入了自适应Dropout正则化技术来提高模型泛化能力和防止过拟合；引入了缩放点积注意力机制来加强模型的关注度，使其能够更加准确地识别出钓鱼邮件；最后还引入了聚焦损失函数来优化数据集不平衡的问题。</p>
+<h3 id="模型框架"><a href="#模型框架" class="headerlink" title="模型框架"></a>模型框架</h3><p>首先，不同的邮件特征通过不同的通道输入模型，其中语义特征、URL 特征的通道采用 BiLSTM 进行上下文信息提取，然后，将每个通道的输出进行拼接，得到特征联合表示。</p>
+<p>其次，引入自适应Dropout 正则化层防止模型过拟合；引入注意力机制加强模型关注度，对全局特征进行加权，加权后的特征向量输入到全连接层进行分类；引入聚焦损失函数，在模型训练时对模型进行优化。</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804180057.png" alt="image.png"></p>
+<h3 id="模型优化（看不懂）"><a href="#模型优化（看不懂）" class="headerlink" title="模型优化（看不懂）"></a>模型优化（看不懂）</h3><h4 id="自适应-Dropout-正则化"><a href="#自适应-Dropout-正则化" class="headerlink" title="自适应 Dropout 正则化"></a>自适应 Dropout 正则化</h4><h4 id="缩放点积注意力机制"><a href="#缩放点积注意力机制" class="headerlink" title="缩放点积注意力机制"></a>缩放点积注意力机制</h4><h4 id="聚焦损失函数"><a href="#聚焦损失函数" class="headerlink" title="聚焦损失函数"></a>聚焦损失函数</h4><h3 id="多通道BiLSTM-Attention模型（看不懂）"><a href="#多通道BiLSTM-Attention模型（看不懂）" class="headerlink" title="多通道BiLSTM-Attention模型（看不懂）"></a>多通道BiLSTM-Attention模型（看不懂）</h3><h4 id="多通道输入层"><a href="#多通道输入层" class="headerlink" title="多通道输入层"></a>多通道输入层</h4><h4 id="多级嵌入层"><a href="#多级嵌入层" class="headerlink" title="多级嵌入层"></a>多级嵌入层</h4><h4 id="BiLSTM层"><a href="#BiLSTM层" class="headerlink" title="BiLSTM层"></a>BiLSTM层</h4><h4 id="特征联合层"><a href="#特征联合层" class="headerlink" title="特征联合层"></a>特征联合层</h4><h4 id="全连接"><a href="#全连接" class="headerlink" title="全连接"></a>全连接</h4><h3 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h3><h4 id="数据集"><a href="#数据集" class="headerlink" title="数据集"></a>数据集</h4><p><strong>数据来源：</strong> 本文使用奇安信DataCon的coremail 2020 邮件安全数据集，数据集包含 24000 封邮件，其中4804 封钓鱼邮件，19196 封正常邮件，但是没有附件内容。</p>
+<p><strong>预处理：</strong> 由于DataCon2020数据集提供的是邮件服务器的日志文件，而本文主要对邮件正文和附件特征进行分析，所以需要做预处理，提取邮件内容字段、附件名、URL等字段信息。</p>
+<p>正则提取URL字段的算法：<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804180111.png" alt="image.png"></p>
+<p>最后转成csv格式，下面是处理好的数据集的结构信息：<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804180130.png" alt="image.png"></p>
+<h4 id="实验环境和配置"><a href="#实验环境和配置" class="headerlink" title="实验环境和配置"></a>实验环境和配置</h4><p>本文基于Keras 的 Functional API 来构建模型，服务器配置和超参数配置信息如下。</p>
+<p>服务器配置<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804180928.png" alt="image.png"></p>
+<p>超参数配置<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804180941.png" alt="image.png"></p>
+<h4 id="实验结果-1"><a href="#实验结果-1" class="headerlink" title="实验结果"></a>实验结果</h4><p><strong>多层次正文特征对比实验：</strong></p>
+<p>针对情感特征，对比使用原始语料库和自定义语料库的分类性能，突出SnowNLP的作用。<br>针对其余三种特征，分别使用CNN、RNN、LSTM、BiLSTM分类，对比其性能。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804180955.png" alt="image.png"></p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804181017.png" alt="image.png"></p>
+<p><strong>多通道 BiLSTM-Attention 模型对比实验：</strong></p>
+<p>首先，是在BiLSTM-Attention模型的基础上，给模型优化方法做了消融实验；其次是横向对比本文模型和其他模型。</p>
+<p>优化方法的消融实验<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804181031.png" alt="image.png"></p>
+<p>横向对比<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804181042.png" alt="image.png"></p>
+<h2 id="系统实现"><a href="#系统实现" class="headerlink" title="系统实现"></a>系统实现</h2><p>框架比较简单，可以分成三部分：数据预处理、特征提取、分类。<br>首先，对已标记的邮件数据做数据预处理、特征提取，得到特征向量后输入进行训练模型；其次，得到模型后对用户输入的待分析邮件做数据预处理、特征提取，得到特征向量后输入训练好的模型，做分类判断。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20240804181217.png" alt="image.png"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>创新点：</p>
+<ol>
+<li>针对基于深度学习的钓鱼邮件识别方法中特征表示还不成体系的问题，本文提出了一种基于多层次多特征的钓鱼邮件特征分析方法</li>
+<li>针对目前钓鱼邮件识别模型可解释性和鲁棒性差的问题，本文提出一种基于多通道 BiLSTM+Attention 钓鱼邮件识别模型。</li>
+</ol>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%AA%E8%AE%BA"><span class="toc-number">1.</span> <span class="toc-text">绪论</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A0%94%E7%A9%B6%E8%83%8C%E6%99%AF"><span class="toc-number">1.1.</span> <span class="toc-text">研究背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A0%94%E7%A9%B6%E7%8E%B0%E7%8A%B6"><span class="toc-number">1.2.</span> <span class="toc-text">研究现状</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A0%94%E7%A9%B6%E5%86%85%E5%AE%B9"><span class="toc-number">1.3.</span> <span class="toc-text">研究内容</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF"><span class="toc-number">2.</span> <span class="toc-text">相关技术</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E5%B8%B8%E8%A7%81%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F"><span class="toc-number">2.1.</span> <span class="toc-text">钓鱼邮件常见攻击方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E6%9C%AC%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95"><span class="toc-number">2.2.</span> <span class="toc-text">文本特征表示方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#One-Hot"><span class="toc-number">2.2.1.</span> <span class="toc-text">One-Hot</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#TF-IDF"><span class="toc-number">2.2.2.</span> <span class="toc-text">TF-IDF</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Word2Vec%EF%BC%88%E4%B8%8D%E5%A4%AA%E6%87%82%EF%BC%89"><span class="toc-number">2.2.3.</span> <span class="toc-text">Word2Vec（不太懂）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90%E6%96%B9%E6%B3%95"><span class="toc-number">2.3.</span> <span class="toc-text">情感分析方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%83%85%E6%84%9F%E8%AF%8D%E5%85%B8%E7%9A%84%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90%E6%96%B9%E6%B3%95"><span class="toc-number">2.3.1.</span> <span class="toc-text">基于情感词典的情感分析方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90%E6%96%B9%E6%B3%95"><span class="toc-number">2.3.2.</span> <span class="toc-text">基于机器学习的情感分析方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SnowNLP-%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.3.3.</span> <span class="toc-text">SnowNLP 介绍</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95"><span class="toc-number">2.4.</span> <span class="toc-text">深度学习方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#RNN%EF%BC%88%E4%B8%8D%E5%A4%AA%E6%87%82%EF%BC%89"><span class="toc-number">2.4.1.</span> <span class="toc-text">RNN（不太懂）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#LSTM%EF%BC%88%E4%B8%8D%E5%A4%AA%E6%87%82%EF%BC%89"><span class="toc-number">2.4.2.</span> <span class="toc-text">LSTM（不太懂）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BiLSTM%EF%BC%88%E4%B8%8D%E5%A4%AA%E6%87%82%EF%BC%89"><span class="toc-number">2.4.3.</span> <span class="toc-text">BiLSTM（不太懂）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AM%EF%BC%88%E4%B8%8D%E5%A4%AA%E6%87%82%EF%BC%89"><span class="toc-number">2.4.4.</span> <span class="toc-text">AM（不太懂）</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%B9%E5%BE%81%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">特征分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E8%AF%8D%E7%89%B9%E5%BE%81%EF%BC%88%E7%96%91%E9%97%AE%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">字词特征（疑问）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E4%B9%89%E7%89%B9%E5%BE%81"><span class="toc-number">3.2.</span> <span class="toc-text">语义特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%85%E6%84%9F%E7%89%B9%E5%BE%81"><span class="toc-number">3.3.</span> <span class="toc-text">情感特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#URL%E7%89%B9%E5%BE%81"><span class="toc-number">3.4.</span> <span class="toc-text">URL特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%99%84%E4%BB%B6%E7%89%B9%E5%BE%81"><span class="toc-number">3.5.</span> <span class="toc-text">附件特征</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="toc-number">4.</span> <span class="toc-text">模型训练</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-number">4.1.</span> <span class="toc-text">引言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E6%A1%86%E6%9E%B6"><span class="toc-number">4.2.</span> <span class="toc-text">模型框架</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E4%BC%98%E5%8C%96%EF%BC%88%E7%9C%8B%E4%B8%8D%E6%87%82%EF%BC%89"><span class="toc-number">4.3.</span> <span class="toc-text">模型优化（看不懂）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%87%AA%E9%80%82%E5%BA%94-Dropout-%E6%AD%A3%E5%88%99%E5%8C%96"><span class="toc-number">4.3.1.</span> <span class="toc-text">自适应 Dropout 正则化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BC%A9%E6%94%BE%E7%82%B9%E7%A7%AF%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6"><span class="toc-number">4.3.2.</span> <span class="toc-text">缩放点积注意力机制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%81%9A%E7%84%A6%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="toc-number">4.3.3.</span> <span class="toc-text">聚焦损失函数</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E9%80%9A%E9%81%93BiLSTM-Attention%E6%A8%A1%E5%9E%8B%EF%BC%88%E7%9C%8B%E4%B8%8D%E6%87%82%EF%BC%89"><span class="toc-number">4.4.</span> <span class="toc-text">多通道BiLSTM-Attention模型（看不懂）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E9%80%9A%E9%81%93%E8%BE%93%E5%85%A5%E5%B1%82"><span class="toc-number">4.4.1.</span> <span class="toc-text">多通道输入层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E7%BA%A7%E5%B5%8C%E5%85%A5%E5%B1%82"><span class="toc-number">4.4.2.</span> <span class="toc-text">多级嵌入层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BiLSTM%E5%B1%82"><span class="toc-number">4.4.3.</span> <span class="toc-text">BiLSTM层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%89%B9%E5%BE%81%E8%81%94%E5%90%88%E5%B1%82"><span class="toc-number">4.4.4.</span> <span class="toc-text">特征联合层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%A8%E8%BF%9E%E6%8E%A5"><span class="toc-number">4.4.5.</span> <span class="toc-text">全连接</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="toc-number">4.5.</span> <span class="toc-text">实验结果</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="toc-number">4.5.1.</span> <span class="toc-text">数据集</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83%E5%92%8C%E9%85%8D%E7%BD%AE"><span class="toc-number">4.5.2.</span> <span class="toc-text">实验环境和配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C-1"><span class="toc-number">4.5.3.</span> <span class="toc-text">实验结果</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E5%AE%9E%E7%8E%B0"><span class="toc-number">5.</span> <span class="toc-text">系统实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/&text=《钓鱼邮件识别方法研究》文献阅读"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/&title=《钓鱼邮件识别方法研究》文献阅读"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/&is_video=false&description=《钓鱼邮件识别方法研究》文献阅读"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=《钓鱼邮件识别方法研究》文献阅读&body=Check out this article: https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/&title=《钓鱼邮件识别方法研究》文献阅读"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/&title=《钓鱼邮件识别方法研究》文献阅读"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/&title=《钓鱼邮件识别方法研究》文献阅读"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/&title=《钓鱼邮件识别方法研究》文献阅读"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/&name=《钓鱼邮件识别方法研究》文献阅读&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2024/08/04/0x13%E3%80%8A%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E3%80%8B%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/&t=《钓鱼邮件识别方法研究》文献阅读"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    Jasper_sec
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+      <ul>
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">
+          本站总访问量 <span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span id="busuanzi_container_site_uv">
+          本站访客数 <span id="busuanzi_value_site_uv"></span>人
+        </span>
+        <span id="busuanzi_container_page_uv">
+          本页访问量 <span id="busuanzi_value_page_pv"><!-- number will be auto injected here by busuanzi --></span>次
+        </span>
+      </ul>
+    </nav>
+  </div>
+
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?21e6754c7f372c2de41518ffb4f72c33";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
