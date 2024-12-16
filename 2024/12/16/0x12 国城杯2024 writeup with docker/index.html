@@ -6,12 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="前言国城杯的题不错的，复现了一下4个web，顺手做了docker方便师傅复现。  ez_gallery环境搭建1docker run --name ez_gallery -d -p 8080:6543 sketchpl4ne&#x2F;gcb2024:ez_gallery_img  解题思路1思路：ssti request外带出网反弹shell 首先是任意文件读，读app.py 1info?file&#x3D;&#x2F;ap">
+    <meta name="description" content="前言国城杯的题不错的，复现了一下4个web，顺手做了docker方便师傅复现。 PS: 图片在Github图床，加载不出请更换网络。 ez_gallery环境搭建1docker run --name ez_gallery -d -p 8080:6543 sketchpl4ne&#x2F;gcb2024:ez_gallery_img  解题思路1思路：ssti request外带出网反弹shell 首先是任意">
 <meta property="og:type" content="article">
 <meta property="og:title" content="国城杯2024 writeup with docker">
 <meta property="og:url" content="https://jaspersec.top/2024/12/16/0x12%20%E5%9B%BD%E5%9F%8E%E6%9D%AF2024%20writeup%20with%20docker/index.html">
 <meta property="og:site_name" content="Jasper_sec">
-<meta property="og:description" content="前言国城杯的题不错的，复现了一下4个web，顺手做了docker方便师傅复现。  ez_gallery环境搭建1docker run --name ez_gallery -d -p 8080:6543 sketchpl4ne&#x2F;gcb2024:ez_gallery_img  解题思路1思路：ssti request外带出网反弹shell 首先是任意文件读，读app.py 1info?file&#x3D;&#x2F;ap">
+<meta property="og:description" content="前言国城杯的题不错的，复现了一下4个web，顺手做了docker方便师傅复现。 PS: 图片在Github图床，加载不出请更换网络。 ez_gallery环境搭建1docker run --name ez_gallery -d -p 8080:6543 sketchpl4ne&#x2F;gcb2024:ez_gallery_img  解题思路1思路：ssti request外带出网反弹shell 首先是任意">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/f2a73f5c2f55595830f81e96190f6763.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/fdd891af2dce0ce0a8385d71d5fb068a.png">
@@ -25,7 +25,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/05912db436951a1e3034029919e75d82.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/d7b055c1179fa444e42bc8440ab211f7.png">
 <meta property="article:published_time" content="2024-12-16T01:47:00.000Z">
-<meta property="article:modified_time" content="2024-12-16T01:51:40.158Z">
+<meta property="article:modified_time" content="2024-12-16T03:44:32.733Z">
 <meta property="article:author" content="Jasper_sec">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="php">
@@ -156,7 +156,7 @@
       
         <time datetime="2024-12-16T01:47:00.000Z" class="dt-published" itemprop="datePublished">2024-12-16</time>
         
-        (Updated: <time datetime="2024-12-16T01:51:40.158Z" class="dt-updated" itemprop="dateModified">2024-12-16</time>)
+        (Updated: <time datetime="2024-12-16T03:44:32.733Z" class="dt-updated" itemprop="dateModified">2024-12-16</time>)
         
       
     </div>
@@ -177,7 +177,7 @@
 
   <div class="content e-content" itemprop="articleBody">
     <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>国城杯的题不错的，复现了一下4个web，顺手做了docker方便师傅复现。</p>
-<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/f2a73f5c2f55595830f81e96190f6763.png"></p>
+<p>PS: 图片在Github图床，加载不出请更换网络。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/f2a73f5c2f55595830f81e96190f6763.png"></p>
 <h2 id="ez-gallery"><a href="#ez-gallery" class="headerlink" title="ez_gallery"></a>ez_gallery</h2><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name ez_gallery -d -p 8080:6543 sketchpl4ne/gcb2024:ez_gallery_img</span><br></pre></td></tr></table></figure>
 
 <h3 id="解题思路1"><a href="#解题思路1" class="headerlink" title="解题思路1"></a>解题思路1</h3><p><strong>思路：ssti request外带出网反弹shell</strong></p>
