@@ -6,12 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="前言 星盟安全团队长期招新中~ 我们的目标是星辰大海！   简历格式：ID、联系方式、掌握技术、比赛情况 简历投递邮箱： &#x78;&#109;&#99;&#x76;&#101;&#x40;&#x71;&#113;&#46;&#x63;&#111;&#109; 联系QQ：1609410364  PS: 图片在GitHub图床，加载不出请更换网络。 PyBlockly环境搭建1docker run">
+    <meta name="description" content="前言 星盟安全团队长期招新中~ 我们的目标是星辰大海！   简历格式：ID、联系方式、掌握技术、比赛情况 简历投递邮箱： &#120;&#x6d;&#99;&#x76;&#x65;&#x40;&#113;&#113;&#x2e;&#x63;&#111;&#x6d; 联系QQ：1609410364  强网杯 S8 Web赛题复现，顺手做了docker环境。PS: 图片在GitHub图床，加载不出请更">
 <meta property="og:type" content="article">
 <meta property="og:title" content="强网杯2024 线上赛 writeup">
 <meta property="og:url" content="https://jaspersec.top/2024/12/31/0x13%20%E5%BC%BA%E7%BD%91%E6%9D%AF2024%20%E7%BA%BF%E4%B8%8A%E8%B5%9B%20writeup/index.html">
 <meta property="og:site_name" content="Jasper_sec">
-<meta property="og:description" content="前言 星盟安全团队长期招新中~ 我们的目标是星辰大海！   简历格式：ID、联系方式、掌握技术、比赛情况 简历投递邮箱： &#x78;&#109;&#99;&#x76;&#101;&#x40;&#x71;&#113;&#46;&#x63;&#111;&#109; 联系QQ：1609410364  PS: 图片在GitHub图床，加载不出请更换网络。 PyBlockly环境搭建1docker run">
+<meta property="og:description" content="前言 星盟安全团队长期招新中~ 我们的目标是星辰大海！   简历格式：ID、联系方式、掌握技术、比赛情况 简历投递邮箱： &#120;&#x6d;&#99;&#x76;&#x65;&#x40;&#113;&#113;&#x2e;&#x63;&#111;&#x6d; 联系QQ：1609410364  强网杯 S8 Web赛题复现，顺手做了docker环境。PS: 图片在GitHub图床，加载不出请更">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/image-20241231190218034.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/24746009105f54f65a54a48ae570d59e.png">
@@ -27,7 +27,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/7d7359b03c73056c6838fb3103bb427e.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/b05a415a7edf54e74e298c5f4f6d8dec.png">
 <meta property="article:published_time" content="2024-12-31T10:52:00.000Z">
-<meta property="article:modified_time" content="2024-12-31T11:21:59.271Z">
+<meta property="article:modified_time" content="2025-01-07T03:00:54.647Z">
 <meta property="article:author" content="Jasper_sec">
 <meta property="article:tag" content="php">
 <meta property="article:tag" content="wp">
@@ -159,7 +159,7 @@
       
         <time datetime="2024-12-31T10:52:00.000Z" class="dt-published" itemprop="datePublished">2024-12-31</time>
         
-        (Updated: <time datetime="2024-12-31T11:21:59.271Z" class="dt-updated" itemprop="dateModified">2024-12-31</time>)
+        (Updated: <time datetime="2025-01-07T03:00:54.647Z" class="dt-updated" itemprop="dateModified">2025-01-07</time>)
         
       
     </div>
@@ -182,10 +182,10 @@
     <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p> <a target="_blank" rel="noopener" href="https://xmcve.com/">星盟安全团队</a>长期招新中~ 我们的目标是星辰大海！ </p>
 <ul>
 <li>简历格式：ID、联系方式、掌握技术、比赛情况</li>
-<li>简历投递邮箱： <a href="mailto:&#x78;&#109;&#99;&#x76;&#101;&#x40;&#x71;&#113;&#46;&#x63;&#111;&#109;">&#x78;&#109;&#99;&#x76;&#101;&#x40;&#x71;&#113;&#46;&#x63;&#111;&#109;</a></li>
+<li>简历投递邮箱： <a href="mailto:&#120;&#x6d;&#99;&#x76;&#x65;&#x40;&#113;&#113;&#x2e;&#x63;&#111;&#x6d;">&#120;&#x6d;&#99;&#x76;&#x65;&#x40;&#113;&#113;&#x2e;&#x63;&#111;&#x6d;</a></li>
 <li>联系QQ：1609410364</li>
 </ul>
-<p>PS: 图片在GitHub图床，加载不出请更换网络。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/image-20241231190218034.png" alt="image-20241231190218034"></p>
+<p>强网杯 S8 Web赛题复现，顺手做了<code>docker</code>环境。<br>PS: 图片在GitHub图床，加载不出请更换网络。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/image-20241231190218034.png" alt="image-20241231190218034"></p>
 <h2 id="PyBlockly"><a href="#PyBlockly" class="headerlink" title="PyBlockly"></a>PyBlockly</h2><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name pyblockly -d -p 8888:8080 sketchpl4ne/qwb2024:pyblockly_img</span><br></pre></td></tr></table></figure>
 <h3 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h3><p><strong>思路：python unicode编码绕过+pyjail ast沙箱绕过和audithook绕过</strong></p>
 <p>审题，blockly_json这个接口，接受json格式数据，解析成对应的python代码，然后执行。</p>
@@ -341,7 +341,7 @@
     Copyright &copy;
     
     
-    2023-2024
+    2023-2025
     Jasper_sec
   </div>
   <div class="footer-right">
