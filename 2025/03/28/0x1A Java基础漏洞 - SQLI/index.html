@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言本文主要对 Java 下 SQLI 的漏洞成因、防御思路做了分析总结，方便理清代码审计时的思路，漏洞样例代码参考自 Hello-Java-Sec 的sql 注入部分。 JDBC 漏洞点JDBC 是相对较老的数据库操作方式了，印象中我在本科课程还用 eclipse 开发过小网页，其中分页查询数据的功能点用到了它。简单来说，JDBC 提供了一套调用接口，使得开发人员可以在Java代码里写SQL，并">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java基础漏洞 - SQLI">
+<meta property="og:url" content="https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/index.html">
+<meta property="og:site_name" content="Jasper_sec">
+<meta property="og:description" content="前言本文主要对 Java 下 SQLI 的漏洞成因、防御思路做了分析总结，方便理清代码审计时的思路，漏洞样例代码参考自 Hello-Java-Sec 的sql 注入部分。 JDBC 漏洞点JDBC 是相对较老的数据库操作方式了，印象中我在本科课程还用 eclipse 开发过小网页，其中分页查询数据的功能点用到了它。简单来说，JDBC 提供了一套调用接口，使得开发人员可以在Java代码里写SQL，并">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/7a57f0fb6a0f46f4aa602c81a792d032.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/4d2288faf8b839dc993960f4b66d46b6.png">
+<meta property="article:published_time" content="2025-03-27T19:47:00.000Z">
+<meta property="article:modified_time" content="2025-03-30T19:48:56.306Z">
+<meta property="article:author" content="Jasper_sec">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="代码审计">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/7a57f0fb6a0f46f4aa602c81a792d032.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Java基础漏洞 - SQLI</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span> 
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/03/27/0x19%20tomcat%20CVE-2025-24813/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&text=Java基础漏洞 - SQLI"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&is_video=false&description=Java基础漏洞 - SQLI"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java基础漏洞 - SQLI&body=Check out this article: https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&name=Java基础漏洞 - SQLI&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&t=Java基础漏洞 - SQLI"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <!-- 
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JDBC-%E6%BC%8F%E6%B4%9E%E7%82%B9"><span class="toc-number">2.</span> <span class="toc-text">JDBC 漏洞点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E6%8B%BC%E6%8E%A5%E5%8F%82%E6%95%B0"><span class="toc-number">2.1.</span> <span class="toc-text">动态拼接参数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0"><span class="toc-number">2.1.1.</span> <span class="toc-text">漏洞成因</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%98%B2%E5%BE%A1%E6%80%9D%E8%B7%AF"><span class="toc-number">2.1.2.</span> <span class="toc-text">防御思路</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E7%BC%96%E8%AF%91%E6%9C%AA%E4%BD%BF%E7%94%A8%E5%8D%A0%E4%BD%8D%E7%AC%A6"><span class="toc-number">2.2.</span> <span class="toc-text">预编译未使用占位符</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0-1"><span class="toc-number">2.2.1.</span> <span class="toc-text">漏洞成因</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%98%B2%E5%BE%A1%E6%80%9D%E8%B7%AF-1"><span class="toc-number">2.2.2.</span> <span class="toc-text">防御思路</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#order-by-%E6%B3%A8%E5%85%A5"><span class="toc-number">2.3.</span> <span class="toc-text">order by 注入</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0-2"><span class="toc-number">2.3.1.</span> <span class="toc-text">漏洞成因</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%98%B2%E5%BE%A1%E6%80%9D%E8%B7%AF-2"><span class="toc-number">2.3.2.</span> <span class="toc-text">防御思路</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mybatis-%E6%BC%8F%E6%B4%9E%E7%82%B9"><span class="toc-number">3.</span> <span class="toc-text">Mybatis 漏洞点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E6%8B%BC%E6%8E%A5%E5%8F%82%E6%95%B0-1"><span class="toc-number">3.1.</span> <span class="toc-text">动态拼接参数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0-3"><span class="toc-number">3.1.1.</span> <span class="toc-text">漏洞成因</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%98%B2%E5%BE%A1%E6%80%9D%E8%B7%AF-3"><span class="toc-number">3.1.2.</span> <span class="toc-text">防御思路</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">5.</span> <span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+     -->
+    <div id="toc">
+      <div id="toc-div" class="toc-article" >
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JDBC-%E6%BC%8F%E6%B4%9E%E7%82%B9"><span class="toc-number">2.</span> <span class="toc-text">JDBC 漏洞点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E6%8B%BC%E6%8E%A5%E5%8F%82%E6%95%B0"><span class="toc-number">2.1.</span> <span class="toc-text">动态拼接参数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0"><span class="toc-number">2.1.1.</span> <span class="toc-text">漏洞成因</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%98%B2%E5%BE%A1%E6%80%9D%E8%B7%AF"><span class="toc-number">2.1.2.</span> <span class="toc-text">防御思路</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E7%BC%96%E8%AF%91%E6%9C%AA%E4%BD%BF%E7%94%A8%E5%8D%A0%E4%BD%8D%E7%AC%A6"><span class="toc-number">2.2.</span> <span class="toc-text">预编译未使用占位符</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0-1"><span class="toc-number">2.2.1.</span> <span class="toc-text">漏洞成因</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%98%B2%E5%BE%A1%E6%80%9D%E8%B7%AF-1"><span class="toc-number">2.2.2.</span> <span class="toc-text">防御思路</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#order-by-%E6%B3%A8%E5%85%A5"><span class="toc-number">2.3.</span> <span class="toc-text">order by 注入</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0-2"><span class="toc-number">2.3.1.</span> <span class="toc-text">漏洞成因</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%98%B2%E5%BE%A1%E6%80%9D%E8%B7%AF-2"><span class="toc-number">2.3.2.</span> <span class="toc-text">防御思路</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mybatis-%E6%BC%8F%E6%B4%9E%E7%82%B9"><span class="toc-number">3.</span> <span class="toc-text">Mybatis 漏洞点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E6%8B%BC%E6%8E%A5%E5%8F%82%E6%95%B0-1"><span class="toc-number">3.1.</span> <span class="toc-text">动态拼接参数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0-3"><span class="toc-number">3.1.1.</span> <span class="toc-text">漏洞成因</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%98%B2%E5%BE%A1%E6%80%9D%E8%B7%AF-3"><span class="toc-number">3.1.2.</span> <span class="toc-text">防御思路</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">5.</span> <span class="toc-text">参考链接</span></a></li></ol>
+        
+      </div>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Java基础漏洞 - SQLI
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Jasper_sec</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-03-27T19:47:00.000Z" class="dt-published" itemprop="datePublished">2025-03-28</time>
+        
+        (Updated: <time datetime="2025-03-30T19:48:56.306Z" class="dt-updated" itemprop="dateModified">2025-03-31</time>)
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Java/" rel="tag">Java</a>, <a class="p-category" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag">代码审计</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文主要对 Java 下 SQLI 的漏洞成因、防御思路做了分析总结，方便理清代码审计时的思路，漏洞样例代码参考自 <a target="_blank" rel="noopener" href="https://github.com/j3ers3/Hello-Java-Sec">Hello-Java-Sec</a> 的sql 注入部分。</p>
+<h2 id="JDBC-漏洞点"><a href="#JDBC-漏洞点" class="headerlink" title="JDBC 漏洞点"></a>JDBC 漏洞点</h2><p>JDBC 是相对较老的数据库操作方式了，印象中我在本科课程还用 eclipse 开发过小网页，其中分页查询数据的功能点用到了它。简单来说，JDBC 提供了一套调用接口，使得开发人员可以在Java代码里写SQL，并传入数据库执行。</p>
+<h3 id="动态拼接参数"><a href="#动态拼接参数" class="headerlink" title="动态拼接参数"></a>动态拼接参数</h3><h4 id="漏洞成因"><a href="#漏洞成因" class="headerlink" title="漏洞成因"></a>漏洞成因</h4><p>动态拼接参数一般是使用 <code>java.sql.Statement</code> 类进行 SQL 查询时，sql 语句动态拼接用户传参导致的注入漏洞。</p>
+<p>例如下面代码中，id 参数直接做了字符串拼接，显然是可以直接注入的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ApiOperation(value = &quot;vul: JDBC语句拼接&quot;)</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/vul1&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">vul1</span><span class="params">(String id)</span> &#123;</span><br><span class="line">	<span class="type">StringBuilder</span> <span class="variable">result</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>();</span><br><span class="line">	<span class="type">String</span> <span class="variable">sql</span> <span class="operator">=</span> <span class="string">&quot;select * from users where id = &#x27;&quot;</span> + id + <span class="string">&quot;&#x27;&quot;</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		Class.forName(<span class="string">&quot;com.mysql.cj.jdbc.Driver&quot;</span>);</span><br><span class="line">		<span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> DriverManager.getConnection(db_url, db_user, db_pass);</span><br><span class="line"></span><br><span class="line">		<span class="type">Statement</span> <span class="variable">stmt</span> <span class="operator">=</span> conn.createStatement();</span><br><span class="line"></span><br><span class="line">		log.info(<span class="string">&quot;[vul] 执行SQL语句： &#123;&#125;&quot;</span>, sql);</span><br><span class="line">		<span class="type">ResultSet</span> <span class="variable">rs</span> <span class="operator">=</span> stmt.executeQuery(sql);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">while</span> (rs.next()) &#123;</span><br><span class="line">			<span class="type">String</span> <span class="variable">res_name</span> <span class="operator">=</span> rs.getString(<span class="string">&quot;user&quot;</span>);</span><br><span class="line">			<span class="type">String</span> <span class="variable">res_pass</span> <span class="operator">=</span> rs.getString(<span class="string">&quot;pass&quot;</span>);</span><br><span class="line">			result.append(String.format(<span class="string">&quot;查询结果 %s: %s&quot;</span>, res_name, res_pass));</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		rs.close();</span><br><span class="line">		stmt.close();</span><br><span class="line">		conn.close();</span><br><span class="line">		<span class="keyword">return</span> result.toString();</span><br><span class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">		<span class="comment">// 输出错误，用于报错注入</span></span><br><span class="line">		<span class="keyword">return</span> e.toString();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>进一步，使用字符串动态拼接可实现不同关键字的注入，如 like注入、in注入和 order by 注入。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">sql_like</span> <span class="operator">=</span> <span class="string">&quot;select * from users where id like &#x27;%&quot;</span> + id + <span class="string">&quot;%&#x27;&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">sql_order</span> <span class="operator">=</span> <span class="string">&quot;select * from users order by &quot;</span> + column_name;</span><br><span class="line"><span class="type">String</span> <span class="variable">sql_in</span> <span class="operator">=</span> <span class="string">&quot;delete from users where id in(&quot;</span> + del_ids +<span class="string">&quot;);&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> DriverManager.getConnection(db_url, db_user, db_pass);</span><br><span class="line"><span class="type">Statement</span> <span class="variable">stmt</span> <span class="operator">=</span> conn.createStatement();</span><br><span class="line"><span class="type">ResultSet</span> <span class="variable">rs</span> <span class="operator">=</span> stmt.executeQuery(sql_xxx);</span><br></pre></td></tr></table></figure>
+<h4 id="防御思路"><a href="#防御思路" class="headerlink" title="防御思路"></a>防御思路</h4><ol>
+<li>预编译SQL</li>
+<li>黑白名单</li>
+<li>参数类型强转</li>
+</ol>
+<p>使用<code>java.sql.PreparedStatement</code>预编译SQL语句可以解决动态拼接的问题，简单来说就是使用占位符代替直接传入的参数，然后调用setter去做赋值，实现了sql 注入的防御。使用预编译的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ApiOperation(value = &quot;safe：JDBC预编译&quot;, notes = &quot;采用预编译的方法，使用?占位，也叫参数化的SQL&quot;)</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/safe1&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">safe1</span><span class="params">(String id)</span> &#123;</span><br><span class="line">	<span class="type">StringBuilder</span> <span class="variable">result</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>();</span><br><span class="line">	<span class="type">String</span> <span class="variable">sql</span> <span class="operator">=</span> <span class="string">&quot;select * from users where id = ?&quot;</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		Class.forName(<span class="string">&quot;com.mysql.cj.jdbc.Driver&quot;</span>);</span><br><span class="line">		<span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> DriverManager.getConnection(db_url, db_user, db_pass);</span><br><span class="line">		<span class="type">PreparedStatement</span> <span class="variable">st</span> <span class="operator">=</span> conn.prepareStatement(sql);</span><br><span class="line">		st.setString(<span class="number">1</span>, id);</span><br><span class="line">		log.info(<span class="string">&quot;[safe] 执行SQL语句： &#123;&#125;&quot;</span>, st);</span><br><span class="line">		<span class="type">ResultSet</span> <span class="variable">rs</span> <span class="operator">=</span> st.executeQuery();</span><br><span class="line"></span><br><span class="line">		<span class="keyword">while</span> (rs.next()) &#123;</span><br><span class="line">			<span class="type">String</span> <span class="variable">res_name</span> <span class="operator">=</span> rs.getString(<span class="string">&quot;user&quot;</span>);</span><br><span class="line">			<span class="type">String</span> <span class="variable">res_pass</span> <span class="operator">=</span> rs.getString(<span class="string">&quot;pass&quot;</span>);</span><br><span class="line">			<span class="type">String</span> <span class="variable">info</span> <span class="operator">=</span> String.format(<span class="string">&quot;查询结果%n %s: %s%n&quot;</span>, res_name, res_pass);</span><br><span class="line">			result.append(info);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		rs.close();</span><br><span class="line">		st.close();</span><br><span class="line">		conn.close();</span><br><span class="line">		<span class="keyword">return</span> result.toString();</span><br><span class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">		<span class="keyword">return</span> e.toString();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意：并不是使用了预编译SQL就是绝对安全的，下一小节就指出了预编译使用不当、无法使用预编译而导致的漏洞。</p>
+<p>类似的防御策略还有：黑白名单、类型强转、第三方安全编码组件等，这里以类型强转为例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ApiOperation(value = &quot;safe：强制数据类型&quot;)</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/safe4&quot;)</span></span><br><span class="line"><span class="keyword">public</span> Map&lt;String, Object&gt; <span class="title function_">safe4</span><span class="params">(Integer id)</span> &#123;</span><br><span class="line">    <span class="type">DriverManagerDataSource</span> <span class="variable">dataSource</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DriverManagerDataSource</span>();</span><br><span class="line">    dataSource.setDriverClassName(<span class="string">&quot;com.mysql.cj.jdbc.Driver&quot;</span>);</span><br><span class="line">    dataSource.setUrl(db_url);</span><br><span class="line">    dataSource.setUsername(db_user);</span><br><span class="line">    dataSource.setPassword(db_pass);</span><br><span class="line"></span><br><span class="line">    <span class="type">JdbcTemplate</span> <span class="variable">jdbctemplate</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">JdbcTemplate</span>(dataSource);</span><br><span class="line"></span><br><span class="line">    <span class="type">String</span> <span class="variable">sql_vul</span> <span class="operator">=</span> <span class="string">&quot;select * from users where id = &quot;</span> + id;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> jdbctemplate.queryForMap(sql_vul);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="预编译未使用占位符"><a href="#预编译未使用占位符" class="headerlink" title="预编译未使用占位符"></a>预编译未使用占位符</h3><h4 id="漏洞成因-1"><a href="#漏洞成因-1" class="headerlink" title="漏洞成因"></a>漏洞成因</h4><p>预编译起作用的前提是正确使用 PreparedStatement ，如果仅调用查询，而不使用占位符进行参数拼接，本质上还是会导致动态参数拼接的问题，从而导致注入。</p>
+<p>例如下面代码虽然用到了预编译的函数，但是并未使用占位符，从而导致注入漏洞。这个问题多是因为开发人员的粗心大意导致的，而在如今的AI辅助编程时代，类似的错误会越来越少。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ApiOperation(value = &quot;vul：JDBC预编译拼接&quot;, notes = &quot;采用预编译的方法，但没使用?占位，此时进行预编译也无法阻止SQL注入&quot;)</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/vul2&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">vul2</span><span class="params">(String id)</span> &#123;</span><br><span class="line">	<span class="type">StringBuilder</span> <span class="variable">result</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>();</span><br><span class="line">	<span class="type">String</span> <span class="variable">sql</span> <span class="operator">=</span> <span class="string">&quot;select * from users where id = &quot;</span> + id;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		Class.forName(<span class="string">&quot;com.mysql.cj.jdbc.Driver&quot;</span>);</span><br><span class="line">		<span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> DriverManager.getConnection(db_url, db_user, db_pass);</span><br><span class="line"></span><br><span class="line">		log.info(<span class="string">&quot;[vul] 执行SQL语句： &#123;&#125;&quot;</span>, sql);</span><br><span class="line">		<span class="type">PreparedStatement</span> <span class="variable">st</span> <span class="operator">=</span> conn.prepareStatement(sql);</span><br><span class="line">		<span class="type">ResultSet</span> <span class="variable">rs</span> <span class="operator">=</span> st.executeQuery();</span><br><span class="line"></span><br><span class="line">		<span class="keyword">while</span> (rs.next()) &#123;</span><br><span class="line">			<span class="type">String</span> <span class="variable">res_name</span> <span class="operator">=</span> rs.getString(<span class="string">&quot;user&quot;</span>);</span><br><span class="line">			<span class="type">String</span> <span class="variable">res_pass</span> <span class="operator">=</span> rs.getString(<span class="string">&quot;pass&quot;</span>);</span><br><span class="line">			<span class="type">String</span> <span class="variable">info</span> <span class="operator">=</span> String.format(<span class="string">&quot;查询结果%n %s: %s%n&quot;</span>, res_name, res_pass);</span><br><span class="line">			result.append(info);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		rs.close();</span><br><span class="line">		st.close();</span><br><span class="line">		conn.close();</span><br><span class="line">		<span class="keyword">return</span> result.toString();</span><br><span class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">		<span class="keyword">return</span> e.toString();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="防御思路-1"><a href="#防御思路-1" class="headerlink" title="防御思路"></a>防御思路</h4><p>对于这种代码编写错误，要规范安全开发流程，在上线前要做统一的代码审查，避免类似的问题。</p>
+<h3 id="order-by-注入"><a href="#order-by-注入" class="headerlink" title="order by 注入"></a>order by 注入</h3><h4 id="漏洞成因-2"><a href="#漏洞成因-2" class="headerlink" title="漏洞成因"></a>漏洞成因</h4><p>这个漏洞比较有意思，由于 PreparedStatement 预编译的函数会把传参转换成字符串，所以会出现下面的情况：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">## 正常语句</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">order</span> <span class="keyword">by</span> id</span><br><span class="line">## 预编译转义后</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">order</span> <span class="keyword">by</span> &quot;id&quot;</span><br></pre></td></tr></table></figure>
+
+<p>“id”不被识别为列名，进而导致排序失效，所以编写包含排序的语句时，只能通过拼接的方式，而如果没对参数进行严格过滤，就容易造成SQL注入。漏洞代码在动态参数拼接那一节写过了，伪代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">sql_order</span> <span class="operator">=</span> <span class="string">&quot;select * from users order by &quot;</span> + id;</span><br><span class="line"><span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> DriverManager.getConnection(db_url, db_user, db_pass);</span><br><span class="line"><span class="type">Statement</span> <span class="variable">stmt</span> <span class="operator">=</span> conn.createStatement();</span><br><span class="line"><span class="type">ResultSet</span> <span class="variable">rs</span> <span class="operator">=</span> stmt.executeQuery(sql_order);</span><br></pre></td></tr></table></figure>
+<h4 id="防御思路-2"><a href="#防御思路-2" class="headerlink" title="防御思路"></a>防御思路</h4><p>由于无法使用预编译，所以需要对用户传参做校验，推荐使用白名单过滤，指定传参必须为列名。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ApiOperation(value = &quot;safe: order by 参数白名单过滤&quot;)</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/safe5&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">safe5</span><span class="params">(String column)</span> &#123;</span><br><span class="line">    <span class="type">StringBuilder</span> <span class="variable">result</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 限制column参数只能是id、username、password三者之一</span></span><br><span class="line">    Set&lt;String&gt; allowedFields = <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;&gt;(Arrays.asList(<span class="string">&quot;id&quot;</span>, <span class="string">&quot;username&quot;</span>, <span class="string">&quot;password&quot;</span>));</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (allowedFields.contains(column)) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Class.forName(<span class="string">&quot;com.mysql.cj.jdbc.Driver&quot;</span>);</span><br><span class="line">            <span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> DriverManager.getConnection(db_url, db_user, db_pass);</span><br><span class="line">            <span class="type">Statement</span> <span class="variable">stmt</span> <span class="operator">=</span> conn.createStatement();</span><br><span class="line">	        <span class="comment">// 动态拼接用户参数</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">sql</span> <span class="operator">=</span> <span class="string">&quot;select * from users order by &quot;</span> + column;</span><br><span class="line">            log.info(<span class="string">&quot;[safe] 执行SQL语句： &#123;&#125;&quot;</span>, sql);</span><br><span class="line">            </span><br><span class="line">            <span class="type">ResultSet</span> <span class="variable">rs</span> <span class="operator">=</span> stmt.executeQuery(sql);</span><br><span class="line">            <span class="keyword">while</span> (rs.next()) &#123;</span><br><span class="line">                <span class="type">String</span> <span class="variable">info</span> <span class="operator">=</span> String.format(<span class="string">&quot;查询结果 %s: %s&quot;</span>, rs.getString(<span class="string">&quot;user&quot;</span>), rs.getString(<span class="string">&quot;pass&quot;</span>));</span><br><span class="line">                result.append(info);</span><br><span class="line">            &#125;</span><br><span class="line">            rs.close();</span><br><span class="line">            stmt.close();</span><br><span class="line">            conn.close();</span><br><span class="line">            <span class="keyword">return</span> result.toString();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">return</span> e.toString();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;xxx&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Mybatis-漏洞点"><a href="#Mybatis-漏洞点" class="headerlink" title="Mybatis 漏洞点"></a>Mybatis 漏洞点</h2><p>Mybatis &#x2F; Mybatis plus 是目前比较新的数据库操作方式，它提供了 xml配置 &#x2F; mapper接口注解 两种映射方式，结合赖注入可以实现非常简洁的数据库调用。（个人更喜欢注解方式）</p>
+<p>xml配置方式<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/7a57f0fb6a0f46f4aa602c81a792d032.png"></p>
+<p>mapper接口注解方式<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/4d2288faf8b839dc993960f4b66d46b6.png"></p>
+<h3 id="动态拼接参数-1"><a href="#动态拼接参数-1" class="headerlink" title="动态拼接参数"></a>动态拼接参数</h3><h4 id="漏洞成因-3"><a href="#漏洞成因-3" class="headerlink" title="漏洞成因"></a>漏洞成因</h4><p>Mybatis 和 JDBC 类似，有传参的预编译和非预编译之分。一般 来说，<code>#&#123;param&#125;</code> 会被转义，而 <code>$&#123;param&#125;</code> 则会直接注入。</p>
+<p>所以如果开发人员使用到 <code>$&#123;&#125;</code>并且传参用户可控，那么就会造成 SQL 注入。特别地，由于 order by、like 和 in 关键字在使用 <code>#&#123;&#125;</code> 做转义时会报错，所以开发者容易下意识选择 <code>$&#123;&#125;</code> 解决问题，进而加大了 Mybatis 出现 SQL 注入的可能。</p>
+<p>常见的漏洞代码如下，总共有：</p>
+<p>1.使用 xml 映射方式，传参使用 <code>$&#123;&#125;</code></p>
+<figure class="highlight xml"><figcaption><span>title:"UserMapper.xml"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- id的值必须和数据处理层的接口名一致 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;orderBy&quot;</span> <span class="attr">resultType</span>=<span class="string">&quot;com.best.hello.entity.User&quot;</span>&gt;</span></span><br><span class="line">	select *</span><br><span class="line">	from users</span><br><span class="line">	order by $&#123;field&#125; $&#123;sort&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><figcaption><span>title:"UserMapper.java"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">UserMapper</span> &#123;</span><br><span class="line"></span><br><span class="line">    List&lt;User&gt; <span class="title function_">orderBy</span><span class="params">(String field, String sort)</span>;</span><br><span class="line">    List&lt;User&gt; <span class="title function_">orderBySafe</span><span class="params">(String field)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>2.使用接口注解方式，传参使用 <code>$&#123;&#125;</code></p>
+<figure class="highlight java"><figcaption><span>title:"UserMapper.java"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">UserMapper</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 1. 参数动态拼接</span></span><br><span class="line">    <span class="meta">@Select(&quot;select * from users where id = $&#123;id&#125;&quot;)</span></span><br><span class="line">    List&lt;User&gt; <span class="title function_">queryByIdAsString</span><span class="params">(<span class="meta">@Param(&quot;id&quot;)</span> String id)</span>;</span><br><span class="line">    <span class="comment">// 2. order by关键字注入，使用 #&#123;&#125; 会产生报错，因此容易写成 $&#123;&#125;</span></span><br><span class="line">    <span class="meta">@Select(&quot;select * from users order by $&#123;field&#125; $&#123;sort&#125;&quot;)</span></span><br><span class="line">    List&lt;User&gt; <span class="title function_">orderBy2</span><span class="params">(<span class="meta">@Param(&quot;field&quot;)</span> String field, <span class="meta">@Param(&quot;sort&quot;)</span> String sort)</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 3. like关键字注入，搜索时使用 &#x27;%#&#123;q&#125;%&#x27; 会报错，因此容易写成 $&#123;&#125;</span></span><br><span class="line">    <span class="meta">@Select(&quot;select * from users where user like &#x27;%$&#123;user&#125;%&#x27;&quot;)</span></span><br><span class="line">    List&lt;User&gt; <span class="title function_">searchVul</span><span class="params">(String user)</span>;</span><br><span class="line">    <span class="comment">// 4. in关键字注入, 搜索时使用 &#x27;%#&#123;q&#125;%&#x27; 会报错，因此容易写成 $&#123;&#125;</span></span><br><span class="line">    <span class="meta">@Select(&quot;select * from users where id in ($&#123;ids&#125;)&quot;)</span></span><br><span class="line">    List&lt;User&gt; <span class="title function_">queryIdInIds</span><span class="params">(<span class="meta">@Param(&quot;ids&quot;)</span> String ids)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="防御思路-3"><a href="#防御思路-3" class="headerlink" title="防御思路"></a>防御思路</h4><p>对于直接动态拼接，把 <code>$&#123;&#125;</code> 改成 <code>#&#123;&#125;</code>即可；对于 order by、like、in 等关键字，由于报错问题，需要微调写法。</p>
+<p>动态拼接安全代码，直接替换即可</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">UserMapper</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Select(&quot;select * from users where id = #&#123;id&#125;&quot;)</span></span><br><span class="line">    List&lt;User&gt; <span class="title function_">queryByIdAsString</span><span class="params">(<span class="meta">@Param(&quot;id&quot;)</span> String id)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>order by 注入安全代码，通过 choose 标签设置 filed 白名单，然后再做对应处理去解决这个问题</p>
+<figure class="highlight xml"><figcaption><span>title:"UserMapper.xml"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;orderBySafe&quot;</span> <span class="attr">resultType</span>=<span class="string">&quot;com.best.hello.entity.User&quot;</span>&gt;</span></span><br><span class="line">	select * from users</span><br><span class="line">	<span class="tag">&lt;<span class="name">choose</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">when</span> <span class="attr">test</span>=<span class="string">&quot;field == &#x27;id&#x27;&quot;</span>&gt;</span></span><br><span class="line">			order by id desc</span><br><span class="line">		<span class="tag">&lt;/<span class="name">when</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">when</span> <span class="attr">test</span>=<span class="string">&quot;field == &#x27;user&#x27;&quot;</span>&gt;</span></span><br><span class="line">			order by user desc</span><br><span class="line">		<span class="tag">&lt;/<span class="name">when</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">otherwise</span>&gt;</span></span><br><span class="line">			order by pass desc limit 2</span><br><span class="line">		<span class="tag">&lt;/<span class="name">otherwise</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">choose</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>like 注入安全代码，需要使用 concat 做字符串拼接，否则会报错的</p>
+<figure class="highlight java"><figcaption><span>title:"UserMapper.java"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">UserMapper</span> &#123;    </span><br><span class="line">	<span class="meta">@Select(&quot;select * from users where user like CONCAT(&#x27;%&#x27;, #&#123;user&#125;, &#x27;%&#x27;)&quot;)</span>  </span><br><span class="line">	List&lt;User&gt; <span class="title function_">searchSafe</span><span class="params">(<span class="meta">@Param(&quot;user&quot;)</span> String user)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>in 注入安全代码，需要使用到 foreach 标签</p>
+<figure class="highlight xml"><figcaption><span>title:"UserMapper.xml"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;findByUserNameVuln04&quot;</span> <span class="attr">parameterType</span>=<span class="string">&quot;String&quot;</span> <span class="attr">resultMap</span>=<span class="string">&quot;User&quot;</span>&gt;</span></span><br><span class="line">    select * from users where id in</span><br><span class="line">    <span class="tag">&lt;<span class="name">foreach</span> <span class="attr">collection</span>=<span class="string">&quot;ids&quot;</span> <span class="attr">item</span>=<span class="string">&quot;item&quot;</span> <span class="attr">open</span>=<span class="string">&quot;(&quot;</span><span class="attr">separatosr</span>=<span class="string">&quot;,&quot;</span> <span class="attr">close</span>=<span class="string">&quot;)&quot;</span>&gt;</span>#&#123;ids&#125; <span class="tag">&lt;/<span class="name">foreach</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Java SQL 注入漏洞比较有意思的地方是，Java 由于 Mybatis 的存在，对数据库操作进一步封装的同时，却不支持例如 order by 语句的预编译，导致开发者会偏向于使用更为”便捷“的 <code>$&#123;&#125;</code>，进而导致漏洞产生。 </p>
+<p>当然值得庆幸的是，Mybatis Plus 目前已经支持上述语句的预编译，所以及时更新组件也是漏洞防御一大重点；不过也需要考虑项目兼容性和供应链安全的问题。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/j3ers3/Hello-Java-Sec">https://github.com/j3ers3/Hello-Java-Sec</a></li>
+<li><a target="_blank" rel="noopener" href="https://tttang.com/archive/1726/">https://tttang.com/archive/1726/</a></li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JDBC-%E6%BC%8F%E6%B4%9E%E7%82%B9"><span class="toc-number">2.</span> <span class="toc-text">JDBC 漏洞点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E6%8B%BC%E6%8E%A5%E5%8F%82%E6%95%B0"><span class="toc-number">2.1.</span> <span class="toc-text">动态拼接参数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0"><span class="toc-number">2.1.1.</span> <span class="toc-text">漏洞成因</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%98%B2%E5%BE%A1%E6%80%9D%E8%B7%AF"><span class="toc-number">2.1.2.</span> <span class="toc-text">防御思路</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E7%BC%96%E8%AF%91%E6%9C%AA%E4%BD%BF%E7%94%A8%E5%8D%A0%E4%BD%8D%E7%AC%A6"><span class="toc-number">2.2.</span> <span class="toc-text">预编译未使用占位符</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0-1"><span class="toc-number">2.2.1.</span> <span class="toc-text">漏洞成因</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%98%B2%E5%BE%A1%E6%80%9D%E8%B7%AF-1"><span class="toc-number">2.2.2.</span> <span class="toc-text">防御思路</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#order-by-%E6%B3%A8%E5%85%A5"><span class="toc-number">2.3.</span> <span class="toc-text">order by 注入</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0-2"><span class="toc-number">2.3.1.</span> <span class="toc-text">漏洞成因</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%98%B2%E5%BE%A1%E6%80%9D%E8%B7%AF-2"><span class="toc-number">2.3.2.</span> <span class="toc-text">防御思路</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mybatis-%E6%BC%8F%E6%B4%9E%E7%82%B9"><span class="toc-number">3.</span> <span class="toc-text">Mybatis 漏洞点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E6%8B%BC%E6%8E%A5%E5%8F%82%E6%95%B0-1"><span class="toc-number">3.1.</span> <span class="toc-text">动态拼接参数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0-3"><span class="toc-number">3.1.1.</span> <span class="toc-text">漏洞成因</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%98%B2%E5%BE%A1%E6%80%9D%E8%B7%AF-3"><span class="toc-number">3.1.2.</span> <span class="toc-text">防御思路</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">5.</span> <span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&text=Java基础漏洞 - SQLI"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&is_video=false&description=Java基础漏洞 - SQLI"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java基础漏洞 - SQLI&body=Check out this article: https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&name=Java基础漏洞 - SQLI&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&t=Java基础漏洞 - SQLI"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2025
+    Jasper_sec
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+      <ul>
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">
+          本站总访问量 <span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span id="busuanzi_container_site_uv">
+          本站访客数 <span id="busuanzi_value_site_uv"></span>人
+        </span>
+        <span id="busuanzi_container_page_uv">
+          本页访问量 <span id="busuanzi_value_page_pv"><!-- number will be auto injected here by busuanzi --></span>次
+        </span>
+      </ul>
+    </nav>
+  </div>
+
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?21e6754c7f372c2de41518ffb4f72c33";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
