@@ -9,17 +9,18 @@
     <meta name="description" content="前言本文主要对 Java 下 SQLI 的漏洞成因、防御思路做了分析总结，方便理清代码审计时的思路，漏洞样例代码参考自 Hello-Java-Sec 的sql 注入部分。 JDBC 漏洞点JDBC 是相对较老的数据库操作方式了，印象中我在本科课程还用 eclipse 开发过小网页，其中分页查询数据的功能点用到了它。简单来说，JDBC 提供了一套调用接口，使得开发人员可以在Java代码里写SQL，并">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java基础漏洞 - SQLI">
-<meta property="og:url" content="https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/index.html">
+<meta property="og:url" content="https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/index.html">
 <meta property="og:site_name" content="Jasper_sec">
 <meta property="og:description" content="前言本文主要对 Java 下 SQLI 的漏洞成因、防御思路做了分析总结，方便理清代码审计时的思路，漏洞样例代码参考自 Hello-Java-Sec 的sql 注入部分。 JDBC 漏洞点JDBC 是相对较老的数据库操作方式了，印象中我在本科课程还用 eclipse 开发过小网页，其中分页查询数据的功能点用到了它。简单来说，JDBC 提供了一套调用接口，使得开发人员可以在Java代码里写SQL，并">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/7a57f0fb6a0f46f4aa602c81a792d032.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/4d2288faf8b839dc993960f4b66d46b6.png">
-<meta property="article:published_time" content="2025-03-27T19:47:00.000Z">
-<meta property="article:modified_time" content="2025-03-30T19:48:56.306Z">
+<meta property="article:published_time" content="2025-03-16T19:47:00.000Z">
+<meta property="article:modified_time" content="2025-03-31T16:16:22.272Z">
 <meta property="article:author" content="Jasper_sec">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="代码审计">
+<meta property="article:tag" content="SQL注入">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/7a57f0fb6a0f46f4aa602c81a792d032.png">
     
@@ -88,8 +89,10 @@
     <span id="actions">
       <ul>
         
+        <li><a class="icon" aria-label="Previous post" href="/2025/03/19/0x1B%20oasys%20%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
-        <li><a class="icon" aria-label="Next post" href="/2025/03/27/0x19%20tomcat%20CVE-2025-24813/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/03/15/0x16%20fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%EF%BC%88%E8%BF%9B%E9%98%B6%EF%BC%89/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
         
         <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
         <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
@@ -102,17 +105,17 @@
     <br/>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&text=Java基础漏洞 - SQLI"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&is_video=false&description=Java基础漏洞 - SQLI"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=Java基础漏洞 - SQLI&body=Check out this article: https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&name=Java基础漏洞 - SQLI&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&t=Java基础漏洞 - SQLI"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&text=Java基础漏洞 - SQLI"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&is_video=false&description=Java基础漏洞 - SQLI"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java基础漏洞 - SQLI&body=Check out this article: https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&name=Java基础漏洞 - SQLI&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&t=Java基础漏洞 - SQLI"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -151,9 +154,9 @@
       
     <div class="postdate">
       
-        <time datetime="2025-03-27T19:47:00.000Z" class="dt-published" itemprop="datePublished">2025-03-28</time>
+        <time datetime="2025-03-16T19:47:00.000Z" class="dt-published" itemprop="datePublished">2025-03-17</time>
         
-        (Updated: <time datetime="2025-03-30T19:48:56.306Z" class="dt-updated" itemprop="dateModified">2025-03-31</time>)
+        (Updated: <time datetime="2025-03-31T16:16:22.272Z" class="dt-updated" itemprop="dateModified">2025-04-01</time>)
         
       
     </div>
@@ -164,7 +167,7 @@
       
     <div class="article-tag">
         <i class="fa-solid fa-tag"></i>
-        <a class="p-category" href="/tags/Java/" rel="tag">Java</a>, <a class="p-category" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag">代码审计</a>
+        <a class="p-category" href="/tags/Java/" rel="tag">Java</a>, <a class="p-category" href="/tags/SQL%E6%B3%A8%E5%85%A5/" rel="tag">SQL注入</a>, <a class="p-category" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag">代码审计</a>
     </div>
 
 
@@ -272,17 +275,17 @@
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&text=Java基础漏洞 - SQLI"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&is_video=false&description=Java基础漏洞 - SQLI"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=Java基础漏洞 - SQLI&body=Check out this article: https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&name=Java基础漏洞 - SQLI&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2025/03/28/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&t=Java基础漏洞 - SQLI"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&text=Java基础漏洞 - SQLI"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&is_video=false&description=Java基础漏洞 - SQLI"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java基础漏洞 - SQLI&body=Check out this article: https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&title=Java基础漏洞 - SQLI"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&name=Java基础漏洞 - SQLI&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/2025/03/17/0x1A%20Java%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%20-%20SQLI/&t=Java基础漏洞 - SQLI"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
