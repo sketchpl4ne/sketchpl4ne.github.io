@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Jasper_sec</title>
+  
+  
+  <link href="https://jaspersec.top/atom.xml" rel="self"/>
+  
+  <link href="https://jaspersec.top/"/>
+  <updated>2025-03-31T22:09:47.242Z</updated>
+  <id>https://jaspersec.top/</id>
+  
+  <author>
+    <name>Jasper_sec</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Tomcat CVE-2025-24813 复现</title>
+    <link href="https://jaspersec.top/posts/2631321160.html"/>
+    <id>https://jaspersec.top/posts/2631321160.html</id>
+    <published>2025-03-27T09:01:00.000Z</published>
+    <updated>2025-03-31T22:09:47.242Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;漏洞简介&quot;&gt;&lt;a href=&quot;#漏洞简介&quot; class=&quot;headerlink&quot; title=&quot;漏洞简介&quot;&gt;&lt;/a&gt;漏洞简介&lt;/h2&gt;&lt;p&gt;最近爆出的 tomcat session</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
+    
+    <category term="反序列化" scheme="https://jaspersec.top/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
+    
+    <category term="漏洞复现" scheme="https://jaspersec.top/tags/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>CodeQL 进阶</title>
+    <link href="https://jaspersec.top/posts/1777878032.html"/>
+    <id>https://jaspersec.top/posts/1777878032.html</id>
+    <published>2025-03-22T10:20:00.000Z</published>
+    <updated>2025-03-31T22:09:47.241Z</updated>
+    
+    
+    <summary type="html">请输入密码查看文章.</summary>
+    
+    
+    
+    
+    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
+    
+    <category term="codeql" scheme="https://jaspersec.top/tags/codeql/"/>
+    
+    <category term="代码审计" scheme="https://jaspersec.top/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+    <category term="need_password" scheme="https://jaspersec.top/tags/need-password/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>oasys 代码审计</title>
+    <link href="https://jaspersec.top/posts/3302810806.html"/>
+    <id>https://jaspersec.top/posts/3302810806.html</id>
+    <published>2025-03-18T19:47:00.000Z</published>
+    <updated>2025-03-31T22:09:47.244Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;oasys 这个项目适合新手代审入门，尝试了下 &lt;code&gt;codeql + 人工&lt;/code&gt;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
+    
+    <category term="代码审计" scheme="https://jaspersec.top/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java基础漏洞 - SQLI</title>
+    <link href="https://jaspersec.top/posts/3957940821.html"/>
+    <id>https://jaspersec.top/posts/3957940821.html</id>
+    <published>2025-03-16T19:47:00.000Z</published>
+    <updated>2025-03-31T22:09:47.243Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;本文主要对 Java 下 SQLI 的漏洞成因、防御思路做了分析总结，方便理清代码审计时的思路，漏洞样例代码参考自 &lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
+    
+    <category term="代码审计" scheme="https://jaspersec.top/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+    <category term="SQL注入" scheme="https://jaspersec.top/tags/SQL%E6%B3%A8%E5%85%A5/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>fastjson反序列化 不出网利用</title>
+    <link href="https://jaspersec.top/posts/3821091475.html"/>
+    <id>https://jaspersec.top/posts/3821091475.html</id>
+    <published>2025-03-15T04:32:20.000Z</published>
+    <updated>2025-03-31T22:09:47.239Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;TemplatesImpl-链&quot;&gt;&lt;a href=&quot;#TemplatesImpl-链&quot; class=&quot;headerlink&quot; title=&quot;TemplatesImpl 链&quot;&gt;&lt;/a&gt;TemplatesImpl 链&lt;/h2&gt;&lt;h3 id=&quot;影响范围&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
+    
+    <category term="反序列化" scheme="https://jaspersec.top/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
+    
+    <category term="Fastjson" scheme="https://jaspersec.top/tags/Fastjson/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>XStream 反序列化</title>
+    <link href="https://jaspersec.top/posts/1342605474.html"/>
+    <id>https://jaspersec.top/posts/1342605474.html</id>
+    <published>2025-01-01T09:00:00.000Z</published>
+    <updated>2025-03-31T22:09:47.240Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;XStream 是一个将 java bean 对象与 xml 互相转换的依赖包，有点类似 fastjson 的 json</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
+    
+    <category term="反序列化" scheme="https://jaspersec.top/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
+    
+    <category term="XStream" scheme="https://jaspersec.top/tags/XStream/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>强网杯2024 线上赛 writeup</title>
+    <link href="https://jaspersec.top/posts/357825894.html"/>
+    <id>https://jaspersec.top/posts/357825894.html</id>
+    <published>2024-12-31T10:52:00.000Z</published>
+    <updated>2025-03-31T22:09:47.237Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt; &lt;a href=&quot;https://xmcve.com/&quot;&gt;星盟安全团队&lt;/a&gt;长期招新中~ 我们的目标是星辰大海！</summary>
+        
+      
+    
+    
+    
+    
+    <category term="php" scheme="https://jaspersec.top/tags/php/"/>
+    
+    <category term="wp" scheme="https://jaspersec.top/tags/wp/"/>
+    
+    <category term="go" scheme="https://jaspersec.top/tags/go/"/>
+    
+    <category term="python" scheme="https://jaspersec.top/tags/python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>国城杯2024 线上赛 writeup</title>
+    <link href="https://jaspersec.top/posts/4142772759.html"/>
+    <id>https://jaspersec.top/posts/4142772759.html</id>
+    <published>2024-12-16T01:47:00.000Z</published>
+    <updated>2025-03-31T22:09:47.236Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt; &lt;a href=&quot;https://xmcve.com/&quot;&gt;星盟安全团队&lt;/a&gt;长期招新中~ 我们的目标是星辰大海！</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
+    
+    <category term="php" scheme="https://jaspersec.top/tags/php/"/>
+    
+    <category term="wp" scheme="https://jaspersec.top/tags/wp/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>某v10 channel 反序列化 出网通杀</title>
+    <link href="https://jaspersec.top/posts/1135273246.html"/>
+    <id>https://jaspersec.top/posts/1135273246.html</id>
+    <published>2024-08-20T17:57:00.000Z</published>
+    <updated>2025-03-31T22:09:47.238Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;漏洞原理&quot;&gt;&lt;a href=&quot;#漏洞原理&quot; class=&quot;headerlink&quot; title=&quot;漏洞原理&quot;&gt;&lt;/a&gt;漏洞原理&lt;/h2&gt;&lt;p&gt;分两块讲，第一个是反序列化点，第二个是绕黑名单的新链子。&lt;/p&gt;
+&lt;h3 id=&quot;Hashtable链&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
+    
+    <category term="反序列化" scheme="https://jaspersec.top/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
+    
+    <category term="代码审计" scheme="https://jaspersec.top/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>CodeQL 基础</title>
+    <link href="https://jaspersec.top/posts/3347678648.html"/>
+    <id>https://jaspersec.top/posts/3347678648.html</id>
+    <published>2024-07-01T10:31:53.000Z</published>
+    <updated>2025-03-31T22:09:47.241Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;CodeQL-概览&quot;&gt;&lt;a href=&quot;#CodeQL-概览&quot; class=&quot;headerlink&quot; title=&quot;CodeQL 概览&quot;&gt;&lt;/a&gt;CodeQL</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
+    
+    <category term="codeql" scheme="https://jaspersec.top/tags/codeql/"/>
+    
+    <category term="代码审计" scheme="https://jaspersec.top/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>CISCN2024 writeup（web部分）</title>
+    <link href="https://jaspersec.top/posts/3286688009.html"/>
+    <id>https://jaspersec.top/posts/3286688009.html</id>
+    <published>2024-05-24T16:00:00.000Z</published>
+    <updated>2025-03-31T22:09:47.235Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;主要复现一下ezjava，jdbc attack还是很有意思的&lt;/p&gt;
+&lt;h2 id=&quot;simple-php&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
+    
+    <category term="php" scheme="https://jaspersec.top/tags/php/"/>
+    
+    <category term="jdbc attack" scheme="https://jaspersec.top/tags/jdbc-attack/"/>
+    
+    <category term="wp" scheme="https://jaspersec.top/tags/wp/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Spring新入口类触发CC链</title>
+    <link href="https://jaspersec.top/posts/3519640587.html"/>
+    <id>https://jaspersec.top/posts/3519640587.html</id>
+    <published>2024-04-18T16:00:00.000Z</published>
+    <updated>2025-03-31T22:09:47.234Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
+    
+    <category term="CC" scheme="https://jaspersec.top/tags/CC/"/>
+    
+    <category term="反序列化" scheme="https://jaspersec.top/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
+    
+    <category term="codeql" scheme="https://jaspersec.top/tags/codeql/"/>
+    
+    <category term="代码审计" scheme="https://jaspersec.top/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>vm2沙盒逃逸源码分析</title>
+    <link href="https://jaspersec.top/posts/2134485987.html"/>
+    <id>https://jaspersec.top/posts/2134485987.html</id>
+    <published>2024-02-07T07:50:00.000Z</published>
+    <updated>2025-03-31T22:09:47.233Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;vm2在2023年7月已经停止维护了，本文仅用作nodejs沙盒逃逸思路的学习。&lt;/p&gt;
+&lt;h1 id=&quot;vm&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Nodejs" scheme="https://jaspersec.top/tags/Nodejs/"/>
+    
+    <category term="vm2" scheme="https://jaspersec.top/tags/vm2/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java二次反序列化浅析</title>
+    <link href="https://jaspersec.top/posts/1316980488.html"/>
+    <id>https://jaspersec.top/posts/1316980488.html</id>
+    <published>2023-12-24T06:32:20.000Z</published>
+    <updated>2025-03-31T22:09:47.232Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;题目hook</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
+    
+    <category term="二次反序列化" scheme="https://jaspersec.top/tags/%E4%BA%8C%E6%AC%A1%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java反序列化 ROME链</title>
+    <link href="https://jaspersec.top/posts/4145469421.html"/>
+    <id>https://jaspersec.top/posts/4145469421.html</id>
+    <published>2023-12-24T05:32:20.000Z</published>
+    <updated>2025-03-31T22:09:47.233Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;环境搭建&quot;&gt;&lt;a href=&quot;#环境搭建&quot; class=&quot;headerlink&quot; title=&quot;环境搭建&quot;&gt;&lt;/a&gt;环境搭建&lt;/h1&gt;&lt;p&gt;jdk8u181&lt;/p&gt;
+&lt;figure class=&quot;highlight xml&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
+    
+    <category term="反序列化" scheme="https://jaspersec.top/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
+    
+    <category term="ROME" scheme="https://jaspersec.top/tags/ROME/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>fastjson反序列化 基础</title>
+    <link href="https://jaspersec.top/posts/1322769944.html"/>
+    <id>https://jaspersec.top/posts/1322769944.html</id>
+    <published>2023-12-24T04:32:20.000Z</published>
+    <updated>2025-03-31T22:09:47.231Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
+    
+    <category term="反序列化" scheme="https://jaspersec.top/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
+    
+    <category term="Fastjson" scheme="https://jaspersec.top/tags/Fastjson/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>JNDI漏洞分析</title>
+    <link href="https://jaspersec.top/posts/2402071288.html"/>
+    <id>https://jaspersec.top/posts/2402071288.html</id>
+    <published>2023-12-24T03:32:20.000Z</published>
+    <updated>2025-03-31T22:09:47.230Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;简介&lt;/h1&gt;&lt;p&gt;根据官方教程，JNDI（Java Naming and Directory</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
+    
+    <category term="JNDI" scheme="https://jaspersec.top/tags/JNDI/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>RMI漏洞分析</title>
+    <link href="https://jaspersec.top/posts/3242753911.html"/>
+    <id>https://jaspersec.top/posts/3242753911.html</id>
+    <published>2023-12-24T02:32:20.000Z</published>
+    <updated>2025-03-31T22:09:47.229Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
+    
+    <category term="RMI" scheme="https://jaspersec.top/tags/RMI/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>shiro550反序列化</title>
+    <link href="https://jaspersec.top/posts/1790070300.html"/>
+    <id>https://jaspersec.top/posts/1790070300.html</id>
+    <published>2023-12-24T00:32:20.000Z</published>
+    <updated>2025-03-31T22:09:47.228Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;参考链接&quot;&gt;&lt;a href=&quot;#参考链接&quot; class=&quot;headerlink&quot; title=&quot;参考链接&quot;&gt;&lt;/a&gt;参考链接&lt;/h1&gt;&lt;p&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
+    
+    <category term="反序列化" scheme="https://jaspersec.top/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
+    
+    <category term="Shiro" scheme="https://jaspersec.top/tags/Shiro/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java反序列化 CC7链</title>
+    <link href="https://jaspersec.top/posts/847238598.html"/>
+    <id>https://jaspersec.top/posts/847238598.html</id>
+    <published>2023-12-23T23:32:20.000Z</published>
+    <updated>2025-03-31T22:09:47.226Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;参考链接&quot;&gt;&lt;a href=&quot;#参考链接&quot; class=&quot;headerlink&quot; title=&quot;参考链接&quot;&gt;&lt;/a&gt;参考链接&lt;/h1&gt;&lt;p&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
+    
+    <category term="CC" scheme="https://jaspersec.top/tags/CC/"/>
+    
+    <category term="反序列化" scheme="https://jaspersec.top/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
+    
+  </entry>
+  
+</feed>

