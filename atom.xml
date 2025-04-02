@@ -146,6 +146,33 @@
   </entry>
   
   <entry>
+    <title>GZCTF Platform Deployment with k3s</title>
+    <link href="https://jaspersec.top/posts/334536658.html"/>
+    <id>https://jaspersec.top/posts/334536658.html</id>
+    <published>2025-01-01T16:41:02.000Z</published>
+    <updated>2025-04-02T11:15:35.020Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;GZ::CTF official guide document strongly recommended us to build GZCTF with &lt;code&gt;docker + k3s&lt;/code&gt; solution , which can substains</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Docker" scheme="https://jaspersec.top/tags/Docker/"/>
+    
+    <category term="CTF" scheme="https://jaspersec.top/tags/CTF/"/>
+    
+    <category term="k3s" scheme="https://jaspersec.top/tags/k3s/"/>
+    
+  </entry>
+  
+  <entry>
     <title>XStream 反序列化</title>
     <link href="https://jaspersec.top/posts/1342605474.html"/>
     <id>https://jaspersec.top/posts/1342605474.html</id>
@@ -524,33 +551,6 @@
     <category term="反序列化" scheme="https://jaspersec.top/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
     
     <category term="Shiro" scheme="https://jaspersec.top/tags/Shiro/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Java反序列化 CC7链</title>
-    <link href="https://jaspersec.top/posts/847238598.html"/>
-    <id>https://jaspersec.top/posts/847238598.html</id>
-    <published>2023-12-23T23:32:20.000Z</published>
-    <updated>2025-03-31T22:09:47.226Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;参考链接&quot;&gt;&lt;a href=&quot;#参考链接&quot; class=&quot;headerlink&quot; title=&quot;参考链接&quot;&gt;&lt;/a&gt;参考链接&lt;/h1&gt;&lt;p&gt;&lt;a</summary>
-        
-      
-    
-    
-    
-    
-    <category term="Java" scheme="https://jaspersec.top/tags/Java/"/>
-    
-    <category term="CC" scheme="https://jaspersec.top/tags/CC/"/>
-    
-    <category term="反序列化" scheme="https://jaspersec.top/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
     
   </entry>
   

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="GZ::CTF official guide document strongly recommended us to build GZCTF with docker + k3s solution , which can substains small &#x2F; middle  competition for public. It means we need two servers at lea">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GZCTF Platform Deployment with k3s">
+<meta property="og:url" content="https://jaspersec.top/posts/334536658.html">
+<meta property="og:site_name" content="Jasper_sec">
+<meta property="og:description" content="GZ::CTF official guide document strongly recommended us to build GZCTF with docker + k3s solution , which can substains small &#x2F; middle  competition for public. It means we need two servers at lea">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/3db4357cc5185f9a28c8e1ac36a2df15.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/be7e875340711f18e5c312ce0118ff97.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/3c62c14f28c66098dddd2916a9becc9a.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/f424cd5a67982f32102ba9f953fa9a30.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/3eaa4cf77aa94f8069fccbca72781c2e.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/2188b51907ff09f7e3ea8eb62a1eca75.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/e3228fcec91239ea8194abf3f0725349.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/0d3f8ccff5b90477e0bfd91890a42bb4.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/d238e5ffee6a6d2eceb6d015f210a192.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/8449be01991f518ab6e12bcebd719d3c.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20250402190237.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20250402190341.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/300acf6ff7cd24d76663e894b85d1b43.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/c20904e59b692b098f60feb1cbe5aaa5.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20250402190500.png">
+<meta property="article:published_time" content="2025-01-01T16:41:02.000Z">
+<meta property="article:modified_time" content="2025-04-02T11:15:35.020Z">
+<meta property="article:author" content="Jasper_sec">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="CTF">
+<meta property="article:tag" content="k3s">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/3db4357cc5185f9a28c8e1ac36a2df15.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>GZCTF Platform Deployment with k3s</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="Jasper_sec" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span> 
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/posts/3821091475.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/posts/1342605474.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/posts/334536658.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/posts/334536658.html&text=GZCTF Platform Deployment with k3s"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/posts/334536658.html&title=GZCTF Platform Deployment with k3s"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/posts/334536658.html&is_video=false&description=GZCTF Platform Deployment with k3s"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=GZCTF Platform Deployment with k3s&body=Check out this article: https://jaspersec.top/posts/334536658.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/posts/334536658.html&title=GZCTF Platform Deployment with k3s"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/posts/334536658.html&title=GZCTF Platform Deployment with k3s"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/posts/334536658.html&title=GZCTF Platform Deployment with k3s"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/posts/334536658.html&title=GZCTF Platform Deployment with k3s"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/posts/334536658.html&name=GZCTF Platform Deployment with k3s&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/posts/334536658.html&t=GZCTF Platform Deployment with k3s"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <!-- 
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Local-Deployment"><span class="toc-number">1.</span> <span class="toc-text">Local Deployment</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#k3s-Deployment"><span class="toc-number">1.1.</span> <span class="toc-text">k3s Deployment</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GZCTF-Deployment"><span class="toc-number">1.2.</span> <span class="toc-text">GZCTF Deployment</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Challenges-Deployment"><span class="toc-number">1.3.</span> <span class="toc-text">Challenges Deployment</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Remote-deployment"><span class="toc-number">2.</span> <span class="toc-text">Remote deployment</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#k3s-deployment"><span class="toc-number">2.1.</span> <span class="toc-text">k3s deployment</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#gzctf-deployment"><span class="toc-number">2.2.</span> <span class="toc-text">gzctf deployment</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">3.</span> <span class="toc-text">Reference</span></a></li></ol>
+      </div>
+     -->
+    <div id="toc">
+      <div id="toc-div" class="toc-article" >
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Local-Deployment"><span class="toc-number">1.</span> <span class="toc-text">Local Deployment</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#k3s-Deployment"><span class="toc-number">1.1.</span> <span class="toc-text">k3s Deployment</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GZCTF-Deployment"><span class="toc-number">1.2.</span> <span class="toc-text">GZCTF Deployment</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Challenges-Deployment"><span class="toc-number">1.3.</span> <span class="toc-text">Challenges Deployment</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Remote-deployment"><span class="toc-number">2.</span> <span class="toc-text">Remote deployment</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#k3s-deployment"><span class="toc-number">2.1.</span> <span class="toc-text">k3s deployment</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#gzctf-deployment"><span class="toc-number">2.2.</span> <span class="toc-text">gzctf deployment</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">3.</span> <span class="toc-text">Reference</span></a></li></ol>
+        
+      </div>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        GZCTF Platform Deployment with k3s
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Jasper_sec</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-01-01T16:41:02.000Z" class="dt-published" itemprop="datePublished">2025-01-02</time>
+        
+        (Updated: <time datetime="2025-04-02T11:15:35.020Z" class="dt-updated" itemprop="dateModified">2025-04-02</time>)
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/CTF/" rel="tag">CTF</a>, <a class="p-category" href="/tags/Docker/" rel="tag">Docker</a>, <a class="p-category" href="/tags/k3s/" rel="tag">k3s</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>GZ::CTF official guide document strongly recommended us to build GZCTF with <code>docker + k3s</code> solution , which can substains small &#x2F; middle  competition for public.</p>
+<p>It means we need two servers at least,  <code>Docker</code> one  used to build gzctf frontend and <code>k3s</code> one for the containers backend.</p>
+<h2 id="Local-Deployment"><a href="#Local-Deployment" class="headerlink" title="Local Deployment"></a>Local Deployment</h2><p>Asset Topology：</p>
+<ul>
+<li>192.168.1.100 : Used for GZCTF platform deployment (frontend)，OS: ubuntu 20.04</li>
+<li>192.168.1.195 : Used for  k3s container cluster deployment (backend) ，OS ubuntu 20.04</li>
+</ul>
+<h3 id="k3s-Deployment"><a href="#k3s-Deployment" class="headerlink" title="k3s Deployment"></a>k3s Deployment</h3><p><strong><code>k3s</code> installation：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">## Domestic</span><br><span class="line">curl -sfL https://rancher-mirror.rancher.cn/k3s/k3s-install.sh | INSTALL_K3S_MIRROR=cn sh -</span><br><span class="line">## Foreign</span><br><span class="line">curl -sfL https://get.k3s.io | sh -</span><br><span class="line">## check the installation</span><br><span class="line">k3s -v</span><br></pre></td></tr></table></figure>
+
+<p>NOTICE: Original config of k3s can’t pull docker images for some reasons. So we need to set  third-party image proxy.</p>
+<p>Just add onfigration to <code>/etc/rancher/k3s/registries.yaml</code> like below:</p>
+<figure class="highlight yaml"><figcaption><span>title:"/etc/rancher/k3s/registries.yaml"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">mirrors:</span></span><br><span class="line">  <span class="attr">&quot;docker.io&quot;:</span></span><br><span class="line">    <span class="attr">endpoint:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;https://hub.littlediary.cn&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;https://hub.xdark.top&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;https://cjie.eu.org&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;https://docker.1panel.live&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;https://docker.unsee.tech&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong><code>Kuboard</code> installation</strong> , a WebUI of <code>k3s</code> for convenience of control k3s.  Kuboard depends on <code>dcoker</code>, so we install <code>docker</code> and <code>docker-compose</code> first.</p>
+<p>Install <code>docker</code> and <code>docker-compose</code> command：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">## Install docker-compose</span><br><span class="line">sudo curl -L https://github.com/docker/compose/releases/download/v2.32.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose</span><br><span class="line">sudo chmod +x /usr/local/bin/docker-compose</span><br><span class="line"></span><br><span class="line">## Install docker</span><br><span class="line">sudo apt install docker.io</span><br><span class="line"></span><br><span class="line">## Optional,  make docker/docker-compose command don&#x27;t need type &quot;sudo&quot; front of them anymore. </span><br><span class="line">## It&#x27;s troublesome to always input the password :x</span><br><span class="line">sudo groupadd docker</span><br><span class="line">sudo gpasswd -a $&#123;USER&#125; docker</span><br><span class="line">sudo systemctl restart docker</span><br><span class="line">sudo chmod a+rw /var/run/docker.sock</span><br></pre></td></tr></table></figure>
+
+<p>next, install <code>Kuboard</code>. Actually, Code block below just pull a docker image and  run a web container.  </p>
+<p>Just try <code>chmod +x run_kuboard.sh &amp;&amp; ./run_kuboard.sh</code> command to  run the below shell script.</p>
+<p>NOTICE: <code>KUBOARD_BASE_URL</code>  need to change to your own k3s vps, for me it’s <code>http://192.168.0.195</code></p>
+<figure class="highlight shell"><figcaption><span>title:"run_kuboard.sh"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment"># Run the Docker container</span></span></span><br><span class="line">docker run -d \</span><br><span class="line">  --restart=unless-stopped \</span><br><span class="line">  --name=kuboard \</span><br><span class="line">  -p 3271:80/tcp \</span><br><span class="line">  -p 10081:10081/tcp \</span><br><span class="line">  -e KUBOARD_ENDPOINT=&quot;http://192.168.0.195:3271&quot; \</span><br><span class="line">  -e KUBOARD_AGENT_SERVER_TCP_PORT=&quot;10081&quot; \</span><br><span class="line">  -v /root/kuboard-data:/data \</span><br><span class="line">  swr.cn-east-2.myhuaweicloud.com/kuboard/kuboard:v3</span><br></pre></td></tr></table></figure>
+
+<p>After that, just visit <code>http://192.168.1.195:3271</code> to see the kuboard panel. Default account is : <code>admin/Kuboard123</code><br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/3db4357cc5185f9a28c8e1ac36a2df15.png"></p>
+<p>Now we got <code>k3s</code> and <code>kuboard</code>, but <code>k3s</code> has not been bound to <code>kuboard</code> yet. We need to add k3s cluster to kuboard.<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/be7e875340711f18e5c312ce0118ff97.png"></p>
+<p>There are two inputs that we need to pay attention to,  <code>kubeconfig</code> and <code>ApiServer地址</code>. <code>名称</code> and <code>描述</code> just take a name and description you want  And the <code>Context</code> position just have one chioce which is <code>default</code> after we set  <code>kubeconfig</code><br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/3c62c14f28c66098dddd2916a9becc9a.png"></p>
+<p>For the  <code>kubeconfig</code> position, We need to <strong>completely</strong> copy the content of file in <code>/etc/rancher/k3s/k3s.yaml</code>.</p>
+<figure class="highlight yaml"><figcaption><span>title:"kubeconfig"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">clusters:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">cluster:</span></span><br><span class="line">    <span class="attr">certificate-authority-data:</span> <span class="string">LS0tL....</span></span><br><span class="line">    <span class="attr">server:</span> <span class="string">https://127.0.0.1:6443</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">contexts:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">context:</span></span><br><span class="line">    <span class="attr">cluster:</span> <span class="string">default</span></span><br><span class="line">    <span class="attr">user:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">current-context:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Config</span></span><br><span class="line"><span class="attr">preferences:</span> &#123;&#125;</span><br><span class="line"><span class="attr">users:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">user:</span></span><br><span class="line">    <span class="attr">client-certificate-data:</span> <span class="string">LS0tL....</span></span><br><span class="line">    <span class="attr">client-key-data:</span> <span class="string">LS0tLS....</span></span><br></pre></td></tr></table></figure>
+
+<p>For the <code>ApiServer地址</code> position, we need to input the k3s server ip, <code>kuboard</code> and <code>k3s</code> is the same vps in this case, so just set below:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://192.168.0.195:6443</span><br></pre></td></tr></table></figure>
+
+<p><strong>Finally</strong>,  we bound k3s to kuboard, the last operation is to set the access rule of  k3s like below picture.<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/f424cd5a67982f32102ba9f953fa9a30.png"></p>
+<h3 id="GZCTF-Deployment"><a href="#GZCTF-Deployment" class="headerlink" title="GZCTF Deployment"></a>GZCTF Deployment</h3><p>GZCTF frontend platform deployed by <code>docker-compose</code>.  The main file is docker-compose.yml, but it depends on <code>appsettings.json</code> and <code>kube-config.yaml</code>. So there are three file we need to create and config, structure like below.</p>
+<figure class="highlight plaintext"><figcaption><span>title:"create basic env"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mkdir ~/gzctf</span><br><span class="line">cd ~/gzctf</span><br><span class="line">tree .               </span><br><span class="line">.</span><br><span class="line">├── appsettings.json</span><br><span class="line">├── docker-compose.yml</span><br><span class="line">└── kube-config.yaml</span><br><span class="line"></span><br><span class="line">0 directories, 3 files</span><br></pre></td></tr></table></figure>
+
+<p>Docker is necessary to build it, so we install <code>docker</code> first:</p>
+<figure class="highlight bash"><figcaption><span>title:"docker install"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## Install docker</span></span><br><span class="line">sudo apt install docker.io</span><br><span class="line"></span><br><span class="line"><span class="comment">## Optional, make docker/docker-compose command don&#x27;t need sudo at the beginning anymore. </span></span><br><span class="line"><span class="comment">## It&#x27;s troublesome to always input the password :x</span></span><br><span class="line">sudo groupadd docker</span><br><span class="line">sudo gpasswd -a <span class="variable">$&#123;USER&#125;</span> docker</span><br><span class="line">sudo systemctl restart docker</span><br><span class="line">sudo <span class="built_in">chmod</span> a+rw /var/run/docker.sock</span><br></pre></td></tr></table></figure>
+
+<p>For the same reason of network, we need to set image proxy config. Just run the below shell script.  The brand new third-party proxy address is illustrated by here: <a target="_blank" rel="noopener" href="https://www.cnblogs.com/alex-oos/p/18417200">https://www.cnblogs.com/alex-oos/p/18417200</a>.</p>
+<figure class="highlight shell"><figcaption><span>title</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir -p /etc/docker</span><br><span class="line">sudo tee /etc/docker/daemon.json &lt;&lt;-&#x27;EOF&#x27;</span><br><span class="line">&#123;</span><br><span class="line">  &quot;registry-mirrors&quot;:[</span><br><span class="line">  &quot;https://hub.xdark.top&quot;,</span><br><span class="line">  &quot;https://hub.littlediary.cn&quot;,</span><br><span class="line">  &quot;https://cjie.eu.org&quot;,</span><br><span class="line">  &quot;https://docker.1panel.live&quot;,</span><br><span class="line">  &quot;https://docker.unsee.tech&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl restart docker</span><br></pre></td></tr></table></figure>
+
+<p>Then we need to config the three necessary files, let’s config them one by one.  All my configrations refers to  <a target="_blank" rel="noopener" href="https://gzctf.gzti.me/guide/start/quick-start.html">Quick Start - GZ::CTF</a> .</p>
+<p>Firstly, the <code>docker-compose.yml</code> is the main file to build the gzctf platform. Below is my configration:</p>
+<figure class="highlight yml"><figcaption><span>title:"docker-compose.yml"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">gzctf:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">registry.cn-shanghai.aliyuncs.com/gztime/gzctf:latest</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;GZCTF_ADMIN_PASSWORD=123456&quot;</span></span><br><span class="line">      <span class="comment">## choose your backend language `en_US` / `zh_CN` / `ja_JP`</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;LC_ALL=zh_CN.UTF-8&quot;</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;80:8080&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./data/files:/app/files&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./appsettings.json:/app/appsettings.json:ro&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./kube-config.yaml:/app/kube-config.yaml:ro&quot;</span> <span class="comment">## this is required for k8s deployment</span></span><br><span class="line">      <span class="comment">## - &quot;/var/run/docker.sock:/var/run/docker.sock&quot; ## this is required for docker deployment</span></span><br><span class="line">    <span class="attr">depends_on:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">db</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">cache</span></span><br><span class="line">  <span class="attr">cache:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">redis:alpine</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">db:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">postgres:alpine</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;POSTGRES_PASSWORD=password_here&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./data/db:/var/lib/postgresql/data&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>The <code>appsettings.json</code> shows the basic configration of GZ::CTF paltform, such as database address, public entry, etc.</p>
+<figure class="highlight json"><figcaption><span>title:appsettings.json</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;AllowedHosts&quot;</span><span class="punctuation">:</span> <span class="string">&quot;*&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;ConnectionStrings&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;Database&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Host=db:5432;Database=gzctf;Username=postgres;Password=password_here&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;EmailConfig&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;SenderAddress&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;SenderName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;UserName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;Password&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;Smtp&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;Host&quot;</span><span class="punctuation">:</span> <span class="string">&quot;localhost&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;Port&quot;</span><span class="punctuation">:</span> <span class="number">587</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;XorKey&quot;</span><span class="punctuation">:</span> <span class="string">&quot;JasperSecretKey&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;ContainerProvider&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;Type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Kubernetes&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;PortMappingType&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Default&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;EnableTrafficCapture&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;PublicEntry&quot;</span><span class="punctuation">:</span> <span class="string">&quot;192.168.0.195&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;DockerConfig&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;SwarmMode&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;Uri&quot;</span><span class="punctuation">:</span> <span class="string">&quot;unix:///var/run/docker.sock&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;RequestLogging&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;DisableRateLimit&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>kube-config.yaml</code> is used to build a brige between gzctf platform (frontend) and k3s clusters (backend). Just copy the contents of <code>/etc/rancher/k3s/k3s.yaml</code> in k3s vps and change the <code>server</code> properties to <code>ApiServer地址</code> we set before.</p>
+<figure class="highlight yaml"><figcaption><span>title:"kube-config.yaml"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">clusters:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">cluster:</span></span><br><span class="line">    <span class="attr">certificate-authority-data:</span> <span class="string">LS0tLS...</span></span><br><span class="line">    <span class="attr">server:</span> <span class="string">https://192.168.0.195:6443</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">contexts:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">context:</span></span><br><span class="line">    <span class="attr">cluster:</span> <span class="string">default</span></span><br><span class="line">    <span class="attr">user:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">current-context:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Config</span></span><br><span class="line"><span class="attr">preferences:</span> &#123;&#125;</span><br><span class="line"><span class="attr">users:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">user:</span></span><br><span class="line">    <span class="attr">client-certificate-data:</span> <span class="string">LS0tLS1...</span></span><br><span class="line">    <span class="attr">client-key-data:</span> <span class="string">LS0tLS1...</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Finally</strong>,  run <code>docker-compose up -d</code> in your gzctf directory of gzpaltform vps, and visit to your vps ip then you will see the paltform has been built if the command run successfully. For example I visit to <code>http://192.168.0.100</code> and I will see below:<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/3eaa4cf77aa94f8069fccbca72781c2e.png"><br>Default username is <code>Admin</code> and password has been set in <code>docker-compose.yml</code>. For me it’s <code>123456</code>.</p>
+<h3 id="Challenges-Deployment"><a href="#Challenges-Deployment" class="headerlink" title="Challenges Deployment"></a>Challenges Deployment</h3><p>If we want to use gz platform api to pull images and run our challenges automatically,  a standard docker container templates is required. Fortunately, official document give us two repo, the <code>GZCTF-Challenges</code> shows basic dynamic container challenge templates and the <code>W4terCTF-2023</code> has provided pre-configured images for challenges deployment.</p>
+<p>official docker templates address: </p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/GZTimeWalker/GZCTF-Challenges">https://github.com/GZTimeWalker/GZCTF-Challenges</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/W4terDr0p/W4terCTF-2023">https://github.com/W4terDr0p/W4terCTF-2023</a></li>
+</ul>
+<p>For example,  I wanna use a web challenges like <code>Help Newnew Find Flag</code>，got the inner service port in file <code>challenges/web/help-new-new-find-flag/README.md</code><br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/2188b51907ff09f7e3ea8eb62a1eca75.png"></p>
+<p>Then visit the packages to get the docker images url: <a target="_blank" rel="noopener" href="https://github.com/orgs/W4terDr0p/packages?repo_name=W4terCTF-2023">Packages · W4terDr0p</a><br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/e3228fcec91239ea8194abf3f0725349.png"></p>
+<p>got the docker image address and pull it:<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/0d3f8ccff5b90477e0bfd91890a42bb4.png"></p>
+<p>Finally, set docker image url and expose port we check before .You’ll able to visit the challenge service if everything  correct.<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/d238e5ffee6a6d2eceb6d015f210a192.png"></p>
+<p>Service will open on k3s vps, but NOTICE use <code>docker ps -a</code> can’t see the challenges container, you need to use <code>Kuboard</code>.<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/8449be01991f518ab6e12bcebd719d3c.png"></p>
+<h2 id="Remote-deployment"><a href="#Remote-deployment" class="headerlink" title="Remote deployment"></a>Remote deployment</h2><p>Asset Topology：</p>
+<ul>
+<li>aaa.aaa.aaa.aaa: for GZCTF platform deployment (frontend)，OS: ubuntu 20.04</li>
+<li>bbb.bbb.bbb.bbb : for  k3s container cluster deployment (backend) ，OS ubuntu 20.04</li>
+</ul>
+<h3 id="k3s-deployment"><a href="#k3s-deployment" class="headerlink" title="k3s deployment"></a>k3s deployment</h3><p><strong><code>k3s</code> installation：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">## Domestic</span><br><span class="line">curl -sfL https://rancher-mirror.rancher.cn/k3s/k3s-install.sh | INSTALL_K3S_MIRROR=cn sh -</span><br><span class="line">## Foreign</span><br><span class="line">curl -sfL https://get.k3s.io | sh -</span><br><span class="line">## check the installation</span><br><span class="line">k3s -v</span><br></pre></td></tr></table></figure>
+
+<p>modify proxy config to make sure pull images successfully. File address:  <code>/etc/rancher/k3s/registries.yaml</code> </p>
+<figure class="highlight yaml"><figcaption><span>title:"/etc/rancher/k3s/registries.yaml"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">mirrors:</span></span><br><span class="line">  <span class="attr">&quot;docker.io&quot;:</span></span><br><span class="line">    <span class="attr">endpoint:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;https://hub.littlediary.cn&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;https://hub.xdark.top&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;https://cjie.eu.org&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;https://docker.1panel.live&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;https://docker.unsee.tech&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>As same, If we want to use Kuboard, we should install <code>docker</code> and <code>docker-compose</code> first.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">## Install docker-compose</span><br><span class="line">sudo curl -L https://github.com/docker/compose/releases/download/v2.32.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose</span><br><span class="line">sudo chmod +x /usr/local/bin/docker-compose</span><br><span class="line"></span><br><span class="line">## Install docker</span><br><span class="line">sudo apt install docker.io</span><br><span class="line"></span><br><span class="line">## Optional, make docker/docker-compose command don&#x27;t need sudo at the beginning anymore. </span><br><span class="line"></span><br><span class="line">## It&#x27;s troublesome to always input the password, let make it blow up :(</span><br><span class="line">sudo groupadd docker</span><br><span class="line">sudo gpasswd -a $&#123;USER&#125; docker</span><br><span class="line">sudo systemctl restart docker</span><br><span class="line">sudo chmod a+rw /var/run/docker.sock</span><br></pre></td></tr></table></figure>
+
+<p>next, install <code>Kuboard</code>. Actually, Code block below just pull a docker image and  run a web container.  </p>
+<p>Just try <code>chmod +x run_kuboard.sh &amp;&amp; ./run_kuboard.sh</code> command to  run the below shell script.</p>
+<p>NOTICE: <code>KUBOARD_BASE_URL</code>  need to change to your own k3s vps, for me it’s <code>http://192.168.0.195</code></p>
+<figure class="highlight shell"><figcaption><span>title:"run_kuboard.sh"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment"># Run the Docker container</span></span></span><br><span class="line">docker run -d \</span><br><span class="line">  --restart=unless-stopped \</span><br><span class="line">  --name=kuboard \</span><br><span class="line">  -p 3271:80/tcp \</span><br><span class="line">  -p 10081:10081/tcp \</span><br><span class="line">  -e KUBOARD_ENDPOINT=&quot;bbb.bbb.bbb.bbb:3271&quot; \</span><br><span class="line">  -e KUBOARD_AGENT_SERVER_TCP_PORT=&quot;10081&quot; \</span><br><span class="line">  -v /root/kuboard-data:/data \</span><br><span class="line">  swr.cn-east-2.myhuaweicloud.com/kuboard/kuboard:v3</span><br></pre></td></tr></table></figure>
+
+<p>then visit address: <a target="_blank" rel="noopener" href="http://bbb.bbb.bbb.bbb:3271/">http://bbb.bbb.bbb.bbb:3271</a> to see kuboard login page: （count: <code>admin/Kuboard123</code>）<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20250402190237.png"></p>
+<p>Then we add a cluster to bound to k3s, and set ServerApi to ensure gzctf-frontend could access backend.</p>
+<p><strong>NOTICE</strong>: <code>kubeconfig</code> completely copy the content of <code>/etc/rancher/k3s/k3s.yaml</code>, and ApiServer should change ip to public ip like <code>https://bbb.bbb.bbb.bbb:6443</code><br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20250402190341.png"></p>
+<p>finally, chose you user role like below:<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/300acf6ff7cd24d76663e894b85d1b43.png"></p>
+<h3 id="gzctf-deployment"><a href="#gzctf-deployment" class="headerlink" title="gzctf deployment"></a>gzctf deployment</h3><p>As we know, we need three file to build a frontend: <code>docker-compose.yml</code>, <code>appsettings.json</code>, <code>kube-config.yaml</code> .</p>
+<figure class="highlight yml"><figcaption><span>title:"docker-compose.yml"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">gzctf:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">registry.cn-shanghai.aliyuncs.com/gztime/gzctf:latest</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;GZCTF_ADMIN_PASSWORD=123456&quot;</span></span><br><span class="line">      <span class="comment">## choose your backend language `en_US` / `zh_CN` / `ja_JP`</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;LC_ALL=zh_CN.UTF-8&quot;</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;80:8080&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./data/files:/app/files&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./appsettings.json:/app/appsettings.json:ro&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./kube-config.yaml:/app/kube-config.yaml:ro&quot;</span> <span class="comment">## this is required for k8s deployment</span></span><br><span class="line">      <span class="comment">## - &quot;/var/run/docker.sock:/var/run/docker.sock&quot; ## this is required for docker deployment</span></span><br><span class="line">    <span class="attr">depends_on:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">db</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">cache</span></span><br><span class="line">  <span class="attr">cache:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">redis:alpine</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">db:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">postgres:alpine</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;POSTGRES_PASSWORD=password_here&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./data/db:/var/lib/postgresql/data&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>NOTICE: change PublicEntry to backend server ip: <code>&quot;PublicEntry&quot;: &quot;bbb.bbb.bbb.bbb&quot;</code></p>
+<figure class="highlight json"><figcaption><span>title:"appsettings.json"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;AllowedHosts&quot;</span><span class="punctuation">:</span> <span class="string">&quot;*&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;ConnectionStrings&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;Database&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Host=db:5432;Database=gzctf;Username=postgres;Password=password_here&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;EmailConfig&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;SenderAddress&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;SenderName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;UserName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;Password&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;Smtp&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;Host&quot;</span><span class="punctuation">:</span> <span class="string">&quot;localhost&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;Port&quot;</span><span class="punctuation">:</span> <span class="number">587</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;XorKey&quot;</span><span class="punctuation">:</span> <span class="string">&quot;JasperSecretKey&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;ContainerProvider&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;Type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Kubernetes&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;PortMappingType&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Default&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;EnableTrafficCapture&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;PublicEntry&quot;</span><span class="punctuation">:</span> <span class="string">&quot;bbb.bbb.bbb.bbb&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;DockerConfig&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;SwarmMode&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;Uri&quot;</span><span class="punctuation">:</span> <span class="string">&quot;unix:///var/run/docker.sock&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;RequestLogging&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;DisableRateLimit&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>NOTICE: change server to <code>https://&lt;backend_server_ip&gt;:6443</code></p>
+<figure class="highlight yaml"><figcaption><span>title:"kube-config.yaml"</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">clusters:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">cluster:</span></span><br><span class="line">    <span class="attr">certificate-authority-data:</span> <span class="string">LS0tLS1...</span></span><br><span class="line">    <span class="attr">server:</span> <span class="string">https://bbb.bbb.bbb.bbb:6443</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">contexts:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">context:</span></span><br><span class="line">    <span class="attr">cluster:</span> <span class="string">default</span></span><br><span class="line">    <span class="attr">user:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">current-context:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Config</span></span><br><span class="line"><span class="attr">preferences:</span> &#123;&#125;</span><br><span class="line"><span class="attr">users:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">user:</span></span><br><span class="line">    <span class="attr">client-certificate-data:</span> <span class="string">LS0tLS1...</span></span><br><span class="line">    <span class="attr">client-key-data:</span> <span class="string">LS0tLS1...</span></span><br></pre></td></tr></table></figure>
+
+<p>Create the above config file properly, then run command <code>docker-compose up -d</code><br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/c20904e59b692b098f60feb1cbe5aaa5.png"></p>
+<p>Try visit <a target="_blank" rel="noopener" href="http://aaa.aaa.aaa.aaa/">http://aaa.aaa.aaa.aaa</a>, you will see the platform:<br><img src="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/20250402190500.png"></p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/15072">https://xz.aliyun.com/t/15072</a></li>
+<li><a target="_blank" rel="noopener" href="https://xieweiling.top/blog/2024/09/25/GZCTF/">https://xieweiling.top/blog/2024/09/25/GZCTF/</a></li>
+<li><a target="_blank" rel="noopener" href="https://gzctf.gzti.me/zh/guide/start/quick-start.html">https://gzctf.gzti.me/zh/guide/start/quick-start.html</a></li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Local-Deployment"><span class="toc-number">1.</span> <span class="toc-text">Local Deployment</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#k3s-Deployment"><span class="toc-number">1.1.</span> <span class="toc-text">k3s Deployment</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GZCTF-Deployment"><span class="toc-number">1.2.</span> <span class="toc-text">GZCTF Deployment</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Challenges-Deployment"><span class="toc-number">1.3.</span> <span class="toc-text">Challenges Deployment</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Remote-deployment"><span class="toc-number">2.</span> <span class="toc-text">Remote deployment</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#k3s-deployment"><span class="toc-number">2.1.</span> <span class="toc-text">k3s deployment</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#gzctf-deployment"><span class="toc-number">2.2.</span> <span class="toc-text">gzctf deployment</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">3.</span> <span class="toc-text">Reference</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jaspersec.top/posts/334536658.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jaspersec.top/posts/334536658.html&text=GZCTF Platform Deployment with k3s"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jaspersec.top/posts/334536658.html&title=GZCTF Platform Deployment with k3s"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jaspersec.top/posts/334536658.html&is_video=false&description=GZCTF Platform Deployment with k3s"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=GZCTF Platform Deployment with k3s&body=Check out this article: https://jaspersec.top/posts/334536658.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jaspersec.top/posts/334536658.html&title=GZCTF Platform Deployment with k3s"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jaspersec.top/posts/334536658.html&title=GZCTF Platform Deployment with k3s"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jaspersec.top/posts/334536658.html&title=GZCTF Platform Deployment with k3s"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jaspersec.top/posts/334536658.html&title=GZCTF Platform Deployment with k3s"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jaspersec.top/posts/334536658.html&name=GZCTF Platform Deployment with k3s&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jaspersec.top/posts/334536658.html&t=GZCTF Platform Deployment with k3s"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2025
+    Jasper_sec
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/sketchpl4ne">Projects</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+      <ul>
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">
+          本站总访问量 <span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span id="busuanzi_container_site_uv">
+          本站访客数 <span id="busuanzi_value_site_uv"></span>人
+        </span>
+        <span id="busuanzi_container_page_uv">
+          本页访问量 <span id="busuanzi_value_page_pv"><!-- number will be auto injected here by busuanzi --></span>次
+        </span>
+      </ul>
+    </nav>
+  </div>
+
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?21e6754c7f372c2de41518ffb4f72c33";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
