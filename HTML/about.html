@@ -13,13 +13,16 @@
 <meta property="og:site_name" content="Jasper_sec">
 <meta property="og:description" content="&#x2F;* body {         background-color: #1a1a1a;         color: #e0e0e0;         font-family: &#39;Segoe UI&#39;, Arial, sans-serif;         max-width: 800px;         margin: 2rem auto;         padding: 0 20">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2025-04-03T14:43:20.734Z">
-<meta property="article:modified_time" content="2025-04-03T14:43:20.734Z">
+<meta property="og:image" content="https://jaspersec.top/images/wechat.jpg">
+<meta property="og:image" content="https://jaspersec.top/images/alipay.jpg">
+<meta property="article:published_time" content="2025-04-03T17:55:34.560Z">
+<meta property="article:modified_time" content="2025-04-03T17:55:34.560Z">
 <meta property="article:author" content="Jasper_sec">
 <meta property="article:tag" content="security">
 <meta property="article:tag" content="CTF">
 <meta property="article:tag" content="Java">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaspersec.top/images/wechat.jpg">
     
     
       
@@ -191,6 +194,79 @@
         color: #888;
         margin-top: 0.5rem;
     }
+    
+    .qr-container {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 2rem;
+    }
+    
+    .qr-item {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .sponsor-table {
+        width: 100%;
+        table-layout: auto;
+        border-collapse: collapse;
+        margin-bottom: 2rem;
+        min-width: 100%;
+        display: table;
+    }
+    
+    .sponsor-table tbody {
+        display: table-row-group;
+        width: 100%;
+    }
+    
+    .sponsor-table th, .sponsor-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #3d3d3d;
+    }
+    
+    .sponsor-table th {
+        color: #c0c0c0;
+        background-color: #2d2d2d;
+    }
+    
+    .sponsor-table tr:hover {
+        background-color: #3d3d3d;
+    }
+    
+    @media (max-width: 768px) {
+        .sponsor-table {
+            font-size: 0.9em;
+            display: table;
+            width: 100%;
+            overflow-x: auto;
+        }
+        
+        .sponsor-table th, .sponsor-table td {
+            padding: 0.8rem;
+            white-space: nowrap;
+        }
+    }
+    
+    .qr-item img {
+        width: 200px;
+        height: 200px;
+        border-radius: 8px;
+    }
+    
+    @media (max-width: 768px) {
+        .qr-container {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .qr-item {
+            margin-bottom: 1.5rem;
+        }
+    }
 </style>
 
 
@@ -203,13 +279,15 @@
             <li>😎 CTFer@Polaris</li>
             <li>🎓 2023 Grad-student of NCU</li>
             <li>💻 Focus on Java/Cloud/LLM Securiy</li>
-            <li>🔍 Look for internship opportunities</li>
+            <li>🔍 <b>Look for internship opportunities!</li>
         </ul>
     </section>
     <!-- Contact Me -->
     <h2>Contact Me</h2>
+    Any questions or suggestions? <i>Better call Jasper!</i>
     <section class="section">
         <ul class="contact-list">
+
             <li>📭️ Email: sketch_pl4ne@qq.com</li>
             <li>💬 Wechat: SmFzcGVyX3NlYw==</li>
             <li>🐧 QICQ: MTYwOTQxMDM2NA==</li>
@@ -222,11 +300,48 @@
         <div class="achievement-list">
             <div class="achievement-card">
                 <h3>🏅 Awards</h3>
-                <p>TODO</p>
+                <li>2024RCTF线上赛 第11名</li>
+                <li>2024强网杯线上赛 第19名</li>
+                <li>2024鹏城杯线上赛 第8名</li>
+                <li>2024网鼎杯线上赛 第31名</li>
+                <li>2024ByteCTF决赛 优胜奖</li>
+                <li>2024CISCN华东南 二等奖</li>
+                <li>2024复兴杯决赛 一等奖</li>
+                <li>2019江西省赛决赛 一等奖</li>
             </div>
             <div class="achievement-card">
                 <h3>🚀 CVEs</h3>
-                <p>TODO</p>
+                <li>正在挖掘中...</li>
+            </div>
+        </div>
+    </section>
+    <!-- Sponsor -->
+    <h2>Sponsor</h2>
+    如果我的文章对您有所帮助，欢迎请我喝杯咖啡/催更 :) 备注ID会添加到Sponsor列表中，谢谢！
+
+    <section class="section">
+        <table class="sponsor-table">
+            <tr>
+                <th>Sponsor</th>
+                <th>Amount</th>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+            <!-- <tr>
+                <td>李四</td>
+                <td>¥100</td>
+            </tr> -->
+        </table>
+        <div class="qr-container">
+            <div class="qr-item">
+                <img src="/images/wechat.jpg" alt="微信支付">
+                <p>微信支付</p>
+            </div>
+            <div class="qr-item">
+                <img src="/images/alipay.jpg" alt="支付宝">
+                <p>支付宝</p>
             </div>
         </div>
     </section>
