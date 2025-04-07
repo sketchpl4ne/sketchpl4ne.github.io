@@ -6,12 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="前言最近在关注LLM Security，发现网上文章大部分偏理论， 缺乏漏洞落地和实操利用，以及对应的防御方案，这让我甚是苦恼。所幸，最终发现了360研究院发布的《大模型安全漏洞报告》，其中关键点是对大模型自身的安全立了框架，将其分为模型层、框架层和应用层，笔者以一个初学者的角度，根据这个框架，辅以一些实际的漏洞demo进行学习和理解。 模型层模型层安全问题  数据投毒 ：例如在开源平台发布携带虚">
+    <meta name="description" content="前言最近在关注LLM Security，发现网上文章偏理论， 缺乏漏洞落地和利用，以及对应的防御方案，让我甚是苦恼。所幸，最终发现了360研究院发布的《大模型安全漏洞报告》，其中关键点是对大模型自身的安全立了框架，将其分为模型层、框架层和应用层，笔者以一个初学者的角度，根据这个框架，辅以一些实际的漏洞demo进行学习和理解。 模型层模型层安全问题  数据投毒 ：例如在开源平台发布携带虚假标签数据的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="大模型安全初探">
 <meta property="og:url" content="https://jaspersec.top/posts/485088154.html">
 <meta property="og:site_name" content="Jasper_sec">
-<meta property="og:description" content="前言最近在关注LLM Security，发现网上文章大部分偏理论， 缺乏漏洞落地和实操利用，以及对应的防御方案，这让我甚是苦恼。所幸，最终发现了360研究院发布的《大模型安全漏洞报告》，其中关键点是对大模型自身的安全立了框架，将其分为模型层、框架层和应用层，笔者以一个初学者的角度，根据这个框架，辅以一些实际的漏洞demo进行学习和理解。 模型层模型层安全问题  数据投毒 ：例如在开源平台发布携带虚">
+<meta property="og:description" content="前言最近在关注LLM Security，发现网上文章偏理论， 缺乏漏洞落地和利用，以及对应的防御方案，让我甚是苦恼。所幸，最终发现了360研究院发布的《大模型安全漏洞报告》，其中关键点是对大模型自身的安全立了框架，将其分为模型层、框架层和应用层，笔者以一个初学者的角度，根据这个框架，辅以一些实际的漏洞demo进行学习和理解。 模型层模型层安全问题  数据投毒 ：例如在开源平台发布携带虚假标签数据的">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/54c6f64c7c2c0ca750b2a29570813cb5.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/ecc8fdc557a4f13f97d69f251c4c0dca.png">
@@ -22,7 +22,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/635c3ce62de032c3cf8809b03093d304.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/sketchpl4ne/images/main/imgs/ff29906c28650465c586d36f21d3652e.png">
 <meta property="article:published_time" content="2025-04-05T20:23:55.000Z">
-<meta property="article:modified_time" content="2025-04-07T08:47:33.222Z">
+<meta property="article:modified_time" content="2025-04-07T08:50:55.064Z">
 <meta property="article:author" content="Jasper_sec">
 <meta property="article:tag" content="反序列化">
 <meta property="article:tag" content="LLM">
@@ -165,7 +165,7 @@
       
         <time datetime="2025-04-05T20:23:55.000Z" class="dt-published" itemprop="datePublished">2025-04-06</time>
         
-        (Updated: <time datetime="2025-04-07T08:47:33.222Z" class="dt-updated" itemprop="dateModified">2025-04-07</time>)
+        (Updated: <time datetime="2025-04-07T08:50:55.064Z" class="dt-updated" itemprop="dateModified">2025-04-07</time>)
         
       
     </div>
@@ -185,7 +185,7 @@
   
 
   <div class="content e-content" itemprop="articleBody">
-    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在关注LLM Security，发现网上文章大部分偏理论， 缺乏漏洞落地和实操利用，以及对应的防御方案，这让我甚是苦恼。<br>所幸，最终发现了360研究院发布的《大模型安全漏洞报告》，其中关键点是对大模型自身的安全立了框架，将其分为<strong>模型层、框架层和应用层</strong>，笔者以一个初学者的角度，根据这个框架，辅以一些实际的漏洞demo进行学习和理解。</p>
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在关注LLM Security，发现网上文章偏理论， 缺乏漏洞落地和利用，以及对应的防御方案，让我甚是苦恼。<br>所幸，最终发现了360研究院发布的《大模型安全漏洞报告》，其中关键点是对大模型自身的安全立了框架，将其分为<strong>模型层、框架层和应用层</strong>，笔者以一个初学者的角度，根据这个框架，辅以一些实际的漏洞demo进行学习和理解。</p>
 <h2 id="模型层"><a href="#模型层" class="headerlink" title="模型层"></a>模型层</h2><p><strong>模型层安全问题</strong></p>
 <ul>
 <li>数据投毒 ：例如在开源平台发布携带虚假标签数据的训练集，从而影响模型的判断。</li>
